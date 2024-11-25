@@ -4,19 +4,27 @@ import useSoundPlayer from "./hooks/useSoundPlayer";
 import { ResponseButtonsMemo } from "./components/responseButtons";
 import { Button } from "./components/button";
 import { findTimeNotes } from "./libs/SoundPlayer";
-import "./App.css";
+import ResponseTimer from "./components/responseTimer";
+import "./app.scss"
+
 
 function App() {
   const gameManager = useRef(new GameManager()).current;
   const [score, setScore] = useState(0);
   const [intervalNumber, setIntervalNumber] = useState(1);
   const player = useSoundPlayer();
+  const [timerPaused, setTimerPaused] = useState(true)
   const containerButtonsRef = useRef();
   const buttonMapRef = useRef(new Map());
+  const [answerPoints, setAnswerPoints] = useState(5)
 
   const registerButton = useCallback((response, buttonElement) => {
     buttonMapRef.current.set(response, buttonElement);
   }, []);
+
+  player.on(player.SOUND_END, () => {
+    setTimerPaused(false)
+  })
 
   const startGame = useCallback(() => {
     gameManager.startGame();
@@ -27,33 +35,39 @@ function App() {
   }, [gameManager]);
 
   const next = useCallback(() => {
+    const buttonMap = buttonMapRef.current;
+    buttonMap.forEach((button) => {
+      button.classList.remove("valid", "error");
+    });
     if (gameManager.nextInterval()) {
       setIntervalNumber((prev) => prev + 1);
       player.setIntervalTimes(findTimeNotes(gameManager.getCurrentInterval()));
+      player.playInterval();
     }
   });
 
   const handleResponse = useCallback((e) => {
     const userAnswer = e.currentTarget.dataset.value;
-    const correctAnswer = gameManager.getCurrentInterval().name; // Exemple, remplace par la réponse correcte dynamique
+    const correctAnswer = gameManager.getCurrentInterval().name;
     const buttonMap = buttonMapRef.current;
 
-    // Réinitialiser les classes
-    buttonMap.forEach((button) => {
-      button.classList.remove("valid", "error");
-    });
+
 
     if (userAnswer === correctAnswer) {
-      buttonMap.get(userAnswer).classList.add("valid"); // Ajouter la classe 'valid'
+      buttonMap.get(userAnswer).classList.add("valid");
+      setScore((score) => score + answerPoints)
     } else {
-      buttonMap.get(userAnswer)?.classList.add("error"); // Ajouter la classe 'error'
-      buttonMap.get(correctAnswer)?.classList.add("valid"); // Marquer la bonne réponse
+      buttonMap.get(userAnswer)?.classList.add("error");
+      buttonMap.get(correctAnswer)?.classList.add("valid");
     }
-  }, []);
+  }, [answerPoints]);
 
   return (
     <>
-      <span>interval : {intervalNumber}</span>
+      <header className="game-interval__header">  <ResponseTimer onUpdate={setAnswerPoints} isPaused={timerPaused}></ResponseTimer>
+        <span>{score}</span>
+        <span>interval : {intervalNumber}</span></header>
+
       <ResponseButtonsMemo
         containerRef={containerButtonsRef}
         callback={handleResponse}

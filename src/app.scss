@@ -1,0 +1,31 @@
+@import url(./styles/reset.scss);
+@import url(./styles/fonts.scss);
+@import url(./styles/responseButton.scss);
+@import url(./styles/buttons.scss);
+
+
+body {
+    font-family: "Urbanist";
+    font-weight: 600;
+    background-color: rgb(34, 49, 133);
+    height: 100vh;
+
+}
+
+.game-interval {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+}
+
+.game-interval__header {
+    width: 100%;
+    height: 100px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #fff;
+}

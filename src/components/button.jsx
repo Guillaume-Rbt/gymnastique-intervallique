@@ -2,7 +2,6 @@ import { forwardRef } from "react"
 
 export const Button = forwardRef(function ({
     text,
-    radius = '0px',
     type = 'primary',
     classes = null,
     handleClick = () => { },
@@ -24,7 +23,6 @@ export const Button = forwardRef(function ({
                 e.target.classList.remove('button-touched')
             }}
             ref={ref}
-            style={{ '--radius': radius }}
 
             {...(dataValue != '' ? { 'data-value': dataValue } : {})}
             onClick={(e) => handleClick(e)}

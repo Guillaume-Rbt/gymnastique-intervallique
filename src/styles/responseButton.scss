@@ -1,0 +1,5 @@
+.buttons-response {
+    width: clamp(320px, 80%, 1000px);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minMax(160px, 300px));
+}

@@ -45,13 +45,13 @@ export const ResponseButtonsMemo = memo(function ResponseButtons({
                 ref={(el) => el && registerButton(intervals[index], el)}
                 dataValue={intervals[index]}
                 text={button}
-                type="response"
+                type="buttons-respnse_response"
             ></Button>
         )
     })
 
     return (
-        <div ref={containerRef} className="button-container">
+        <div ref={containerRef} className="buttons-response">
             {buttonList}
         </div>
     )

@@ -1,0 +1,23 @@
+@font-face {
+    font-family: 'Urbanist';
+    src:
+        url('../assets/fonts/Urbanist-Regular.woff2') format('woff2'),
+        url('../assets/fonts/Urbanist-Regular.woff') format('woff');
+    font-weight: 400;
+}
+
+@font-face {
+    font-family: 'Urbanist';
+    src:
+        url('../assets/fonts/Urbanist-Bold.woff2') format('woff2'),
+        url('../assets/fonts/Urbanist-Bold.woff') format('woff');
+    font-weight: 700;
+}
+
+@font-face {
+    font-family: 'Urbanist';
+    src:
+        url('../assets/fonts/Urbanist-Medium.woff2') format('woff2'),
+        url('../assets/fonts/Urbanist-Medium.woff') format('woff');
+    font-weight: 600;
+}
