@@ -71,3 +71,19 @@ export default class SoundPlayer extends Emitter {
         return !this.audio.paused
     }
 }
+
+
+export function findTimeNotes(interval) {
+    const timeSeparateNotes = 2000
+    const { noteStart, noteEnd } = interval
+
+    const timeNoteStart =
+        timeSeparateNotes * (noteStart.index + noteStart.octave * 12)
+    const timeNoteEnd =
+        timeSeparateNotes * (noteEnd.index + noteEnd.octave * 12)
+
+    return {
+        timeNote1: timeNoteStart,
+        timeNote2: timeNoteEnd,
+    }
+}
