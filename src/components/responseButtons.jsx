@@ -1,3 +1,4 @@
+import { useGameContext } from '../hooks/useGameContext.jsx'
 import { buttons, buttonsMobile, intervals } from '../utils/constantsMusical.js'
 import { Button } from './button.jsx'
 import {
@@ -13,6 +14,10 @@ export const ResponseButtonsMemo = memo(function ResponseButtons({
     registerButton
 }) {
     let buttonList = []
+
+    const { allowedIntervals } = useGameContext()
+
+    console.log(allowedIntervals)
 
     const prevWidth = useRef(window.innerWidth)
     const [buttonData, setButtonData] = useState(
@@ -33,18 +38,18 @@ export const ResponseButtonsMemo = memo(function ResponseButtons({
         return () => window.removeEventListener('resize', handleResize)
     }, [])
 
-    buttonData.forEach((button, index) => {
+    allowedIntervals.forEach((button, key) => {
 
         buttonList.push(
             <Button
-                key={buttons[index].toLowerCase()}
+                key={button}
 
                 handleClick={(e) => {
                     callback(e)
                 }}
-                ref={(el) => el && registerButton(intervals[index], el)}
-                dataValue={intervals[index]}
-                text={button}
+                ref={(el) => el && registerButton(button, el)}
+                dataValue={intervals[key]}
+                text={buttonData[key]}
                 type="buttons-respnse_response"
             ></Button>
         )

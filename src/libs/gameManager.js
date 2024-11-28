@@ -2,7 +2,10 @@ import intervalsGenerator from "./randomIntervalGenerator";
 
 
 export default class GameManager {
-    constructor() {
+    constructor(options) {
+        this.options = {
+            allowedIntervals: null
+        }
         this.intervalsGenerator = new intervalsGenerator();
         this.intervals = [];
         this.currentIntervalIndex = 0;
