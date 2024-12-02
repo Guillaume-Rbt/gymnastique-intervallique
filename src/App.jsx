@@ -6,6 +6,27 @@ import { Button } from "./components/button";
 import { findTimeNotes } from "./libs/SoundPlayer";
 import ResponseTimer from "./components/responseTimer";
 import "./app.scss";
+import { MotionPopup } from "./components/popup";
+import { useGameContext } from "./hooks/useGameContext";
+import { AnimatePresence, motion } from "motion/react";
+
+
+
+const popupVariants =
+{
+  init: {
+    scale: 0.5,
+    opacity: 0
+  },
+  visible: {
+    scale: 1,
+    opacity: 1
+  },
+  exit: {
+    scale: 0.5,
+    opacity: 0
+  }
+}
 
 function App() {
   const gameManager = useRef(new GameManager()).current;
@@ -16,6 +37,7 @@ function App() {
   const containerButtonsRef = useRef();
   const buttonMapRef = useRef(new Map());
   const [answerPoints, setAnswerPoints] = useState(5);
+  const { gameState, setGameState } = useGameContext()
 
   const registerButton = useCallback((response, buttonElement) => {
     buttonMapRef.current.set(response, buttonElement);
@@ -28,6 +50,7 @@ function App() {
   const startGame = useCallback(() => {
     gameManager.startGame();
     setScore(0);
+    setGameState("playing")
     setIntervalNumber(1);
     player.setIntervalTimes(findTimeNotes(gameManager.getCurrentInterval()));
     player.playInterval();
@@ -42,8 +65,11 @@ function App() {
       setIntervalNumber((prev) => prev + 1);
       player.setIntervalTimes(findTimeNotes(gameManager.getCurrentInterval()));
       player.playInterval();
+    } else {
+      setGameState('end')
     }
-  });
+  }
+  );
 
   const handleResponse = useCallback(
     (e) => {
@@ -63,33 +89,45 @@ function App() {
   );
 
   return (
-    <>
-      <header className="game-interval__header">
-        {" "}
-        <ResponseTimer
-          resetToken={intervalNumber}
-          onUpdate={setAnswerPoints}
-          isPaused={timerPaused}
-        ></ResponseTimer>
-        <span>{score}</span>
-        <span>interval : {intervalNumber}</span>
-      </header>
+    <>      <AnimatePresence>
 
-      <ResponseButtonsMemo
-        containerRef={containerButtonsRef}
-        callback={handleResponse}
-        registerButton={registerButton}
-      />
+      {(gameState == "init" || gameState == 'end') &&
+        <MotionPopup layout transition={{ duration: 0.3, ease: 'easeOut' }} variants={popupVariants} initial="init" animate="visible" exit="init">
+          <h2 className="popup__title">Gymnastique Intervallique</h2>
+          <p className="popup__text">Exercez votre oreille en reconnaissant les intervalles.</p>
+          <Button text="Start" handleClick={startGame}></Button>
+        </MotionPopup>}
+      {gameState == "playing" && <motion.div transition={{ duration: 0.3, ease: 'easeOut' }} variants={popupVariants} initial="init" animate="visible" exit="init">
+        <header className="game-interval__header">
+          {" "}
+          <ResponseTimer
+            resetToken={intervalNumber}
+            onUpdate={setAnswerPoints}
+            isPaused={timerPaused}
+          ></ResponseTimer>
+          <span>{score}</span>
+          <span>interval : {intervalNumber}</span>
+        </header>
 
-      <Button text="Suivant" handleClick={next}></Button>
-      <Button text="Start" handleClick={startGame}></Button>
-      <Button
-        text="Play"
-        handleClick={() => {
-          player.playInterval();
-        }}
-      ></Button>
-      <pre>{JSON.stringify(gameManager.getCurrentInterval())}</pre>
+        <ResponseButtonsMemo
+          containerRef={containerButtonsRef}
+          callback={handleResponse}
+          registerButton={registerButton}
+        />
+
+        <Button text="Suivant" handleClick={next}></Button>
+
+        <Button
+          text="Play"
+          handleClick={() => {
+            player.playInterval();
+          }}
+        ></Button>
+        <pre>{JSON.stringify(gameManager.getCurrentInterval())}</pre>
+      </motion.div>
+      }
+
+    </AnimatePresence>
     </>
   );
 }

@@ -8,7 +8,6 @@ const intervalsMap = new Map(intervals.map((interval, index) => {
 }))
 
 
-
 const GameContext = createContext({
     allowedIntervals: intervalsMap,
 })
@@ -16,13 +15,16 @@ const GameContext = createContext({
 
 export const GameContextProvider = ({ children }) => {
     const [allowedIntervals, setAllowedIntervals] = useState(intervalsMap)
+    const [gameState, setGameState] = useState("init")
+
+
     const toggleAllowedInterval = (interval) => {
         setAllowedIntervals((allowedIntervals) => {
             allowedIntervals.get(interval) ? allowedIntervals.delete(interval) : allowedIntervals.set(interval, intervals[interval])
         })
     }
 
-    return <GameContext.Provider value={{ allowedIntervals, toggleAllowedInterval }}>
+    return <GameContext.Provider value={{ allowedIntervals, toggleAllowedInterval, setGameState, gameState }}>
         {children}
     </GameContext.Provider>
 }

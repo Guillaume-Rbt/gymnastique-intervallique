@@ -4,7 +4,8 @@ import intervalsGenerator from "./randomIntervalGenerator";
 export default class GameManager {
     constructor(options) {
         this.options = {
-            allowedIntervals: null
+            allowedIntervals: null,
+            ...options
         }
         this.intervalsGenerator = new intervalsGenerator();
         this.intervals = [];
@@ -14,7 +15,6 @@ export default class GameManager {
     startGame() {
         this.intervals = this.intervalsGenerator.generateAnyIntervals(10);
         this.currentIntervalIndex = 0;
-        this.score = 0;
     }
 
     getCurrentInterval() {

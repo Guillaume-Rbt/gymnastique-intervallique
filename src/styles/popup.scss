@@ -1,0 +1,13 @@
+.popup {
+    padding: 25px;
+    background-color: #fafafa;
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: start;
+}
+
+.popup__title {
+    font-size: 25px;
+}
