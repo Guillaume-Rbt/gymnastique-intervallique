@@ -1,6 +1,13 @@
 import { intervals, notes } from '../utils/constantsMusical'
 
 export default class RandomIntervalGenerator {
+
+    allowedIntervals = null
+
+    set allowedIntervals(value) {
+        this.allowedIntervals = value
+    }
+
     constructor(options) {
         this.setDefaultOptions = this.setDefaultOptions.bind(this)
         this.generateInterval = this.generateInterval.bind(this)
@@ -10,12 +17,15 @@ export default class RandomIntervalGenerator {
         this.setDefaultOptions(options)
 
         this.generateAnyIntervals = this.generateAnyIntervals.bind(this)
-        this.generateInterval()
+
+
+        this.allowedIntervals = this.options.allowedIntervals
+        this.intervalsKey = Array.from(this.allowedIntervals.keys())
     }
 
     setDefaultOptions(options) {
         this.options = {
-            intervalsAllowed: 'all', //use later if implements intervals choices
+            allowedIntervals: 'all', //use later if implements intervals choices
             ...options,
         }
     }
@@ -32,10 +42,14 @@ export default class RandomIntervalGenerator {
     }
 
     generateInterval() {
-        const intervalByNumber = this.randomNumber(0, 12)
-        const intervalName = intervals[intervalByNumber]
-        const noteStartNumber = this.randomNumber(0, 11)
-        const noteStartName = notes[noteStartNumber]
+
+        const { allowedIntervals } = this.options
+
+        const intervalByNumber = this.randomNumber(0, this.intervalsKey.length - 1)
+        const intervalKey = this.intervalsKey[intervalByNumber]
+        const intervalName = allowedIntervals.get(intervalKey)
+        const noteStartNumber = this.randomNumber(0, 11) // 0 == C (do) 11 = B (si)
+        const noteStartName = notes[noteStartNumber] // get note name with number
         const direction = this.randomNumber(0, 1) == 0 ? 'desc' : 'asc'
         const noteEndNumber =
             direction == 'asc'
@@ -43,17 +57,17 @@ export default class RandomIntervalGenerator {
                     ? noteStartNumber + intervalByNumber - 12
                     : noteStartNumber + intervalByNumber
                 : noteStartNumber - intervalByNumber < 0
-                  ? 12 + (noteStartNumber - intervalByNumber)
-                  : noteStartNumber - intervalByNumber
-        const noteEndName = notes[noteEndNumber]
+                    ? 12 + (noteStartNumber - intervalByNumber)
+                    : noteStartNumber - intervalByNumber// calc number of endNote according interval
+        const noteEndName = notes[noteEndNumber]// get note name with number
         const isPassOctave =
             direction == 'asc'
                 ? noteStartNumber + intervalByNumber > 11
                     ? true
                     : false
                 : noteStartNumber - intervalByNumber < 0
-                  ? true
-                  : false
+                    ? true
+                    : false
         const octave = this.randomNumber(0, 2)
 
         let interval = {

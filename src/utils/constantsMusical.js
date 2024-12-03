@@ -12,6 +12,7 @@ export const intervals = [
     'septième mineure',
     'septième majeure',
     'octave',
+    'neuvième'
 ]
 
 export const buttons = [
@@ -28,6 +29,7 @@ export const buttons = [
     'Septième mineure',
     'Septième Majeure',
     'Octave',
+    'Neuvième mineure'
 ]
 
 export const buttonsMobile = [
@@ -44,6 +46,7 @@ export const buttonsMobile = [
     '7<sup>ème</sup> m',
     '7<sup>ème</sup> M',
     '8<sup>ve</sup>',
+    '9<sup>ème</sup> m'
 ]
 
 export const notes = [

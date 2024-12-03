@@ -20,7 +20,11 @@ export const GameContextProvider = ({ children }) => {
 
     const toggleAllowedInterval = (interval) => {
         setAllowedIntervals((allowedIntervals) => {
-            allowedIntervals.get(interval) ? allowedIntervals.delete(interval) : allowedIntervals.set(interval, intervals[interval])
+            allowedIntervals.get(interval) ? allowedIntervals.set(interval, false) : allowedIntervals.set(interval, intervals[interval])
+
+            const newAllowedIntervals = new Map(allowedIntervals)
+
+            return newAllowedIntervals
         })
     }
 

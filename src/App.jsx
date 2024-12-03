@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState, useEffect, useReducer } from "react";
+import { useCallback, useRef, useState, useEffect } from "react";
 import GameManager from "./libs/gameManager";
 import useSoundPlayer from "./hooks/useSoundPlayer";
 import { ResponseButtonsMemo } from "./components/responseButtons";
@@ -9,6 +9,7 @@ import "./app.scss";
 import { MotionPopup } from "./components/popup";
 import { useGameContext } from "./hooks/useGameContext";
 import { AnimatePresence, motion } from "motion/react";
+import { Settings } from "./components/settings";
 
 
 
@@ -29,7 +30,11 @@ const popupVariants =
 }
 
 function App() {
-  const gameManager = useRef(new GameManager()).current;
+  const { gameState, setGameState, allowedIntervals } = useGameContext()
+  const gameManager = useRef(new GameManager({ allowedIntervals })).current
+  useEffect(() => {
+    gameManager.allowedIntervals = allowedIntervals
+  }, [allowedIntervals])
   const [score, setScore] = useState(0);
   const [intervalNumber, setIntervalNumber] = useState(1);
   const player = useSoundPlayer();
@@ -37,8 +42,8 @@ function App() {
   const containerButtonsRef = useRef();
   const buttonMapRef = useRef(new Map());
   const [answerPoints, setAnswerPoints] = useState(5);
-  const { gameState, setGameState } = useGameContext()
 
+  console.log(gameState)
   const registerButton = useCallback((response, buttonElement) => {
     buttonMapRef.current.set(response, buttonElement);
   }, []);
@@ -97,9 +102,8 @@ function App() {
           <p className="popup__text">Exercez votre oreille en reconnaissant les intervalles.</p>
           <Button text="Start" handleClick={startGame}></Button>
         </MotionPopup>}
-      {gameState == "playing" && <motion.div transition={{ duration: 0.3, ease: 'easeOut' }} variants={popupVariants} initial="init" animate="visible" exit="init">
+      {gameState == "playing" && <>
         <header className="game-interval__header">
-          {" "}
           <ResponseTimer
             resetToken={intervalNumber}
             onUpdate={setAnswerPoints}
@@ -124,7 +128,9 @@ function App() {
           }}
         ></Button>
         <pre>{JSON.stringify(gameManager.getCurrentInterval())}</pre>
-      </motion.div>
+        <Settings></Settings>
+      </>
+
       }
 
     </AnimatePresence>

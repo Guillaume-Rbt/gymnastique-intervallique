@@ -17,7 +17,6 @@ export const ResponseButtonsMemo = memo(function ResponseButtons({
 
     const { allowedIntervals } = useGameContext()
 
-    console.log(allowedIntervals)
 
     const prevWidth = useRef(window.innerWidth)
     const [buttonData, setButtonData] = useState(
@@ -39,20 +38,21 @@ export const ResponseButtonsMemo = memo(function ResponseButtons({
     }, [])
 
     allowedIntervals.forEach((button, key) => {
+        if (button) {
+            buttonList.push(
+                <Button
+                    key={key}
 
-        buttonList.push(
-            <Button
-                key={button}
-
-                handleClick={(e) => {
-                    callback(e)
-                }}
-                ref={(el) => el && registerButton(button, el)}
-                dataValue={intervals[key]}
-                text={buttonData[key]}
-                type="buttons-respnse_response"
-            ></Button>
-        )
+                    handleClick={(e) => {
+                        callback(e)
+                    }}
+                    ref={(el) => el && registerButton(button, el)}
+                    dataValue={intervals[key]}
+                    text={buttonData[key]}
+                    type="buttons-respnse_response"
+                ></Button>
+            )
+        }
     })
 
     return (
