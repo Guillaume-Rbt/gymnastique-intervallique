@@ -1,0 +1,35 @@
+.response-timer {
+    width          : 50px;
+    height         : 50px;
+    display        : flex;
+    align-items    : center;
+    justify-content: center;
+    position       : relative;
+}
+
+.response-timer svg {
+    position: absolute;
+    width   : 100%;
+    height  : 100%;
+    fill    : none;
+}
+
+.response-timer .progress {
+    --progress      : 1px;
+    --transition    : 999ms;
+    stroke          : #4a90e2;
+    stroke-width    : 5px;
+    stroke-linecap  : round;
+    fill            : none;
+    stroke-dasharray: var(--progress), 1px;
+    transform       : rotateZ(-90deg);
+    transform-origin: 50% 50%;
+    transition      : all var(--transition) linear;
+}
+
+.bg {
+    stroke      : rgb(68, 68, 68);
+    opacity     : .2;
+    stroke-width: 5px;
+    fill        : none;
+}
