@@ -1,15 +1,14 @@
-@import url(./styles/reset.scss);
-@import url(./styles/fonts.scss);
-@import url(./styles/responseButton.scss);
-@import url(./styles/buttons.scss);
-@import url(./styles/popup.scss);
-@import url(./styles/timer.scss);
-
+@import './styles/variables.scss';
+@import './styles/reset.scss';
+@import './styles/responseButton.scss';
+@import './styles/buttons.scss';
+@import './styles/popup.scss';
+@import './styles/timer.scss';
 
 body {
     font-family     : "Urbanist";
     font-weight     : 600;
-    background-color: rgb(34, 49, 133);
+    background-color: rgb(25, 36, 97);
     height          : 100vh;
 
 }
