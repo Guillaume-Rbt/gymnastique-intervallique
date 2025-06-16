@@ -1,5 +1,5 @@
 type ButtonProps = {
-    classes: string[];
+    classes: string[] | string;
     onClick: () => void;
     children: string;
 };
@@ -9,10 +9,13 @@ type ButtonProps = {
 export default function Button({ classes, onClick, children }: ButtonProps) {
 
 
-    const buttonClasses = ["rounded", "flex", "flex-content-center", "flex", ...classes].join(' ').trim();
+    const defaultClasses = ["btn"]
 
 
-    return <div onClick={onClick} className={buttonClasses}>
+    const buttonClasses = Array.isArray(classes) ? [...defaultClasses, ...classes] : [classes, ...defaultClasses]
+
+
+    return <div onClick={onClick} className={buttonClasses.join(" ")}>
         <span dangerouslySetInnerHTML={{ __html: children }}></span>
     </div>
 }

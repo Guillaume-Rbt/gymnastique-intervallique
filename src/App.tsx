@@ -1,23 +1,29 @@
 
 import GameManager from "./libs/GameManager"
-import Button from "./components/Buttons"
 import { buttons } from "./utils/constants"
+import { useRef } from "react"
+import Header from "./components/Header"
+import Button from "./components/Buttons"
 
 function App() {
 
-  const gameManager = new GameManager()
+  const gameManager = useRef(new GameManager()).current
 
   gameManager.startGame()
 
-  console.log(gameManager)
-
-
-
   return (
     <>
-      {buttons.map((button, index) => {
-        return <Button key={button} classes={[`btn-response-${index + 1}`, "btn-response"]} onClick={() => { }}>{button}</Button>
-      })}
+      <Header />
+
+      <div className="buttons-container grid grid-col-2-xxl">
+
+        {buttons.map((button, index) => {
+          /*unocss*/
+          const classeNameString = `btn-response-${index + 1} btn-response`
+          return <Button key={button} classes={classeNameString} onClick={() => { }}>{button}</Button>
+        })}
+      </div>
+
     </>
   )
 }
