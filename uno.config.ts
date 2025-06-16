@@ -78,6 +78,6 @@ export default defineConfig({
 
     shortcuts: {
         "btn": 'cursor-pointer w-max-content',
-        'btn-response': 'flex py-2 px-6 rounded-lg',
+        'btn-response': 'flex flex-justify-center py-2 px-6 rounded-lg',
     }
 })
