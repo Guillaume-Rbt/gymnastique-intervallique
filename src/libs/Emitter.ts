@@ -46,7 +46,6 @@ export default class Emitter {
                 break;
             }
         }
-
         return this;
     }
 
@@ -55,16 +54,11 @@ export default class Emitter {
     }
 
     once(event: string, fn: Listener): this {
-        this.listeners[event] = this.listeners[event] || [];
-
         const onceWrapper = (data?: Record<string, any>) => {
             fn(data);
             this.off(event, onceWrapper);
         };
-
-        this.listeners[event].push(onceWrapper);
-
-        return this;
+        return this.addListener(event, onceWrapper);
     }
 
     listernerCount(event: string): number {

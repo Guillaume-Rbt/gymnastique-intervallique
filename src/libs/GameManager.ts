@@ -13,8 +13,25 @@ export default class GameManager extends Emitter {
   intervalsGenerator: RandomIntervalGenerator = new RandomIntervalGenerator();
   currentIntervalIndex: number = 0;
   allowedIntervals: Map<number, string | string[]>;
-  intervalPlayer = new IntervalPlayer("./assets/sounds/intervals.mp3");
+  intervalPlayer = new IntervalPlayer("./src/assets/sounds/notes.wav");
   buttonsSelector: string = ".button-response";
+  hasStarted: boolean = false;
+  numberOfIntervals: number = 10;
+
+  static get GAME_ENDED() {
+    return "gameManager.game.ended";
+  }
+
+  static get GAME_STARTED() {
+    return "gameManager.game.started";
+  }
+
+
+
+
+  get isLastInterval() {
+    return this.currentIntervalIndex === this.intervals.length - 1;
+  }
 
   constructor(options: Partial<gameOptions> = {}) {
     super();
@@ -26,22 +43,31 @@ export default class GameManager extends Emitter {
 
     this.allowedIntervals = this.options.allowedIntervals;
     this.intervals = [];
-
-
   }
 
   startGame() {
-    this.intervals = this.intervalsGenerator.generateAnyIntervals(10);
+    if (this.hasStarted) {
+      this.emit(GameManager.GAME_STARTED, { instance: this });
+      console.warn("🚫 game is already started");
+      return;
+    }
+    this.intervals = this.intervalsGenerator.generateAnyIntervals(this.numberOfIntervals);
     this.currentIntervalIndex = 0;
+    this.hasStarted = true;
+
+
+    this.emit(GameManager.GAME_STARTED, { instance: this });
   }
 
   getCurrentInterval() {
     return this.intervals[this.currentIntervalIndex];
   }
 
-  checkResponse(intervalName: string | string[]): boolean {
-    const currentInterval = this.getCurrentInterval();
-    return Array.isArray(currentInterval.name) ? currentInterval.name.includes(intervalName) : currentInterval.name === intervalName;
+  getProgress() {
+    return {
+      current: this.currentIntervalIndex + 1,
+      total: this.intervals.length,
+    };
   }
 
   nextInterval() {
@@ -49,14 +75,8 @@ export default class GameManager extends Emitter {
       this.currentIntervalIndex++;
       return true;
     }
+
+    this.emit(GameManager.GAME_ENDED, { instance: this });
     return false;
   }
-
-  handleClickResponse(event: MouseEvent) {
-
-    const response = (event.target as HTMLElement).dataset.response;
-
-    console.log(response)
-  }
-
 }

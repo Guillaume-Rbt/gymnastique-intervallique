@@ -72,6 +72,7 @@ export default class RandomIntervalGenerator {
   }
 
   generateAnyIntervals(nbIntervals: number = 10) {
+    console.log("Generating", nbIntervals, "intervals");
     let intervals = [];
     for (let i = 0; i < nbIntervals; i++) {
       intervals.push(this.generateInterval());

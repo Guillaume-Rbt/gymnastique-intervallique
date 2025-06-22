@@ -2,11 +2,12 @@ type ButtonProps = {
     classes: string[] | string;
     onClick: () => void;
     children: string;
+    data: string | null
 };
 
 
 
-export default function Button({ classes, onClick, children }: ButtonProps) {
+export default function Button({ classes, onClick, children = "", data = null }: Partial<ButtonProps>) {
 
 
     const defaultClasses = ["btn"]
@@ -15,7 +16,7 @@ export default function Button({ classes, onClick, children }: ButtonProps) {
     const buttonClasses = Array.isArray(classes) ? [...defaultClasses, ...classes] : [classes, ...defaultClasses]
 
 
-    return <div onClick={onClick} className={buttonClasses.join(" ")}>
+    return <div  {...(data && { 'data-data': data })} onClick={onClick} className={buttonClasses.join(" ")}>
         <span dangerouslySetInnerHTML={{ __html: children }}></span>
     </div>
 }

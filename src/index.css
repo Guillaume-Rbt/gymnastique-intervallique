@@ -1,0 +1,16 @@
+@import "./css/utils.css";
+
+
+html,
+body {
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+}
+
+.buttons-container {
+    width: clamp(320px, 80%, 1000px);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minMax(160px, 300px));
+    justify-content: center;
+}
