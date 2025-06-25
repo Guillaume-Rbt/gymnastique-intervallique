@@ -7,15 +7,11 @@ type ProgessType = {
     current: number;
     total: number;
 }
-export const GAMESTATES = {
-    INIT: "init",
-    STARTED: "started",
-    ENDED: "ended"
-} as const
-
-
-
-
+export enum GAMESTATES {
+    INIT = "init",
+    STARTED = "started",
+    ENDED = "ended"
+}
 
 type gameContextType = {
     gameState: typeof GAMESTATES[keyof typeof GAMESTATES];

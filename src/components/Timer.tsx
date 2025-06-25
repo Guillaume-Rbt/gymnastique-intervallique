@@ -47,6 +47,8 @@ const Timer = ({ onScoreChange, running, resetSignal, paused }: TimerProps) => {
       const now = Date.now();
       const elapsed = (now - startTimeRef.current - totalPausedDurationRef.current) / 1000;
 
+
+
       if (elapsed >= 6) {
         clearInterval(intervalRef.current!);
         return;
@@ -65,7 +67,16 @@ const Timer = ({ onScoreChange, running, resetSignal, paused }: TimerProps) => {
     return () => clearInterval(intervalRef.current!);
   }, [running, paused]);
 
-  return <p>Points : {points}</p>;
-};
+  return <div className="flex h-[4em] w-[4em] rounded-full  flex-justify-center flex-items-center position-relative ">
+    <span>{points} pts</span>
+    <svg className="absolute  color-blue  w-full h-full" xmlns=" http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <circle className="opacity-35" cx="12" cy="12" r="10" stroke="currentColor" fill="none" strokeWidth="2"></circle>
+      <circle cx="12" cy="12" r="10" strokeDashoffset={2 * Math.PI * 0
+      } strokeDasharray={2 * Math.PI * 10} stroke="currentColor" fill="none" strokeWidth="2"></circle>
+
+
+    </svg>
+  </div >
+}
 
 export default Timer;

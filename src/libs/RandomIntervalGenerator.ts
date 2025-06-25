@@ -113,23 +113,27 @@ export class Interval {
     this.endNote = this.#notes.endNote;
 
     this.adjustlOctave = this.adjustlOctave.bind(this);
+
+
   }
 
-  adjustlOctave() {
+  adjustlOctave({ startNote, endNote }: { startNote: Note; endNote: Note }) {
     switch (this.direction) {
       case "asc":
-        if (this.endNote.octave > 2) {
-          this.startNote.octave = this.startNote.octave - 1;
-          this.endNote.octave = this.endNote.octave - 1;
+        if (endNote.octave > 2) {
+          startNote.octave = startNote.octave - 1;
+          endNote.octave = endNote.octave - 1;
         }
         break;
       case "desc":
-        if (this.endNote.octave < 0) {
-          this.startNote.octave = this.startNote.octave + 1;
-          this.endNote.octave = this.endNote.octave + 1;
+        if (endNote.octave < 0) {
+          startNote.octave = startNote.octave + 1;
+          endNote.octave = endNote.octave + 1;
         }
         break;
     }
+
+    return { startNote: startNote, endNote: endNote };
   }
 
   setNotes() {
@@ -144,14 +148,13 @@ export class Interval {
           ? startNote.index + this.length - 12
           : startNote.index + this.length
         : startNote.index - this.length < 0
-        ? 12 + (startNote.index - this.length)
-        : startNote.index - this.length;
+          ? 12 + (startNote.index - this.length)
+          : startNote.index - this.length;
 
     const endNote = new Note(
       endNoteIndex,
       this.isPassOctave ? (this.direction == "asc" ? startNote.octave + 1 : startNote.octave - 1) : startNote.octave,
     );
-
-    return { startNote, endNote };
+    return this.adjustlOctave({ startNote, endNote });
   }
 }

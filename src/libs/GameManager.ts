@@ -90,6 +90,7 @@ export default class GameManager extends Emitter {
 	}
 
 	nextInterval() {
+		this.intervalPlayer.audio.pause();
 		if (this.currentIntervalIndex < this.intervals.length - 1) {
 			this.currentIntervalIndex++;
 			return true;
