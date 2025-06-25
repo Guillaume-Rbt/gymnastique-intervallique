@@ -7,13 +7,16 @@ import { buttons, intervals } from "./utils/constants";
 
 function App() {
   const { gameState, setGameState, setProgress } = useGameContext();
-
-
   const [answer, setAnswer] = useState<string | null>(null);
   const [isAnswered, setAnswered] = useState<boolean>(false);
   const [userResponse, setUserResponse] = useState<string | null>(null);
+  const [paused, setPaused] = useState(false);
+
+
   const gameManagerRef = useRef(new GameManager());
   const gameManager = gameManagerRef.current;
+
+  let score = 0;
 
 
 
@@ -41,6 +44,26 @@ function App() {
     }
   }, []);
 
+  const [questionScore, setQuestionScore] = useState(5);
+  const [running, setRunning] = useState(false);
+  const [resetSignal, setResetSignal] = useState(0); // change this to trigger reset
+
+  const handleStart = () => {
+    setRunning(true);
+    setPaused(false);
+  };
+
+  const handleReset = () => {
+    setRunning(false);
+    setPaused(false);
+    setResetSignal(prev => prev + 1);
+    setQuestionScore(5);
+  };
+
+  const togglePause = () => {
+    if (!running) return;
+    setPaused(prev => !prev);
+  };
 
 
   const handleResponse = useCallback(
@@ -54,6 +77,7 @@ function App() {
       setAnswer(gameManager.getCurrentInterval().name);
       setAnswered(true);
       setUserResponse(data);
+      score = score + questionScore;
     },
     [gameManager, gameState, isAnswered]
   );
@@ -74,7 +98,12 @@ function App() {
 
   return (
     <>
-      <Header />
+      <Header
+        score={score}
+        running={running}
+        resetSignal={resetSignal}
+        onScoreChange={setQuestionScore}
+      />
       <div className="game-container position-absolute h-[calc(100%-5rem)] top-20 overflow-scroll p-block-8 flex w-full">
         <div className="buttons-container grid  gap-2 m-auto" onClick={handleResponse}>
           {buttons.map((buttons, index) => {

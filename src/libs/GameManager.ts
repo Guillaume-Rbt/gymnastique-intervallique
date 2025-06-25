@@ -4,79 +4,98 @@ import { intervals } from "../utils/constants";
 import IntervalPlayer from "./IntervalsPlayer";
 
 type gameOptions = {
-  allowedIntervals: Map<number, string | string[]>;
+	allowedIntervals: Map<number, string | string[]>;
 };
 
 export default class GameManager extends Emitter {
-  options: gameOptions;
-  intervals: Interval[] | [];
-  intervalsGenerator: RandomIntervalGenerator = new RandomIntervalGenerator();
-  currentIntervalIndex: number = 0;
-  allowedIntervals: Map<number, string | string[]>;
-  intervalPlayer = new IntervalPlayer("./src/assets/sounds/notes.wav");
-  buttonsSelector: string = ".button-response";
-  hasStarted: boolean = false;
-  numberOfIntervals: number = 10;
+	options: gameOptions;
+	intervals: Interval[] | [];
+	intervalsGenerator: RandomIntervalGenerator = new RandomIntervalGenerator();
+	currentIntervalIndex: number = 0;
+	allowedIntervals: Map<number, string | string[]>;
+	intervalPlayer = new IntervalPlayer("./src/assets/sounds/notes.wav");
+	buttonsSelector: string = ".button-response";
+	hasStarted: boolean = false;
+	numberOfIntervals: number = 10;
 
-  static get GAME_ENDED() {
-    return "gameManager.game.ended";
-  }
+	static get GAME_ENDED() {
+		return "gameManager.game.ended";
+	}
 
-  static get GAME_STARTED() {
-    return "gameManager.game.started";
-  }
+	static get GAME_STARTED() {
+		return "gameManager.game.started";
+	}
 
+	static get INTERVAL_STARTED() {
+		return "gameManager.interval.started";
+	}
 
+	static get INTERVAL_ENDED() {
+		return "gameManager.interval.ended";
+	}
 
+	get isLastInterval() {
+		return this.currentIntervalIndex === this.intervals.length - 1;
+	}
 
-  get isLastInterval() {
-    return this.currentIntervalIndex === this.intervals.length - 1;
-  }
+	constructor(options: Partial<gameOptions> = {}) {
+		super();
 
-  constructor(options: Partial<gameOptions> = {}) {
-    super();
+		this.options = {
+			allowedIntervals: new Map(intervals.map((interval, index) => [index, interval])),
+			...options,
+		};
 
-    this.options = {
-      allowedIntervals: new Map(intervals.map((interval, index) => [index, interval])),
-      ...options,
-    };
+		this.allowedIntervals = this.options.allowedIntervals;
+		this.intervals = [];
+		this.addEventListeners();
+	}
 
-    this.allowedIntervals = this.options.allowedIntervals;
-    this.intervals = [];
-  }
+	startGame() {
+		if (this.hasStarted) {
+			this.emit(GameManager.GAME_STARTED, { instance: this });
+			console.warn("🚫 game is already started");
+			return;
+		}
+		this.intervals = this.intervalsGenerator.generateAnyIntervals(this.numberOfIntervals);
+		this.currentIntervalIndex = 0;
+		this.hasStarted = true;
 
-  startGame() {
-    if (this.hasStarted) {
-      this.emit(GameManager.GAME_STARTED, { instance: this });
-      console.warn("🚫 game is already started");
-      return;
-    }
-    this.intervals = this.intervalsGenerator.generateAnyIntervals(this.numberOfIntervals);
-    this.currentIntervalIndex = 0;
-    this.hasStarted = true;
+		this.emit(GameManager.GAME_STARTED, { instance: this });
+	}
 
+	getCurrentInterval() {
+		return this.intervals[this.currentIntervalIndex];
+	}
 
-    this.emit(GameManager.GAME_STARTED, { instance: this });
-  }
+	getProgress() {
+		return {
+			current: this.currentIntervalIndex + 1,
+			total: this.intervals.length,
+		};
+	}
 
-  getCurrentInterval() {
-    return this.intervals[this.currentIntervalIndex];
-  }
+	addEventListeners() {
+		this.intervalPlayer.on(IntervalPlayer.INTERVAL_STARTED, (data) => {
+			this.emit(GameManager.INTERVAL_STARTED, data);
+		});
 
-  getProgress() {
-    return {
-      current: this.currentIntervalIndex + 1,
-      total: this.intervals.length,
-    };
-  }
+		this.intervalPlayer.on(IntervalPlayer.INTERVAL_ENDED, (data) => {
+			this.emit(GameManager.INTERVAL_ENDED, data);
+		});
+	}
 
-  nextInterval() {
-    if (this.currentIntervalIndex < this.intervals.length - 1) {
-      this.currentIntervalIndex++;
-      return true;
-    }
+	playCurrentInterval() {
+		this.intervalPlayer.playInterval(this.getCurrentInterval());
+	}
 
-    this.emit(GameManager.GAME_ENDED, { instance: this });
-    return false;
-  }
+	nextInterval() {
+		if (this.currentIntervalIndex < this.intervals.length - 1) {
+			this.currentIntervalIndex++;
+			return true;
+		}
+
+		this.emit(GameManager.GAME_ENDED, { instance: this });
+		return false;
+	}
 }
