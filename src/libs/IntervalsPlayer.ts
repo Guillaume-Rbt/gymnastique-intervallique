@@ -18,7 +18,6 @@ export default class IntervalPlayer extends Emitter {
 		return "intervalPlayer.sound.start";
 	}
 
-
 	constructor(source: string, timeSeparateNotes?: number) {
 		if (IntervalPlayer._instance) {
 			return IntervalPlayer._instance;
@@ -73,11 +72,11 @@ export default class IntervalPlayer extends Emitter {
 			this.interval = interval;
 			this.findTimeNotes();
 			this.setIntervalTimes();
-			console.log(this, this.audio.duration)
+			this.emitSoundEnd = true;
 		}
 		if (this.audio.paused) {
 			this.currentNote = 1;
-			if (!this.emitEndedOncePerInterval) {
+			if (!this.emitEndedOncePerInterval && !this.emitSoundEnd) {
 				this.emitSoundEnd = true;
 			}
 			this.audio.currentTime = this.intervalTimePerNote.timeNote1 / 1000;

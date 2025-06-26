@@ -10,12 +10,12 @@ type ProgessType = {
 export enum GAMESTATES {
     INIT = "init",
     STARTED = "started",
+    LAST_INTERVAL = "last.interval",
     ENDED = "ended"
 }
 
 type gameContextType = {
     gameState: typeof GAMESTATES[keyof typeof GAMESTATES];
-    isAnswered: boolean;
     progress: ProgessType;
     setProgress: Dispatch<SetStateAction<{ current: number; total: number; }>> | (() => {});
     setGameState: Dispatch<SetStateAction<typeof GAMESTATES[keyof typeof GAMESTATES]>> | (() => {});
@@ -25,7 +25,6 @@ type gameContextType = {
 
 const GameContext = createContext({
     gameState: GAMESTATES.INIT,
-    isAnswered: false,
     progress: { current: 1, total: 0 },
     setProgress: () => { },
     setGameState: () => { }
@@ -41,7 +40,6 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
 
     return <GameContext.Provider value={{
         gameState: gameState,
-        isAnswered: false,
         progress: progress,
         setProgress: setProgress,
         setGameState: setGameState

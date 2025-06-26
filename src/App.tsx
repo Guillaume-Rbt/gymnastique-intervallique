@@ -15,13 +15,12 @@ function App() {
   const [questionScore, setQuestionScore] = useState(5);
   const [running, setRunningTrue, setRunningFalse] = useBoolean(false);
   const [resetSignal, setResetSignal] = useState(0); // change this to trigger reset
-
+const [score, setScore] = useState(0);
 
   const gameManagerRef = useRef(new GameManager());
   const gameManager = gameManagerRef.current;
 
-  let score = 0;
-
+  
 
 
   useEffect(() => {
@@ -37,12 +36,18 @@ function App() {
       setProgress(gameManager.getProgress());
     }
 
+    const handleIntervalEnded = () => 
+    {
+      console.log(isAnswered);
+      if (!isAnswered)
+      {
+         handleStartTimer()
+      }
+    }
+
     gameManager.on(GameManager.GAME_ENDED, handleGameEnded)
     gameManager.on(GameManager.GAME_STARTED, handleGameStarted)
-    gameManager.on(GameManager.INTERVAL_ENDED, () => {
-      console.log("Interval ended");
-      handleStartTimer()
-    })
+    gameManager.on(GameManager.INTERVAL_ENDED,handleIntervalEnded )
     gameManager.startGame();
     setProgress(gameManager.getProgress());
 
@@ -69,7 +74,7 @@ function App() {
 
   const handleResponse = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
-      if (gameState !== GAMESTATES.STARTED || isAnswered) return;
+      if ((gameState !== GAMESTATES.STARTED && gameState !== GAMESTATES.LAST_INTERVAL) || isAnswered ) return;
 
       const target = (e.target as HTMLElement).closest('[data-data]') as HTMLElement | null;
       if (!target || !target.dataset.data) return;
@@ -79,16 +84,21 @@ function App() {
       setAnswer(gameManager.getCurrentInterval().name);
       setIsAnsweredTrue();
       setUserResponse(data);
-      score = score + questionScore;
+      if (data === gameManager.getCurrentInterval().name) {
+        setScore(prevScore =>  prevScore + questionScore );
+      }
     },
-    [gameManager, gameState, isAnswered]
+    [gameManager, gameState, isAnswered, questionScore]
   );
 
 
   const handleNext = useCallback(() => {
-    if (gameManager.isLastInterval && gameState === GameManager.GAME_ENDED) {
+    if (gameState === GAMESTATES.LAST_INTERVAL) 
+    {
+      setGameState(GAMESTATES.ENDED);
       return
-    }
+     }
+    
     setIsAnsweredFalse();
     setUserResponse(null);
     setAnswer(null);
@@ -96,7 +106,11 @@ function App() {
     setProgress(gameManager.getProgress());
     handleResetTimer();
     gameManager.playCurrentInterval();
-  }, [gameManager])
+    if (gameManager.isLastInterval && gameState === GAMESTATES.STARTED) {
+      setGameState(GAMESTATES.LAST_INTERVAL);
+    
+    }
+  }, [gameManager, gameState])
 
 
 
@@ -112,7 +126,7 @@ function App() {
       <div className="game-container position-absolute h-[calc(100%-5rem)] top-20 overflow-scroll p-block-8 flex w-full">
         <div className="buttons-container grid  gap-2 m-auto" onClick={handleResponse}>
           {buttons.map((buttons, index) => {
-            const isDisabled = isAnswered || gameState === GameManager.GAME_ENDED;
+            const isDisabled = isAnswered || gameState === GAMESTATES.ENDED;
             const isUserResponse = userResponse === intervals[index];
             const isCorrect = intervals[index] === answer;
             const isWrong = isUserResponse && !isCorrect;
@@ -136,8 +150,7 @@ function App() {
               </Button>
             );
           })}
-
-          <Button classes={`py-4 px-6 ${!isAnswered || gameState == GameManager.GAME_ENDED ? "pointer-events-none opacity-40" : ""}`} onClick={handleNext} >{gameManager.isLastInterval ? "Terminer" : "Suivant"}</Button>
+          <Button classes={`py-4 px-6 ${!isAnswered || gameState == GAMESTATES.ENDED ? "pointer-events-none opacity-40" : ""}`} onClick={handleNext} >{gameManager.isLastInterval ? "Terminer" : "Suivant"}</Button>
         </div>
       </div>
     </>
