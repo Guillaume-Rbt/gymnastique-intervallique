@@ -75,6 +75,6 @@ export default defineConfig({
 
   shortcuts: {
     btn: "cursor-pointer rounded-lg flex flex-justify-center bg-blue-400",
-    "btn-response": "py-4 px-6 position-relative flex flex-justify-center font-bold rounded-lg color-dark-900",
+    "btn-response": "py-3 px-4 position-relative flex flex-justify-center font-bold rounded-lg color-dark-900",
   },
 });

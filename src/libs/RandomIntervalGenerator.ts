@@ -1,21 +1,21 @@
 import { intervals, notes } from "../utils/constants";
 import { randomNumber } from "../utils/numbers";
 
-type allowedIntervals = Map<number, string | string[]>;
+export type allowedIntervalsType = Map<number, { text: string | string[], enabled: boolean; }>;
 type intervalGeneratorOptions = {
-  allowedIntervals: Map<number, string | string[]>;
+  allowedIntervals: allowedIntervalsType;
 };
 
 export default class RandomIntervalGenerator {
   options: intervalGeneratorOptions;
   intervalsKey: number[];
-  private _allowedIntervals!: allowedIntervals;
+  private _allowedIntervals!: allowedIntervalsType;
 
-  set allowedIntervals(value: allowedIntervals) {
+  set allowedIntervals(value: allowedIntervalsType) {
     this._allowedIntervals = value;
   }
 
-  get allowedIntervals(): allowedIntervals {
+  get allowedIntervals(): allowedIntervalsType {
     return this._allowedIntervals;
   }
 
@@ -36,7 +36,7 @@ export default class RandomIntervalGenerator {
     const mergeOptions = {
       allowedIntervals: new Map(
         intervals.map((interval, index) => {
-          return [index, interval];
+          return [index, { text: interval, enabled: true }];
         }),
       ),
       ...options,
@@ -48,7 +48,7 @@ export default class RandomIntervalGenerator {
   generateInterval() {
     const index = randomNumber(0, this.intervalsKey.length - 1);
     const length = this.intervalsKey[index];
-    const name = this.allowedIntervals.get(length) as string;
+    const name = this.allowedIntervals.get(length)!.text as string;
 
     return new Interval({ length, name });
   }

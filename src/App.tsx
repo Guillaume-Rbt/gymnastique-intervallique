@@ -7,7 +7,7 @@ import { buttons, intervals } from "./utils/constants";
 import { useBoolean } from "./hooks/useBoolean";
 
 function App() {
-	const { gameState, setGameState, setProgress } = useGameContext();
+	const { gameState, setGameState, setProgress, allowedIntervals } = useGameContext();
 	const [answer, setAnswer] = useState<string | null>(null);
 	const [isAnswered, setIsAnsweredTrue, setIsAnsweredFalse] = useBoolean(false);
 	const [userResponse, setUserResponse] = useState<string | null>(null);
@@ -18,7 +18,7 @@ function App() {
 	const [score, setScore] = useState(0);
 	const [playerPaused, setPlayerPaused] = useState(true);
 
-	const gameManagerRef = useRef(new GameManager());
+	const gameManagerRef = useRef(new GameManager({ allowedIntervals }));
 	const gameManager = gameManagerRef.current;
 
 	useEffect(() => {
@@ -54,6 +54,8 @@ function App() {
 		return () => {
 			gameManager.off(GameManager.GAME_ENDED, handleGameEnded);
 			gameManager.off(GameManager.GAME_STARTED, handleGameStarted);
+			gameManager.off(GameManager.INTERVAL_ENDED, handleIntervalEnded);
+			gameManager.off(GameManager.INTERVAL_STARTED, handleIntervalStarted);
 		};
 	}, []);
 
@@ -106,16 +108,29 @@ function App() {
 		}
 	}, [gameManager, gameState]);
 
+	const buttonList = useCallback(() => {
+		const buttons = []
+
+		for (const [index, interval] of allowedIntervals) {
+			if (interval.enabled) {
+				buttons.push({ text: interval.text, index: index });
+			}
+		}
+
+		return buttons;
+
+	}, [allowedIntervals])
+
 	return (
 		<>
 			<Header score={score} running={running} resetSignal={resetSignal} onScoreChange={setQuestionScore} paused={timerPaused} />
-			<div className='position-absolute flex flex-col flex-items-center  h-[calc(100%-5rem)] top-20 overflow-scroll p-block-8 flex w-full'>
-				<div className='flex flex-items-center flex-justify-center  flex-col w-full m-auto'>
+			<div className='position-absolute flex flex-col flex-items-center  h-[calc(100%-5rem)] top-18 overflow-scroll p-block-5 flex w-full'>
+				<div className='flex flex-items-center flex-justify-center  text-3  flex-col w-full m-auto'>
 					<Button
 						onClick={() => {
 							gameManager.playCurrentInterval();
 						}}
-						classes={["rounded-full", "p-1", "fs-3", "text-10", "m-be-10"]}>
+						classes={["rounded-full", "p-[4px]", "fs-3", "text-10", "m-be-10", "hover:bg-blue-400", "bg-blue-500", "color-white", "transition-all", "duration-200", "flex-items-center", "flex-justify-center"].join(" ")}>
 						{playerPaused ? (
 							<svg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 24 24'>
 								<path fill='currentColor' d='M8 5v14l11-7z' />
@@ -127,14 +142,14 @@ function App() {
 						)}
 					</Button>
 					<div className='buttons-container grid  gap-2' onClick={handleResponse}>
-						{buttons.map((buttons, index) => {
+						{buttonList().map((button) => {
 							const isDisabled = isAnswered || gameState === GAMESTATES.ENDED;
-							const isUserResponse = userResponse === intervals[index];
-							const isCorrect = intervals[index] === answer;
+							const isUserResponse = userResponse === intervals[button.index];
+							const isCorrect = intervals[button.index] === answer;
 							const isWrong = isUserResponse && !isCorrect;
 
 							const className = `
-  btn-response-${index + 1} btn-response 
+  btn-response-${button.index + 1} btn-response
   ${isCorrect ? "right" : ""}
   ${isWrong ? "wrong" : ""}
   ${isDisabled ? "pointer-events-none" : ""}
@@ -144,12 +159,12 @@ function App() {
 								.replace(/\s+/g, " ");
 
 							return (
-								<Button key={buttons.toString()} data={intervals[index]} classes={className} onClick={() => {}}>
-									{buttons}
+								<Button key={button.toString()} data={intervals[button.index]} classes={className} onClick={() => { }}>
+									{buttons[button.index]}
 								</Button>
 							);
 						})}
-						<Button classes={`py-4 px-6 ${!isAnswered || gameState == GAMESTATES.ENDED ? "pointer-events-none opacity-40" : ""}`} onClick={handleNext}>
+						<Button classes={`py-3 px-6 ${!isAnswered || gameState == GAMESTATES.ENDED ? "pointer-events-none opacity-40" : ""}`} onClick={handleNext}>
 							{gameManager.isLastInterval ? "Terminer" : "Suivant"}
 						</Button>
 					</div>

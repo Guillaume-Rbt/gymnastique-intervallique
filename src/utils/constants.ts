@@ -24,7 +24,7 @@ export const buttons = [
     'Quarte juste',
     'Quarte aug&nbsp/ Quinte dim',
     'Quinte juste',
-    'Quinte aug Sixte mineure',
+    'Quinte aug&nbsp/ Sixte mineure',
     'Sixte majeure&nbsp/ Septième dim',
     'Septième mineure',
     'Septième Majeure',

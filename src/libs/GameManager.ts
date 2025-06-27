@@ -1,10 +1,10 @@
-import RandomIntervalGenerator, { Interval } from "./RandomIntervalGenerator";
+import RandomIntervalGenerator, { Interval, type allowedIntervalsType } from "./RandomIntervalGenerator";
 import Emitter from "./Emitter";
 import { intervals } from "../utils/constants";
 import IntervalPlayer from "./IntervalsPlayer";
 
 type gameOptions = {
-	allowedIntervals: Map<number, string | string[]>;
+	allowedIntervals: allowedIntervalsType
 };
 
 export default class GameManager extends Emitter {
@@ -12,7 +12,7 @@ export default class GameManager extends Emitter {
 	intervals: Interval[] | [];
 	intervalsGenerator: RandomIntervalGenerator = new RandomIntervalGenerator();
 	currentIntervalIndex: number = 0;
-	allowedIntervals: Map<number, string | string[]>;
+	allowedIntervals: allowedIntervalsType;
 	intervalPlayer = new IntervalPlayer("./src/assets/sounds/notes.wav");
 	buttonsSelector: string = ".button-response";
 	hasStarted: boolean = false;
@@ -42,7 +42,10 @@ export default class GameManager extends Emitter {
 		super();
 
 		this.options = {
-			allowedIntervals: new Map(intervals.map((interval, index) => [index, interval])),
+			allowedIntervals: new Map(
+				intervals.map((interval, index) => {
+					return [index, { text: interval, enabled: true }];
+				})),
 			...options,
 		};
 
