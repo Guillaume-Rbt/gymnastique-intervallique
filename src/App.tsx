@@ -159,7 +159,7 @@ function App() {
 								.replace(/\s+/g, " ");
 
 							return (
-								<Button key={button.toString()} data={intervals[button.index]} classes={className} onClick={() => { }}>
+								<Button key={button.toString()} data={intervals[button.index]} classes={className}>
 									{buttons[button.index]}
 								</Button>
 							);
