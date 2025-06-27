@@ -6,9 +6,9 @@ export default class IntervalPlayer extends Emitter {
 	interval!: Interval;
 	intervalTimePerNote = { timeNote1: 0, timeNote2: 1 };
 	currentNote: number = 1;
-	emitSoundEnd = true;
 	timeSeparateNotes: number = 2000;
 	emitEndedOncePerInterval: boolean = true;
+	firstPlay: boolean = true;
 	private static _instance: IntervalPlayer | null = null;
 
 	static get INTERVAL_ENDED() {
@@ -30,7 +30,6 @@ export default class IntervalPlayer extends Emitter {
 			timeNote2: 1,
 		};
 		this.currentNote = 1;
-		this.emitSoundEnd = true;
 		this.timeSeparateNotes = timeSeparateNotes || 2000;
 		this.setIntervalTimes = this.setIntervalTimes.bind(this);
 		this.onAudioTimeUpdater = this.onAudioTimeUpdater.bind(this);
@@ -58,27 +57,21 @@ export default class IntervalPlayer extends Emitter {
 			console.log("Playing note 2", this.intervalTimePerNote.timeNote2 / 1000);
 
 			this.audio.pause();
-			if (this.emitSoundEnd) {
-				if (this.emitEndedOncePerInterval) {
-					this.emitSoundEnd = false;
-				}
-				this.emit(IntervalPlayer.INTERVAL_ENDED, { interval: this.interval });
-			}
+
+			this.emit(IntervalPlayer.INTERVAL_ENDED, { interval: this.interval, firstPlay: this.firstPlay });
+			this.firstPlay = false;
 		}
 	}
 
 	playInterval(interval: Interval) {
 		if (this.interval !== interval) {
 			this.interval = interval;
+			this.firstPlay = true;
 			this.findTimeNotes();
 			this.setIntervalTimes();
-			this.emitSoundEnd = true;
 		}
 		if (this.audio.paused) {
 			this.currentNote = 1;
-			if (!this.emitEndedOncePerInterval && !this.emitSoundEnd) {
-				this.emitSoundEnd = true;
-			}
 			this.audio.currentTime = this.intervalTimePerNote.timeNote1 / 1000;
 			this.audio.play();
 			this.emit(IntervalPlayer.INTERVAL_STARTED, { interval: this.interval });
