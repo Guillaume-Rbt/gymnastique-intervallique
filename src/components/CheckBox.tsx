@@ -9,7 +9,7 @@ export default function CheckBox({
     checked?: boolean;
     label?: string;
 }) {
-    const defaultClasses = ["checkbox"];
+    const defaultClasses = ["flex flex-items-center gap-1"];
     const checkboxClasses = Array.isArray(classes)
         ? [...defaultClasses, ...classes]
         : [classes, ...defaultClasses];
@@ -20,8 +20,10 @@ export default function CheckBox({
                 type="checkbox"
                 onChange={onChange}
                 checked={checked}
+                className="hidden"
             />
-            <span>{label}</span>
-        </label>
+            <span className="w-3 h-3 rounded-full border-solid border-2 block border-blue relative"><span className={`absolute inset-2 rounded-full bg-blue ${!checked ? "hidden" : ""}`}></span></span>
+            <span dangerouslySetInnerHTML={{ __html: label }}></span>
+        </label >
     );
 }

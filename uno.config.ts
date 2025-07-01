@@ -71,6 +71,11 @@ export default defineConfig({
         }`;
       },
     ],
+    [/inset-(\d)/, ([, d]) => {
+      return {
+        inset: `${parseInt(d)}px`,
+      };
+    }]
   ],
 
   shortcuts: {

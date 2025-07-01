@@ -31,7 +31,7 @@ const GameContextDefaultValue = {
     setGameState: () => { },
     allowedIntervals: new Map(intervals.map((interval, index) => [index, { text: interval, enabled: true }])),
     toggleAllowedInterval: (intervalIndex: number) => {
-        console.warn("toggleAllowedInterval function not implemented");
+        console.warn("toggleAllowedInterval function not implemented", intervalIndex);
     }
 }
 
@@ -47,17 +47,20 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
     const [allowedIntervals, setAllowedIntervals] = useState(GameContextDefaultValue.allowedIntervals);
 
     const toggleAllowedInterval = (intervalIndex: number) => {
-        setAllowedIntervals((allowedIntervals) => {
+        setAllowedIntervals(prev => {
+            const interval = prev.get(intervalIndex);
+            if (!interval) return prev;
 
-            const interval = allowedIntervals.get(intervalIndex)!
+            const updated = new Map(prev);
+            updated.set(intervalIndex, {
+                ...interval,
+                enabled: !interval.enabled,
+            });
 
-            interval.enabled ? allowedIntervals.set(intervalIndex, { ...interval, enabled: false }) : allowedIntervals.set(intervalIndex, { ...interval, enabled: false })
+            return updated;
+        });
+    };
 
-            const newAllowedIntervals = new Map(allowedIntervals)
-
-            return newAllowedIntervals
-        })
-    }
 
     return <GameContext.Provider value={{ ...GameContextDefaultValue, progress, setProgress, gameState, setGameState, toggleAllowedInterval, allowedIntervals }}>
         {children}

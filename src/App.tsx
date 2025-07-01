@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import GameManager from "./libs/GameManager";
 import Header from "./components/Header";
-import Button from "./components/Buttons";
+import Button from "./components/Button";
 import { useGameContext, GAMESTATES } from "./hooks/useGameContext";
 import { buttons, intervals } from "./utils/constants";
 import { useBoolean } from "./hooks/useBoolean";
@@ -159,7 +159,7 @@ function App() {
 								.replace(/\s+/g, " ");
 
 							return (
-								<Button key={button.toString()} data={intervals[button.index]} classes={className}>
+								<Button key={button.index} data={intervals[button.index]} classes={className}>
 									{buttons[button.index]}
 								</Button>
 							);
