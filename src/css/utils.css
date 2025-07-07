@@ -14,12 +14,12 @@
 }
 
 *.right::after {
-    background-image: url(../assets/img/right.svg);
+    background-image: url(./img/right.svg);
 
 }
 
 *.wrong::after {
-    background-image: url(../assets/img/wrong.svg);
+    background-image: url(./img/wrong.svg);
 }
 
 @keyframes rightWrong {

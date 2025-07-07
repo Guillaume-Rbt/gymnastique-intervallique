@@ -9,7 +9,6 @@ import { useBoolean } from "./hooks/useBoolean";
 function App() {
 	const { gameState, setGameState, setProgress, allowedIntervals } = useGameContext();
 	const [answer, setAnswer] = useState<string | null>(null);
-	const [isAnswered, setIsAnsweredTrue, setIsAnsweredFalse] = useBoolean(false);
 	const [userResponse, setUserResponse] = useState<string | null>(null);
 	const [timerPaused, setTimerPausedTrue, setTimerPausedFalse] = useBoolean(false);
 	const [questionScore, setQuestionScore] = useState(5);
@@ -29,13 +28,18 @@ function App() {
 		};
 
 		const handleGameStarted = () => {
+
 			setGameState(GAMESTATES.STARTED);
 			setProgress(gameManager.getProgress());
+			gameManager.playCurrentInterval();
+			setGameState(GAMESTATES.INTERVAL_PLAYED);
+
 		};
 
 		const handleIntervalEnded = ({ firstPlay }: { firstPlay: boolean }) => {
-			if (firstPlay && !isAnswered) {
+			if (firstPlay && gameState === GAMESTATES.INTERVAL_PLAYED) {
 				handleStartTimer();
+				setGameState(GAMESTATES.WAIT_ANSWER);
 			}
 			setPlayerPaused(true);
 		};
@@ -44,11 +48,16 @@ function App() {
 			setPlayerPaused(false);
 		};
 
+		const handleGameReady = () => {
+			setGameState(GAMESTATES.READY);
+		};
+		console.log(gameManager)
 		gameManager.on(GameManager.GAME_ENDED, handleGameEnded);
 		gameManager.on(GameManager.GAME_STARTED, handleGameStarted);
 		gameManager.on(GameManager.INTERVAL_ENDED, handleIntervalEnded);
 		gameManager.on(GameManager.INTERVAL_STARTED, handleIntervalStarted);
-		gameManager.startGame();
+		gameManager.once(GameManager.READY, handleGameReady)
+
 		setProgress(gameManager.getProgress());
 
 		return () => {
@@ -57,7 +66,7 @@ function App() {
 			gameManager.off(GameManager.INTERVAL_ENDED, handleIntervalEnded);
 			gameManager.off(GameManager.INTERVAL_STARTED, handleIntervalStarted);
 		};
-	}, []);
+	}, [gameState]);
 
 	const handleStartTimer = () => {
 		setRunningTrue();
@@ -73,7 +82,7 @@ function App() {
 
 	const handleResponse = useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {
-			if ((gameState !== GAMESTATES.STARTED && gameState !== GAMESTATES.LAST_INTERVAL) || isAnswered) return;
+			if (!(gameState == GAMESTATES.WAIT_ANSWER)) return;
 
 			const target = (e.target as HTMLElement).closest("[data-data]") as HTMLElement | null;
 			if (!target || !target.dataset.data) return;
@@ -81,36 +90,34 @@ function App() {
 			const data = target.dataset.data;
 			setTimerPausedTrue();
 			setAnswer(gameManager.getCurrentInterval().name);
-			setIsAnsweredTrue();
+			setGameState(GAMESTATES.ANSWERED);
 			setUserResponse(data);
 			if (data === gameManager.getCurrentInterval().name) {
 				setScore((prevScore) => prevScore + questionScore);
 			}
 		},
-		[gameManager, gameState, isAnswered, questionScore]
+		[gameManager, gameState, questionScore]
 	);
 
 	const handleNext = useCallback(() => {
-		if (gameState === GAMESTATES.LAST_INTERVAL) {
+		if (gameState === GAMESTATES.ANSWERED && gameManager.isLastInterval) {
 			setGameState(GAMESTATES.ENDED);
 			return;
 		}
 
-		setIsAnsweredFalse();
+
 		setUserResponse(null);
 		setAnswer(null);
 		gameManager.nextInterval();
 		setProgress(gameManager.getProgress());
 		handleResetTimer();
+		setGameState(GAMESTATES.INTERVAL_PLAYED);
 		gameManager.playCurrentInterval();
-		if (gameManager.isLastInterval && gameState === GAMESTATES.STARTED) {
-			setGameState(GAMESTATES.LAST_INTERVAL);
-		}
 	}, [gameManager, gameState]);
 
 	const buttonList = useCallback(() => {
 		const buttons = []
-
+		console.log(allowedIntervals)
 		for (const [index, interval] of allowedIntervals) {
 			if (interval.enabled) {
 				buttons.push({ text: interval.text, index: index });
@@ -123,6 +130,19 @@ function App() {
 
 	return (
 		<>
+			{(gameState === GAMESTATES.INIT) && <div className="position-fixed w-full h-full bg-white"></div>}
+			{(gameState === GAMESTATES.READY) && <div className="bg-indigo-950 p-bs-10 position-fixed  w-full h-full top-0 z-999 flex flex-col">
+				<h2 className=" font-bold m-inline-auto">GYMNASTIQUE INTERVALLIQUE</h2>
+				<p className="m-inline-auto m-block-auto">Formez votre oreille à la reconnaissance d'intervalles</p>
+				<Button
+					onClick={() => {
+						gameManager.startGame();
+
+					}}
+					classes="bg-blue-500 color-white rounded-full p-3 m-inline-auto m-block-auto text-3">
+					Démarrer
+				</Button>
+			</div>}
 			<Header score={score} running={running} resetSignal={resetSignal} onScoreChange={setQuestionScore} paused={timerPaused} />
 			<div className='position-absolute flex flex-col flex-items-center  h-[calc(100%-5rem)] top-18 overflow-scroll p-block-5 flex w-full'>
 				<div className='flex flex-items-center flex-justify-center  text-3  flex-col w-full m-auto'>
@@ -143,7 +163,7 @@ function App() {
 					</Button>
 					<div className='buttons-container grid  gap-2' onClick={handleResponse}>
 						{buttonList().map((button) => {
-							const isDisabled = isAnswered || gameState === GAMESTATES.ENDED;
+							const isDisabled = gameState === GAMESTATES.ANSWERED || gameState === GAMESTATES.ENDED;
 							const isUserResponse = userResponse === intervals[button.index];
 							const isCorrect = intervals[button.index] === answer;
 							const isWrong = isUserResponse && !isCorrect;
@@ -164,7 +184,7 @@ function App() {
 								</Button>
 							);
 						})}
-						<Button classes={`py-3 px-6 ${!isAnswered || gameState == GAMESTATES.ENDED ? "pointer-events-none opacity-40" : ""}`} onClick={handleNext}>
+						<Button classes={`py-3 px-6 ${gameState == GAMESTATES.ENDED ? "pointer-events-none opacity-40" : ""}`} onClick={handleNext}>
 							{gameManager.isLastInterval ? "Terminer" : "Suivant"}
 						</Button>
 					</div>

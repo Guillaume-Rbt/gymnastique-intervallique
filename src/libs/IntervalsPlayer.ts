@@ -18,6 +18,10 @@ export default class IntervalPlayer extends Emitter {
 		return "intervalPlayer.sound.start";
 	}
 
+	static get READY() {
+		return "intervalPlayer.ready";
+	}
+
 	constructor(source: string, timeSeparateNotes?: number) {
 		if (IntervalPlayer._instance) {
 			return IntervalPlayer._instance;
@@ -32,12 +36,13 @@ export default class IntervalPlayer extends Emitter {
 		this.currentNote = 1;
 		this.timeSeparateNotes = timeSeparateNotes || 2000;
 		this.setIntervalTimes = this.setIntervalTimes.bind(this);
-		this.onAudioTimeUpdater = this.onAudioTimeUpdater.bind(this);
+		this.onAudioTimeUpdate = this.onAudioTimeUpdate.bind(this);
 		this.playInterval = this.playInterval.bind(this);
+		this.ready = this.ready.bind(this);
 
 		this.removeListener = this.removeListener.bind(this);
 
-		this.addNativeListeners();
+		this.init();
 	}
 
 	setIntervalTimes() {
@@ -45,7 +50,7 @@ export default class IntervalPlayer extends Emitter {
 		this.audio.currentTime = this.intervalTimePerNote.timeNote1 / 1000;
 	}
 
-	onAudioTimeUpdater() {
+	onAudioTimeUpdate() {
 		if (this.audio.currentTime >= this.intervalTimePerNote.timeNote1 / 1000 + 0.85 && this.currentNote == 1) {
 			console.log("Playing note 2", this.intervalTimePerNote.timeNote2 / 1000);
 
@@ -78,8 +83,14 @@ export default class IntervalPlayer extends Emitter {
 		}
 	}
 
-	addNativeListeners() {
-		this.audio.addEventListener("timeupdate", this.onAudioTimeUpdater);
+	ready() {
+		this.audio.removeEventListener("canplay", this.ready);
+		this.audio.addEventListener("timeupdate", this.onAudioTimeUpdate);
+		this.emit(IntervalPlayer.READY, { interval: this.interval });
+	}
+
+	init() {
+		this.audio.addEventListener("canplay", this.ready);
 	}
 
 	isPlaying() {

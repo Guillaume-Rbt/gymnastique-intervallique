@@ -2,6 +2,7 @@ import RandomIntervalGenerator, { Interval, type allowedIntervalsType } from "./
 import Emitter from "./Emitter";
 import { intervals } from "../utils/constants";
 import IntervalPlayer from "./IntervalsPlayer";
+import sound from "../assets/sounds/notes.wav";
 
 type gameOptions = {
 	allowedIntervals: allowedIntervalsType
@@ -13,7 +14,7 @@ export default class GameManager extends Emitter {
 	intervalsGenerator: RandomIntervalGenerator = new RandomIntervalGenerator();
 	currentIntervalIndex: number = 0;
 	allowedIntervals: allowedIntervalsType;
-	intervalPlayer = new IntervalPlayer("./src/assets/sounds/notes.wav");
+	intervalPlayer = new IntervalPlayer(sound);
 	buttonsSelector: string = ".button-response";
 	hasStarted: boolean = false;
 	numberOfIntervals: number = 10;
@@ -24,6 +25,10 @@ export default class GameManager extends Emitter {
 
 	static get GAME_STARTED() {
 		return "gameManager.game.started";
+	}
+
+	static get READY() {
+		return "gameManager.game.ready";
 	}
 
 	static get INTERVAL_STARTED() {
@@ -55,11 +60,6 @@ export default class GameManager extends Emitter {
 	}
 
 	startGame() {
-		if (this.hasStarted) {
-			this.emit(GameManager.GAME_STARTED, { instance: this });
-			console.warn("🚫 game is already started");
-			return;
-		}
 		this.intervals = this.intervalsGenerator.generateAnyIntervals(this.numberOfIntervals);
 		this.currentIntervalIndex = 0;
 		this.hasStarted = true;
@@ -85,6 +85,10 @@ export default class GameManager extends Emitter {
 
 		this.intervalPlayer.on(IntervalPlayer.INTERVAL_ENDED, (data) => {
 			this.emit(GameManager.INTERVAL_ENDED, data);
+		});
+
+		this.intervalPlayer.on(IntervalPlayer.READY, (data) => {
+			this.emit(GameManager.READY, data);
 		});
 	}
 
