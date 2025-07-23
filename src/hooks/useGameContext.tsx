@@ -1,8 +1,11 @@
-import { createContext, useState, useContext, useRef, useEffect } from "react";
+import { createContext, useState, useContext, useRef } from "react";
 import type { ReactNode } from "react";
 import { intervals } from "../utils/constants";
+import GameManager from "../libs/GameManager";
+import { useBoolean } from "./useBoolean";
 
-type IntervalData = { text: string | string[]; enabled: boolean };
+
+type IntervalData = { text: string; enabled: boolean };
 type ProgessType = { current: number; total: number };
 
 export enum GAMESTATES {
@@ -21,9 +24,10 @@ type gameContextType = {
     setProgress: React.Dispatch<React.SetStateAction<ProgessType>>;
     setGameState: React.Dispatch<React.SetStateAction<GAMESTATES>>;
     allowedIntervals: Map<number, IntervalData>;
-    toggleAllowedInterval: (intervalIndex: number) => void;
-    commitAllowedIntervals: () => void;
-    transitionnalAllowedIntervals: Map<number, IntervalData>;
+    checkIfNeedUpdateGame: (allowedIntervals: Map<number, IntervalData>) => void;
+    commitAllowedIntervals: (allowedIntervals: Map<number, IntervalData>) => void;
+    gameManager: GameManager;
+    needCommit: boolean;
 };
 
 const defaultMap = new Map(intervals.map((interval, index) => [index, { text: interval, enabled: true }]));
@@ -33,26 +37,54 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
     const [progress, setProgress] = useState({ current: 1, total: 0 });
     const [gameState, setGameState] = useState<GAMESTATES>(GAMESTATES.INIT);
     const [allowedIntervals, setAllowedIntervals] = useState(defaultMap);
-    const [transitionnalAllowedIntervals, setTransitionnalAllowedIntervals] = useState(new Map(defaultMap));
+    const [needCommit, setNeedCommitTrue, setNeedCommitFalse] = useBoolean(false);
+    const allowedIntervalsRef = useRef(allowedIntervals);
+    const gameManagerRef = useRef(new GameManager({ allowedIntervals }));
+    const gameManager = gameManagerRef.current;
 
-    const transitionRef = useRef(transitionnalAllowedIntervals);
-    useEffect(() => {
-        transitionRef.current = transitionnalAllowedIntervals;
-    }, [transitionnalAllowedIntervals]);
 
-    const commitAllowedIntervals = () => {
-        const latest = new Map(transitionRef.current);
+
+
+
+    const handleGameNextInterval = () => {
+        if (gameState === GAMESTATES.INTERVAL_PLAYED && needCommit) {
+            commitAllowedIntervals(allowedIntervalsRef.current);
+        }
+    }
+
+    gameManager.once(GameManager.REQUEST_NEXT_INTERVAL, handleGameNextInterval);
+
+    const commitAllowedIntervals = (allowedIntervalsFromPopup: Map<number, IntervalData>) => {
+        const latest = new Map(allowedIntervalsFromPopup);
+        gameManager.allowedIntervals = latest;
         setAllowedIntervals(latest);
+        setNeedCommitFalse();
     };
 
-    const toggleAllowedInterval = (intervalIndex: number) => {
-        setTransitionnalAllowedIntervals(prev => {
-            const interval = prev.get(intervalIndex);
-            if (!interval) return prev;
-            const updated = new Map(prev);
-            updated.set(intervalIndex, { ...interval, enabled: !interval.enabled });
-            return updated;
-        });
+    const checkIfNeedUpdateGame = (allowedIntervalsFromPopup: Map<number, IntervalData>) => {
+        const map = allowedIntervalsFromPopup;
+
+        if (gameState === GAMESTATES.READY) {
+
+            commitAllowedIntervals(allowedIntervalsFromPopup);
+            return;
+        }
+        console.log("checkIfNeedUpdateGame", map, allowedIntervals);
+        for (const [key, value] of map.entries()) {
+            console.log(value.enabled, allowedIntervals.get(key)?.enabled);
+            if (value.enabled !== allowedIntervals.get(key)?.enabled) {
+                allowedIntervalsRef.current = map;
+                setNeedCommitTrue();
+
+                return
+            }
+        }
+
+        setNeedCommitFalse();
+
+        return map;
+
+
     };
 
     return (
@@ -63,12 +95,14 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
                 progress,
                 setProgress,
                 allowedIntervals,
-                toggleAllowedInterval,
+                checkIfNeedUpdateGame,
                 commitAllowedIntervals,
-                transitionnalAllowedIntervals,
+                gameManager,
+                needCommit,
             }}
         >
             {children}
+
         </GameContext.Provider>
     );
 };

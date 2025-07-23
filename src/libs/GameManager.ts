@@ -10,14 +10,14 @@ type gameOptions = {
 
 export default class GameManager extends Emitter {
 	options: gameOptions;
-	intervals: Interval[] | [];
+	intervals: Interval[] | [] = [];
 	intervalsGenerator: RandomIntervalGenerator = new RandomIntervalGenerator();
 	currentIntervalIndex: number = 0;
-	allowedIntervals: allowedIntervalsType;
 	intervalPlayer = new IntervalPlayer(sound);
 	buttonsSelector: string = ".button-response";
-	hasStarted: boolean = false;
+	isStarted: boolean = false;
 	numberOfIntervals: number = 10;
+	#allowedIntervals: allowedIntervalsType = new Map();
 
 	static get GAME_ENDED() {
 		return "gameManager.game.ended";
@@ -39,8 +39,29 @@ export default class GameManager extends Emitter {
 		return "gameManager.interval.ended";
 	}
 
+	static get REQUEST_NEXT_INTERVAL() {
+		return "gameManager.request.next.interval";
+	}
+
 	get isLastInterval() {
 		return this.currentIntervalIndex === this.intervals.length - 1;
+	}
+
+	set allowedIntervals(allowedIntervals: allowedIntervalsType) {
+		this.options.allowedIntervals = allowedIntervals;
+		this.intervalsGenerator.allowedIntervals = allowedIntervals;
+		const generatedInterval = !this.isStarted ? this.intervalsGenerator.generateAnyIntervals(this.numberOfIntervals - (this.currentIntervalIndex)) : this.intervalsGenerator.generateAnyIntervals(this.numberOfIntervals - 1 - (this.currentIntervalIndex));
+
+		let index = !this.isStarted ? this.currentIntervalIndex : this.currentIntervalIndex + 1;
+
+		for (const interval of generatedInterval) {
+			this.intervals[index] = interval;
+			index++;
+		}
+		this.#allowedIntervals = allowedIntervals;
+	}
+	get allowedIntervals() {
+		return this.#allowedIntervals;
 	}
 
 	constructor(options: Partial<gameOptions> = {}) {
@@ -55,15 +76,12 @@ export default class GameManager extends Emitter {
 		};
 
 		this.allowedIntervals = this.options.allowedIntervals;
-		this.intervals = [];
 		this.addEventListeners();
 	}
 
 	startGame() {
-		this.intervals = this.intervalsGenerator.generateAnyIntervals(this.numberOfIntervals);
 		this.currentIntervalIndex = 0;
-		this.hasStarted = true;
-
+		this.isStarted = true;
 		this.emit(GameManager.GAME_STARTED, { instance: this });
 	}
 
@@ -99,6 +117,7 @@ export default class GameManager extends Emitter {
 	nextInterval() {
 		this.intervalPlayer.audio.pause();
 		if (this.currentIntervalIndex < this.intervals.length - 1) {
+			this.emit(GameManager.REQUEST_NEXT_INTERVAL, { instance: this });
 			this.currentIntervalIndex++;
 			return true;
 		}

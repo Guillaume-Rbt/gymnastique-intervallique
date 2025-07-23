@@ -7,7 +7,7 @@ type ButtonProps = {
 
 export default function Button({ classes, onClick = null, children = "", data = null }: Partial<ButtonProps>) {
 	const defaultClasses = ["btn"];
-
+	console.log(onClick)
 	const buttonClasses = Array.isArray(classes) ? [...defaultClasses, ...classes] : [classes, ...defaultClasses];
 
 	return (
