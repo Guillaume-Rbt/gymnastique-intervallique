@@ -15,7 +15,7 @@ function Popup({
 }): React.JSX.Element {
     const classesDefault = `${classes ? classes : ""} overlay bg-op-90 bg-dark-100 flex position-fixed top-0 left-0 w-full h-full flex-items-center flex-justify-center z-999 ${isOpen ? "visible" : "invisible"}`;
 
-    return <div onClick={onClose} className={classesDefault}><div className="flex w-[65%] flex-col rounded-4 bg-white p-4" onClick={(e) => { e.stopPropagation() }}>{children}</div></div>;
+    return <div onClick={onClose} className={classesDefault}><div className="flex w-[65%] flex-col rounded-4 bg-slate-100 p-4" onClick={(e) => { e.stopPropagation() }}>{children}</div></div>;
 }
 
 export function usePopup(

@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { intervals } from "../utils/constants";
 import GameManager from "../libs/GameManager";
 import { useBoolean } from "./useBoolean";
+import { useDevice, type DeviceType } from "./useDevice";
 
 
 type IntervalData = { text: string; enabled: boolean };
@@ -28,6 +29,7 @@ type gameContextType = {
     commitAllowedIntervals: (allowedIntervals: Map<number, IntervalData>) => void;
     gameManager: GameManager;
     needCommit: boolean;
+    device: { type: DeviceType; width: number; ua: string };
 };
 
 const defaultMap = new Map(intervals.map((interval, index) => [index, { text: interval, enabled: true }]));
@@ -41,10 +43,7 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
     const allowedIntervalsRef = useRef(allowedIntervals);
     const gameManagerRef = useRef(new GameManager({ allowedIntervals }));
     const gameManager = gameManagerRef.current;
-
-
-
-
+    const device = useDevice();
 
     const handleGameNextInterval = () => {
         if (gameState === GAMESTATES.INTERVAL_PLAYED && needCommit) {
@@ -69,9 +68,7 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
             commitAllowedIntervals(allowedIntervalsFromPopup);
             return;
         }
-        console.log("checkIfNeedUpdateGame", map, allowedIntervals);
         for (const [key, value] of map.entries()) {
-            console.log(value.enabled, allowedIntervals.get(key)?.enabled);
             if (value.enabled !== allowedIntervals.get(key)?.enabled) {
                 allowedIntervalsRef.current = map;
                 setNeedCommitTrue();
@@ -99,6 +96,7 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
                 commitAllowedIntervals,
                 gameManager,
                 needCommit,
+                device
             }}
         >
             {children}

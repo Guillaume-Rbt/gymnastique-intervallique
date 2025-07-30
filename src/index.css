@@ -12,10 +12,3 @@ body {
 html {
     font-size: max(16px, min(2vw, 22px));
 }
-
-.buttons-container {
-    width: clamp(320px, 80%, 1000px);
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minMax(160px, 300px));
-    justify-content: center;
-}

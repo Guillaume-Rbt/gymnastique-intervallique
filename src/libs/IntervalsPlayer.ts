@@ -52,14 +52,12 @@ export default class IntervalPlayer extends Emitter {
 
 	onAudioTimeUpdate() {
 		if (this.audio.currentTime >= this.intervalTimePerNote.timeNote1 / 1000 + 0.85 && this.currentNote == 1) {
-			console.log("Playing note 2", this.intervalTimePerNote.timeNote2 / 1000);
 
 			this.audio.pause();
 			this.audio.currentTime = this.intervalTimePerNote.timeNote2 / 1000;
 			this.currentNote = 2;
 			this.audio.play();
 		} else if (this.currentNote == 2 && this.audio.currentTime >= this.intervalTimePerNote.timeNote2 / 1000 + 0.85) {
-			console.log("Playing note 2", this.intervalTimePerNote.timeNote2 / 1000);
 
 			this.audio.pause();
 
@@ -79,7 +77,7 @@ export default class IntervalPlayer extends Emitter {
 			this.currentNote = 1;
 			this.audio.currentTime = this.intervalTimePerNote.timeNote1 / 1000;
 			this.audio.play();
-			this.emit(IntervalPlayer.INTERVAL_STARTED, { interval: this.interval });
+			this.emit(IntervalPlayer.INTERVAL_STARTED, { interval: this.interval, firstPlay: this.firstPlay });
 		}
 	}
 

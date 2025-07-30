@@ -18,28 +18,14 @@ export default defineConfig({
       xxl: "1400px",
     },
     colors: {
-      buttonResponse: {
-        1: "#4c40f0",
-        2: "#f04c4c",
-        3: "#4cf04c",
-        4: "#f0f04c",
-        5: "#4cfff0",
-        6: "#f04cf0",
-        7: "#f0f04c",
-        8: "#4c4cf0",
-        9: "#f04c4c",
-        10: "#4cf04c",
-        11: "#f0f04c",
-        12: "#4cfff0",
-        13: "#f04cf0",
-        14: "#f0f04c",
-      },
+      interactable: "#fc9026",
     },
   },
 
   safelist: [...Array.from({ length: 14 }, (_, i) => `btn-response-${i + 1}`)],
 
   rules: [
+    ["buttons-container", { display: "grid", "grid-template-columns": "repeat(auto-fill, minmax(160px, 320px))", width: "clamp(320px, 80%, 1000px)", "justify-content": "center" }],
     ["h-max-content", { height: "max-content" }],
     [
       /^grid-col-(\d+)-(\w+)$/,
@@ -52,34 +38,17 @@ export default defineConfig({
         } }`;
       },
     ],
-    [
-      /^btn-response-(\d+)$/,
-      function ([, d], { theme, rawSelector }) {
-        const selector = e(rawSelector);
-
-        return `
-            ${selector} {
-                background-color: ${theme.colors!.buttonResponse[d]};
-                width: 100%;
-                transition: background-color 0.2s ease-in-out;
-            }
-
-            @media (pointer: fine) and (hover: hover) {
-            ${selector}:hover {
-                background-color: color-mix(in srgb, ${theme.colors!.buttonResponse[d]} 80%, white);
-            }
-        }`;
-      },
-    ],
     [/inset-(\d)/, ([, d]) => {
       return {
         inset: `${parseInt(d)}px`,
       };
-    }]
+    }],
+
   ],
 
   shortcuts: {
-    btn: "cursor-pointer rounded-lg flex flex-justify-center bg-blue-400",
-    "btn-response": "py-3 px-4 position-relative flex flex-justify-center font-bold rounded-lg color-dark-900",
+    btn: "cursor-pointer rounded-lg flex flex-justify-center",
+    "btn-interactable": " hover:bg-slate-100 hover:border-interactable hover:color-interactable bg-interactable color-slate-100 border-3 border-solid border-slate-100 transition-all duration-200",
+    "btn-response": "py-3 px-4 hover:bg-slate-300 position-relative flex flex-justify-center font-bold rounded-lg color-dark-900 bg-slate-100 transition-background-color duration-200",
   },
 });

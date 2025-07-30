@@ -3,11 +3,11 @@ import GameManager from "./libs/GameManager";
 import Header from "./components/Header";
 import Button from "./components/Button";
 import { useGameContext, GAMESTATES } from "./hooks/useGameContext";
-import { buttons, intervals } from "./utils/constants";
+import { buttons, intervals, buttonsMobile } from "./utils/constants";
 import { useBoolean } from "./hooks/useBoolean";
 
 function App() {
-	const { gameState, setGameState, setProgress, allowedIntervals, gameManager } = useGameContext();
+	const { gameState, setGameState, setProgress, allowedIntervals, gameManager, device } = useGameContext();
 	const [answer, setAnswer] = useState<string | null>(null);
 	const [userResponse, setUserResponse] = useState<string | null>(null);
 	const [timerPaused, setTimerPausedTrue, setTimerPausedFalse] = useBoolean(false);
@@ -17,10 +17,10 @@ function App() {
 	const [score, setScore] = useState(0);
 	const [playerPaused, setPlayerPaused] = useState(true);
 
+
 	const displaySettingsRef = useRef<{ setIsOpenTrue: () => void } | null>(null);
 
 	const displaySettings = () => {
-		console.log(displaySettingsRef.current)
 		displaySettingsRef.current?.setIsOpenTrue();
 	}
 
@@ -48,8 +48,11 @@ function App() {
 			setPlayerPaused(true);
 		};
 
-		const handleIntervalStarted = () => {
-			setGameState(GAMESTATES.INTERVAL_PLAYED);
+		const handleIntervalStarted = ({ firstPlay }: { firstPlay: boolean }) => {
+			if (firstPlay) {
+				setGameState(GAMESTATES.INTERVAL_PLAYED);
+
+			}
 			setPlayerPaused(false);
 		};
 
@@ -132,7 +135,7 @@ function App() {
 
 	return (
 		<>
-			{(gameState === GAMESTATES.INIT) && <div className="position-fixed w-full h-full bg-white z-999 "></div>}
+			{(gameState === GAMESTATES.INIT) && <div className="position-fixed w-full h-full bg-slate-100 z-999 "></div>}
 			{(gameState === GAMESTATES.READY) && <div className="bg-indigo-950 p-bs-10 position-fixed  w-full h-full top-0 z-999 flex flex-col flex-items-center flex-justify-center">
 				<h2 className=" font-bold m-inline-auto">GYMNASTIQUE INTERVALLIQUE</h2>
 				<p className="m-inline-auto m-block-auto">Formez votre oreille à la reconnaissance d'intervalles</p>
@@ -144,58 +147,61 @@ function App() {
 						gameManager.startGame();
 
 					}}
-					classes="bg-blue-500 color-white rounded-full p-3 m-inline-auto m-block-auto text-3">
+					classes="bg-blue-500 color-slate-100 rounded-full p-3 m-inline-auto m-block-auto text-3">
 					Commencer
 				</Button>
 			</div>}
-			<Header ref={displaySettingsRef} score={score} running={running} resetSignal={resetSignal} onScoreChange={setQuestionScore} paused={timerPaused} />
+			{(gameState != GAMESTATES.INIT) && <Header ref={displaySettingsRef} score={score} running={running} resetSignal={resetSignal} onScoreChange={setQuestionScore} paused={timerPaused} />}
+			{(gameState !== GAMESTATES.READY && gameState !== GAMESTATES.INIT) && <>
 
-			<div className='position-absolute flex flex-col flex-items-center  h-[calc(100%-5rem)] top-18 overflow-scroll p-block-5 flex w-full'>
-				<div className='flex flex-items-center flex-justify-center  text-3  flex-col w-full m-auto'>
-					<Button
-						onClick={() => {
-							gameManager.playCurrentInterval();
-						}}
-						classes={["rounded-full", "p-[4px]", "fs-3", "text-10", "m-be-10", "hover:bg-blue-400", "bg-blue-500", "color-white", "transition-all", "duration-200", "flex-items-center", "flex-justify-center"].join(" ")}>
-						{playerPaused ? (
-							<svg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 24 24'>
-								<path fill='currentColor' d='M8 5v14l11-7z' />
-							</svg>
-						) : (
-							<svg xmlns='http://www.w3.org/2000/svg' width='1em' height='1em' viewBox='0 0 24 24'>
-								<path fill='currentColor' d='M6 19h4V5H6zm8-14v14h4V5z' />
-							</svg>
-						)}
-					</Button>
-					<div className='buttons-container grid  gap-2' onClick={handleResponse}>
-						{buttonList().map((button) => {
-							const isDisabled = gameState !== GAMESTATES.WAIT_ANSWER;
-							const isUserResponse = userResponse === intervals[button.index];
-							const isCorrect = intervals[button.index] === answer;
-							const isWrong = isUserResponse && !isCorrect;
 
-							const className = `
-  btn-response-${button.index + 1} btn-response
+				<div className='position-relative mt-16 flex flex-col flex-items-center  min-h-[calc(100vh-4rem)]  overflow-scroll p-block-5 flex w-full'>
+					<div className={`flex flex-items-center flex-justify-center  ${((device.type == "desktop" || device.type == "tablet") && device.width > 942) ? "text-3" : "text-4"}	  flex-col w-full m-auto`}>
+						<Button
+							onClick={() => {
+								gameManager.playCurrentInterval();
+							}}
+							classes={["rounded-full", "p-[4px]", `${playerPaused ? "btn-interactable" : ""}`, "text-10", "m-be-10", "flex-items-center", "flex-justify-center", `${!playerPaused ? "bg-slate-100" : ""}`, `${!playerPaused ? "border-3" : ""}`, `${!playerPaused ? "border-interactable" : ""}`, `${!playerPaused ? "border-solid" : ""}`, `${!playerPaused ? "color-interactable" : ""}`]} >
+							<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+								<path fill="currentColor" d="M7.825 21.85L2.15 16.2l4.225-4.225V6.3l11.35 11.325H12.05zm5.075-6.225L8.375 11.1v1.7l-3.4 3.4L7.8 19.025l3.4-3.4zm6.7 1.125l-1.45-1.45q1.125-2.05.788-4.337T16.95 7.025t-3.937-1.987t-4.338.787l-1.45-1.45q2.675-1.7 5.788-1.362T18.375 5.6t2.588 5.363T19.6 16.75m-2.95-2.95l-1.7-1.7q0-.625-.187-1.212t-.613-1.013q-.45-.45-1.037-.65t-1.238-.2l-1.7-1.7Q11.6 6.9 13.05 7.15t2.5 1.3t1.288 2.488t-.188 2.862m-7.7 1.25" />
+							</svg>
+						</Button>
+						<div className='buttons-container mb-4 grid  gap-2' onClick={handleResponse}>
+							{buttonList().map((button) => {
+								const buttonsText = device.type === "mobile" ? buttonsMobile : buttons;
+								const isDisabled = gameState !== GAMESTATES.WAIT_ANSWER;
+								const isUserResponse = userResponse === intervals[button.index];
+								const isCorrect = intervals[button.index] === answer;
+								const isWrong = isUserResponse && !isCorrect;
+
+								const className = `
+ btn-response
   ${isCorrect ? "right" : ""}
   ${isWrong ? "wrong" : ""}
   ${isDisabled ? "pointer-events-none" : ""}
   ${isDisabled && !isCorrect && !isUserResponse ? "opacity-40" : ""}
 `
-								.trim()
-								.replace(/\s+/g, " ");
+									.trim()
+									.replace(/\s+/g, " ");
 
-							return (
-								<Button key={button.index} data={intervals[button.index]} classes={className}>
-									{buttons[button.index]}
-								</Button>
-							);
-						})}
-						<Button classes={`py-3 px-6 ${gameState == GAMESTATES.ENDED ? "pointer-events-none opacity-40" : ""}`} onClick={handleNext}>
-							{gameManager.isLastInterval ? "Terminer" : "Suivant"}
-						</Button>
+								return (
+									<Button key={button.index} data={intervals[button.index]} classes={className}>
+										{buttonsText[button.index]}
+									</Button>
+								);
+							})}
+
+						</div>
 					</div>
-				</div>
-			</div>
+					<Button classes={`rounded-full text-10  p-[4px] flex flex-items-center flex-justify-center  btn-interactable font-bold ${gameState == GAMESTATES.ENDED ? "pointer-events-none opacity-40" : ""}`} onClick={handleNext}>
+						<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+							<path fill="currentColor" d="M12.6 12L8 7.4L9.4 6l6 6l-6 6L8 16.6z" />
+						</svg>
+					</Button>
+				</div >
+
+
+			</>}
 		</>
 	);
 }
