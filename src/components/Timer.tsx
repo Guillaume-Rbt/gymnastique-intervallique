@@ -78,9 +78,9 @@ const Timer = ({ onScoreChange, running, resetSignal, paused }: TimerProps) => {
   const dashOffset = (circumference / DURATION) * elapsedSeconds;
 
   return (
-    <div className="flex h-[4em] min-w-[48px] aspect-ratio-square w-[4em] text-3 rounded-full flex-justify-center flex-items-center position-relative">
+    <div className="flex h-[4em] min-w-[48px] aspect-ratio-square  w-[4em] text-3 rounded-full flex-justify-center flex-items-center position-relative">
       <span className="text-3">{points} pts</span>
-      <svg className="absolute color-blue w-full h-full" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+      <svg className="absolute color-blue w-full h-full " xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <circle
           className="opacity-35"
           cx="12"
@@ -99,6 +99,7 @@ const Timer = ({ onScoreChange, running, resetSignal, paused }: TimerProps) => {
           stroke="currentColor"
           fill="none"
           strokeWidth="2"
+          className="transform-origin-c rotate-270 scale-y--100"
           style={{ transition: 'stroke-dashoffset 0.25s ease' }}
         />
       </svg>

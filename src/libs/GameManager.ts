@@ -48,18 +48,55 @@ export default class GameManager extends Emitter {
 	}
 
 	set allowedIntervals(allowedIntervals: allowedIntervalsType) {
-		this.options.allowedIntervals = allowedIntervals;
-		this.intervalsGenerator.allowedIntervals = allowedIntervals;
-		const generatedInterval = !this.isStarted ? this.intervalsGenerator.generateAnyIntervals(this.numberOfIntervals - (this.currentIntervalIndex)) : this.intervalsGenerator.generateAnyIntervals(this.numberOfIntervals - 1 - (this.currentIntervalIndex));
-
-		let index = !this.isStarted ? this.currentIntervalIndex : this.currentIntervalIndex + 1;
-
-		for (const interval of generatedInterval) {
-			this.intervals[index] = interval;
-			index++;
-		}
 		this.#allowedIntervals = allowedIntervals;
+
+
+		const currentInterval = this.getCurrentInterval();
+
+
+
+		this.intervalsGenerator.allowedIntervals = allowedIntervals;
+
+		function checkIfIntervalIsAllowed(interval: Interval) {
+			for (const [_, value] of allowedIntervals) {
+				if (value.enabled && value.text === interval.name) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		for (let i = this.currentIntervalIndex; i < this.numberOfIntervals; i++) {
+
+			const interval = this.intervals[i];
+			if (!interval) {
+				this.intervals[i] = this.intervalsGenerator.generateInterval();
+			}
+			else if (!checkIfIntervalIsAllowed(interval)) { this.intervals[i] = this.intervalsGenerator.generateInterval(); }
+
+		}
+
+		console.log(currentInterval && !checkIfIntervalIsAllowed(currentInterval))
+		if (currentInterval && !checkIfIntervalIsAllowed(currentInterval)) {
+			this.playCurrentInterval();
+		}
+
 	}
+	/* 	set allowedIntervals(allowedIntervals: allowedIntervalsType) {
+			this.options.allowedIntervals = allowedIntervals;
+			this.intervalsGenerator.allowedIntervals = allowedIntervals;
+			const generatedInterval = !this.isStarted ? this.intervalsGenerator.generateAnyIntervals(this.numberOfIntervals - (this.currentIntervalIndex)) : this.intervalsGenerator.generateAnyIntervals(this.numberOfIntervals - 1 - (this.currentIntervalIndex));
+	
+			let index = !this.isStarted ? this.currentIntervalIndex : this.currentIntervalIndex + 1;
+	
+			for (const interval of generatedInterval) {
+				this.intervals[index] = interval;
+				index++;
+			}
+			this.#allowedIntervals = allowedIntervals;
+		} */
+
+
 	get allowedIntervals() {
 		return this.#allowedIntervals;
 	}

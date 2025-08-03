@@ -4,20 +4,25 @@ import CheckBox from "../components/CheckBox";
 import { buttons } from "../utils/constants";
 import { useState } from "react";
 
-export const GameSettingsPopup = ({ Popup }: { Popup: any }) => {
-    const { gameState, allowedIntervals: contextAllowedInterval, checkIfNeedUpdateGame } = useGameContext();
+export const GameSettingsPopup = ({ Popup, allowedIntervalsRef }: { Popup: any, allowedIntervalsRef: React.RefObject<Map<number, { text: string; enabled: boolean }>> }) => {
+    const { gameState, allowedIntervals: contextAllowedInterval, checkIfNeedUpdateGame, } = useGameContext();
     const [allowedIntervals, setAllowedIntervals] = useState(contextAllowedInterval);
 
     const toggleAllowedInterval = (intervalIndex: number) => {
+
+        let updated = allowedIntervals;
         setAllowedIntervals(prev => {
             const interval = prev.get(intervalIndex);
+            updated = new Map(prev);
             if (!interval) return prev;
-            const updated = new Map(prev);
             updated.set(intervalIndex, { ...interval, enabled: !interval.enabled });
-            checkIfNeedUpdateGame(updated);
-
             return updated;
         });
+
+        console.log(updated)
+
+        checkIfNeedUpdateGame(updated);
+        allowedIntervalsRef.current = updated;
 
 
     };

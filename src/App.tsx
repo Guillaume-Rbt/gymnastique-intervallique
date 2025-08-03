@@ -161,7 +161,7 @@ function App() {
 							onClick={() => {
 								gameManager.playCurrentInterval();
 							}}
-							classes={["rounded-full", "p-[4px]", `${playerPaused ? "btn-interactable" : ""}`, "text-10", "m-be-10", "flex-items-center", "flex-justify-center", `${!playerPaused ? "bg-slate-100" : ""}`, `${!playerPaused ? "border-3" : ""}`, `${!playerPaused ? "border-interactable" : ""}`, `${!playerPaused ? "border-solid" : ""}`, `${!playerPaused ? "color-interactable" : ""}`]} >
+							classes={["rounded-full", "w-13", "h-13", `${playerPaused ? "btn-interactable" : ""}`, "text-8", "m-be-10", "flex-items-center", "flex-justify-center", `${!playerPaused ? "bg-slate-100" : ""}`, `${!playerPaused ? "border-3" : ""}`, `${!playerPaused ? "border-interactable" : ""}`, `${!playerPaused ? "border-solid" : ""}`, `${!playerPaused ? "color-interactable" : ""}`]} >
 							<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
 								<path fill="currentColor" d="M7.825 21.85L2.15 16.2l4.225-4.225V6.3l11.35 11.325H12.05zm5.075-6.225L8.375 11.1v1.7l-3.4 3.4L7.8 19.025l3.4-3.4zm6.7 1.125l-1.45-1.45q1.125-2.05.788-4.337T16.95 7.025t-3.937-1.987t-4.338.787l-1.45-1.45q2.675-1.7 5.788-1.362T18.375 5.6t2.588 5.363T19.6 16.75m-2.95-2.95l-1.7-1.7q0-.625-.187-1.212t-.613-1.013q-.45-.45-1.037-.65t-1.238-.2l-1.7-1.7Q11.6 6.9 13.05 7.15t2.5 1.3t1.288 2.488t-.188 2.862m-7.7 1.25" />
 							</svg>
@@ -173,7 +173,6 @@ function App() {
 								const isUserResponse = userResponse === intervals[button.index];
 								const isCorrect = intervals[button.index] === answer;
 								const isWrong = isUserResponse && !isCorrect;
-
 								const className = `
  btn-response
   ${isCorrect ? "right" : ""}
@@ -193,7 +192,7 @@ function App() {
 
 						</div>
 					</div>
-					<Button classes={`rounded-full text-10  p-[4px] flex flex-items-center flex-justify-center  btn-interactable font-bold ${gameState == GAMESTATES.ENDED ? "pointer-events-none opacity-40" : ""}`} onClick={handleNext}>
+					<Button classes={`rounded-full text-8  w-13 h-13 flex flex-items-center flex-justify-center  btn-interactable font-bold ${gameState == GAMESTATES.ENDED ? "pointer-events-none opacity-40" : ""}`} onClick={handleNext}>
 						<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
 							<path fill="currentColor" d="M12.6 12L8 7.4L9.4 6l6 6l-6 6L8 16.6z" />
 						</svg>

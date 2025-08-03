@@ -1,6 +1,6 @@
 import type React from "react";
 import { useBoolean } from "./useBoolean";
-import { useCallback } from "react";
+
 
 function Popup({
     children,
@@ -27,12 +27,12 @@ export function usePopup(
         () => void,
     ] {
     const [isOpen, setIsOpenTrue, setIsOpenFalse] = useBoolean(initialState);
-    const setIsOpenFalseCallback = useCallback(() => {
+    const setIsOpenFalseCallback = () => {
         setIsOpenFalse();
         if (onClose) {
             onClose();
         }
-    }, [])
+    }
 
 
 

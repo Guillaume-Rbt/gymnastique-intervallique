@@ -46,7 +46,7 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
     const device = useDevice();
 
     const handleGameNextInterval = () => {
-        if (gameState === GAMESTATES.INTERVAL_PLAYED && needCommit) {
+        if (needCommit) {
             commitAllowedIntervals(allowedIntervalsRef.current);
         }
     }
@@ -62,9 +62,8 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
 
     const checkIfNeedUpdateGame = (allowedIntervalsFromPopup: Map<number, IntervalData>) => {
         const map = allowedIntervalsFromPopup;
-
+        console.log(map)
         if (gameState === GAMESTATES.READY) {
-
             commitAllowedIntervals(allowedIntervalsFromPopup);
             return;
         }

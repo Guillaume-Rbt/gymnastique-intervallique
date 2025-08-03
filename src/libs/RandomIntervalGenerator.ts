@@ -9,10 +9,10 @@ type intervalGeneratorOptions = {
 export default class RandomIntervalGenerator {
   options: intervalGeneratorOptions;
   intervalsKey: number[] = [];
-  private _allowedIntervals!: allowedIntervalsType;
+  #allowedIntervals!: allowedIntervalsType;
 
   set allowedIntervals(value: allowedIntervalsType) {
-    this._allowedIntervals = value;
+    this.#allowedIntervals = value;
     this.intervalsKey = Array.from(this.allowedIntervals.keys()).filter((key) => {
       if (this.allowedIntervals.get(key)!.enabled) {
         return this.allowedIntervals.get(key)?.enabled;
@@ -21,7 +21,7 @@ export default class RandomIntervalGenerator {
   }
 
   get allowedIntervals(): allowedIntervalsType {
-    return this._allowedIntervals;
+    return this.#allowedIntervals;
   }
 
   constructor(options: Partial<intervalGeneratorOptions> = {}) {
