@@ -26,7 +26,6 @@ export default function Header({ score, onScoreChange, running, resetSignal, pau
 
 
     const onPopupClose = () => {
-        console.log(needCommit, allowedIntervalsRef.current)
         if (needCommit && gameState !== GAMESTATES.ANSWERED) {
             commitAllowedIntervals(allowedIntervalsRef.current)
         }

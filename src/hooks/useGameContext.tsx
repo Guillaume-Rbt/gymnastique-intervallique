@@ -55,8 +55,12 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
 
     const commitAllowedIntervals = (allowedIntervalsFromPopup: Map<number, IntervalData>) => {
         const latest = new Map(allowedIntervalsFromPopup);
-        gameManager.allowedIntervals = latest;
-        setAllowedIntervals(latest);
+        if (gameState !== GAMESTATES.READY)
+        {
+              gameManager.allowedIntervals = latest;
+
+        }
+             setAllowedIntervals(latest); 
         setNeedCommitFalse();
     };
 

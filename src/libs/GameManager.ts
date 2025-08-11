@@ -76,7 +76,6 @@ export default class GameManager extends Emitter {
 
 		}
 
-		console.log(currentInterval && !checkIfIntervalIsAllowed(currentInterval))
 		if (currentInterval && !checkIfIntervalIsAllowed(currentInterval)) {
 			this.playCurrentInterval();
 		}
