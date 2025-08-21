@@ -9,7 +9,7 @@ import { useDevice, type DeviceType } from "./useDevice";
 type IntervalData = { text: string; enabled: boolean };
 type ProgessType = { current: number; total: number };
 
-export enum GAMESTATES {
+export enum GAME_STATES {
     INIT = "init",
     READY = "ready",
     STARTED = "started",
@@ -20,10 +20,10 @@ export enum GAMESTATES {
 }
 
 type gameContextType = {
-    gameState: GAMESTATES;
+    gameState: GAME_STATES;
     progress: ProgessType;
     setProgress: React.Dispatch<React.SetStateAction<ProgessType>>;
-    setGameState: React.Dispatch<React.SetStateAction<GAMESTATES>>;
+    setGameState: React.Dispatch<React.SetStateAction<GAME_STATES>>;
     allowedIntervals: Map<number, IntervalData>;
     checkIfNeedUpdateGame: (allowedIntervals: Map<number, IntervalData>) => void;
     commitAllowedIntervals: (allowedIntervals: Map<number, IntervalData>) => void;
@@ -37,7 +37,7 @@ const GameContext = createContext<gameContextType>(undefined!);
 
 export const GameContextProvider = ({ children }: { children: ReactNode }) => {
     const [progress, setProgress] = useState({ current: 1, total: 0 });
-    const [gameState, setGameState] = useState<GAMESTATES>(GAMESTATES.INIT);
+    const [gameState, setGameState] = useState<GAME_STATES>(GAME_STATES.INIT);
     const [allowedIntervals, setAllowedIntervals] = useState(defaultMap);
     const [needCommit, setNeedCommitTrue, setNeedCommitFalse] = useBoolean(false);
     const allowedIntervalsRef = useRef(allowedIntervals);
@@ -55,19 +55,18 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
 
     const commitAllowedIntervals = (allowedIntervalsFromPopup: Map<number, IntervalData>) => {
         const latest = new Map(allowedIntervalsFromPopup);
-        if (gameState !== GAMESTATES.READY)
-        {
-              gameManager.allowedIntervals = latest;
+        if (gameState !== GAME_STATES.READY) {
+            gameManager.allowedIntervals = latest;
 
         }
-             setAllowedIntervals(latest); 
+        setAllowedIntervals(latest);
         setNeedCommitFalse();
     };
 
     const checkIfNeedUpdateGame = (allowedIntervalsFromPopup: Map<number, IntervalData>) => {
         const map = allowedIntervalsFromPopup;
         console.log(map)
-        if (gameState === GAMESTATES.READY) {
+        if (gameState === GAME_STATES.READY) {
             commitAllowedIntervals(allowedIntervalsFromPopup);
             return;
         }
@@ -88,7 +87,7 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
     };
 
     return (
-        <GameContext.Provider
+        <GameContext
             value={{
                 gameState,
                 setGameState,
@@ -104,7 +103,7 @@ export const GameContextProvider = ({ children }: { children: ReactNode }) => {
         >
             {children}
 
-        </GameContext.Provider>
+        </GameContext>
     );
 };
 

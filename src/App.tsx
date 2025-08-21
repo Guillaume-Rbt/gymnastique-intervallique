@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import GameManager from "./libs/GameManager";
 import Header from "./components/Header";
 import Button from "./components/Button";
-import { useGameContext, GAMESTATES } from "./hooks/useGameContext";
+import { useGameContext, GAME_STATES } from "./hooks/useGameContext";
 import { buttons, intervals, buttonsMobile } from "./utils/constants";
 import { useBoolean } from "./hooks/useBoolean";
 
@@ -27,37 +27,37 @@ function App() {
 
 	useEffect(() => {
 		const handleGameEnded = () => {
-			setGameState(GAMESTATES.ENDED);
+			setGameState(GAME_STATES.ENDED);
 			setUserResponse(null);
 			setAnswer(null);
 		};
 
 		const handleGameStarted = () => {
 
-			setGameState(GAMESTATES.STARTED);
+			setGameState(GAME_STATES.STARTED);
 			setProgress(gameManager.getProgress());
 			gameManager.playCurrentInterval();
 
 		};
 
 		const handleIntervalEnded = ({ firstPlay }: { firstPlay: boolean }) => {
-			if (firstPlay && gameState === GAMESTATES.INTERVAL_PLAYED) {
+			if (firstPlay && gameState === GAME_STATES.INTERVAL_PLAYED) {
 				handleStartTimer();
-				setGameState(GAMESTATES.WAIT_ANSWER);
+				setGameState(GAME_STATES.WAIT_ANSWER);
 			}
 			setPlayerPaused(true);
 		};
 
 		const handleIntervalStarted = ({ firstPlay }: { firstPlay: boolean }) => {
 			if (firstPlay) {
-				setGameState(GAMESTATES.INTERVAL_PLAYED);
+				setGameState(GAME_STATES.INTERVAL_PLAYED);
 
 			}
 			setPlayerPaused(false);
 		};
 
 		const handleGameReady = () => {
-			setGameState(GAMESTATES.READY);
+			setGameState(GAME_STATES.READY);
 		};
 
 		gameManager.on(GameManager.GAME_ENDED, handleGameEnded);
@@ -90,7 +90,7 @@ function App() {
 
 	const handleResponse = useCallback(
 		(e: React.MouseEvent<HTMLDivElement>) => {
-			if (!(gameState == GAMESTATES.WAIT_ANSWER)) return;
+			if (!(gameState == GAME_STATES.WAIT_ANSWER)) return;
 
 			const target = (e.target as HTMLElement).closest("[data-data]") as HTMLElement | null;
 			if (!target || !target.dataset.data) return;
@@ -98,7 +98,7 @@ function App() {
 			const data = target.dataset.data;
 			setTimerPausedTrue();
 			setAnswer(gameManager.getCurrentInterval().name);
-			setGameState(GAMESTATES.ANSWERED);
+			setGameState(GAME_STATES.ANSWERED);
 			setUserResponse(data);
 			if (data === gameManager.getCurrentInterval().name) {
 				setScore((prevScore) => prevScore + questionScore);
@@ -108,8 +108,8 @@ function App() {
 	);
 
 	const handleNext = useCallback(() => {
-		if (gameState === GAMESTATES.ANSWERED && gameManager.isLastInterval) {
-			setGameState(GAMESTATES.ENDED);
+		if (gameState === GAME_STATES.ANSWERED && gameManager.isLastInterval) {
+			setGameState(GAME_STATES.ENDED);
 			return;
 		}
 		setUserResponse(null);
@@ -135,8 +135,8 @@ function App() {
 
 	return (
 		<>
-			{(gameState === GAMESTATES.INIT) && <div className="position-fixed w-full h-full bg-slate-100 z-999 "></div>}
-			{(gameState === GAMESTATES.READY) && <div className="bg-indigo-950 p-bs-10 position-fixed  w-full h-full top-0 z-999 flex flex-col flex-items-center flex-justify-center">
+			{(gameState === GAME_STATES.INIT) && <div className="position-fixed w-full h-full bg-slate-100 z-999 "></div>}
+			{(gameState === GAME_STATES.READY) && <div className="bg-indigo-950 p-bs-10 position-fixed  w-full h-full top-0 z-999 flex flex-col flex-items-center flex-justify-center">
 				<h2 className=" font-bold m-inline-auto">GYMNASTIQUE INTERVALLIQUE</h2>
 				<p className="m-inline-auto m-block-auto">Formez votre oreille à la reconnaissance d'intervalles</p>
 				<Button onClick={() => { displaySettings() }} classes="p-[3px] text-8 bg-transparent hover:bg-gray-200 transition-bg duration-200 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
@@ -151,8 +151,8 @@ function App() {
 					Commencer
 				</Button>
 			</div>}
-			{(gameState != GAMESTATES.INIT) && <Header ref={displaySettingsRef} score={score} running={running} resetSignal={resetSignal} onScoreChange={setQuestionScore} paused={timerPaused} />}
-			{(gameState !== GAMESTATES.READY && gameState !== GAMESTATES.INIT) && <>
+			{(gameState != GAME_STATES.INIT) && <Header ref={displaySettingsRef} score={score} running={running} resetSignal={resetSignal} onScoreChange={setQuestionScore} paused={timerPaused} />}
+			{(gameState !== GAME_STATES.READY && gameState !== GAME_STATES.INIT) && <>
 
 
 				<div className='position-relative mt-16 flex flex-col flex-items-center  min-h-[calc(100vh-4rem)]  overflow-scroll p-block-5 flex w-full'>
@@ -169,7 +169,7 @@ function App() {
 						<div className='buttons-container mb-4 grid  gap-2' onClick={handleResponse}>
 							{buttonList().map((button) => {
 								const buttonsText = device.type === "mobile" ? buttonsMobile : buttons;
-								const isDisabled = gameState !== GAMESTATES.WAIT_ANSWER;
+								const isDisabled = gameState !== GAME_STATES.WAIT_ANSWER;
 								const isUserResponse = userResponse === intervals[button.index];
 								const isCorrect = intervals[button.index] === answer;
 								const isWrong = isUserResponse && !isCorrect;
@@ -192,7 +192,7 @@ function App() {
 
 						</div>
 					</div>
-					<Button classes={`rounded-full text-8  w-13 h-13 flex flex-items-center flex-justify-center  btn-interactable font-bold ${gameState == GAMESTATES.ENDED ? "pointer-events-none opacity-40" : ""}`} onClick={handleNext}>
+					<Button classes={`rounded-full text-8  w-13 h-13 flex flex-items-center flex-justify-center  btn-interactable font-bold ${gameState == GAME_STATES.ENDED ? "pointer-events-none opacity-40" : ""}`} onClick={handleNext}>
 						<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
 							<path fill="currentColor" d="M12.6 12L8 7.4L9.4 6l6 6l-6 6L8 16.6z" />
 						</svg>
