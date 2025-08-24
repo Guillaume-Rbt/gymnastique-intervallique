@@ -12,7 +12,7 @@ export default defineConfig({
   )],
   base: "./",
   build: {
-    sourcemap: true,
+    sourcemap: false,
     outDir: "prod",
     assetsDir: "",
     emptyOutDir: true,

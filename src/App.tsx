@@ -5,6 +5,7 @@ import Button from "./components/Button";
 import { useGameContext, GAME_STATES } from "./hooks/useGameContext";
 import { buttons, intervals, buttonsMobile } from "./utils/constants";
 import { useBoolean } from "./hooks/useBoolean";
+import Loader from "./components/Loader";
 
 function App() {
 	const { gameState, setGameState, setProgress, allowedIntervals, gameManager, device } = useGameContext();
@@ -135,7 +136,7 @@ function App() {
 
 	return (
 		<>
-			{(gameState === GAME_STATES.INIT) && <div className="position-fixed w-full h-full bg-slate-100 z-999 "></div>}
+			{(gameState === GAME_STATES.INIT) && <div className="position-fixed flex flex-justify-center flex-items-center w-full h-full bg-indigo-950 z-999 "><Loader size={75}></Loader></div>}
 			{(gameState === GAME_STATES.READY) && <div className="bg-indigo-950 p-bs-10 position-fixed  w-full h-full top-0 z-999 flex flex-col flex-items-center flex-justify-center">
 				<h2 className=" font-bold m-inline-auto">GYMNASTIQUE INTERVALLIQUE</h2>
 				<p className="m-inline-auto m-block-auto">Formez votre oreille à la reconnaissance d'intervalles</p>

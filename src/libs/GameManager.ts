@@ -81,20 +81,6 @@ export default class GameManager extends Emitter {
 		}
 
 	}
-	/* 	set allowedIntervals(allowedIntervals: allowedIntervalsType) {
-			this.options.allowedIntervals = allowedIntervals;
-			this.intervalsGenerator.allowedIntervals = allowedIntervals;
-			const generatedInterval = !this.isStarted ? this.intervalsGenerator.generateAnyIntervals(this.numberOfIntervals - (this.currentIntervalIndex)) : this.intervalsGenerator.generateAnyIntervals(this.numberOfIntervals - 1 - (this.currentIntervalIndex));
-	
-			let index = !this.isStarted ? this.currentIntervalIndex : this.currentIntervalIndex + 1;
-	
-			for (const interval of generatedInterval) {
-				this.intervals[index] = interval;
-				index++;
-			}
-			this.#allowedIntervals = allowedIntervals;
-		} */
-
 
 	get allowedIntervals() {
 		return this.#allowedIntervals;

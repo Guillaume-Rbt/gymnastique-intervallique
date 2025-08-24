@@ -9,8 +9,33 @@
 </head>
 
 <body class="color-slate-100 bg-cover bg-center bg bg-[url('/img/bg.webp')]  w-full min-h-dvh ">
-  <div id="root" class="flex flex-col w-full flex-items-center"></div>
+  <div id="loader"
+    class="position-fixed w-full h-full flex flex-items-center flex-justify-center bg-indigo-950 text-slate-100 transition-opacity duration-300 z-999">
+    <svg xmlns="http://www.w3.org/2000/svg" width="275" height="150" viewBox="0 0 275 150">
+      <circle cx="37.5" cy="112.5" r="37.5" fill="currentColor">
+        <animate begin="0" attributeName="cy" values="112.5;37.5;112.5" dur="1.5s" repeatCount="indefinite"></animate>
+      </circle>
+      <circle cx="137.5" cy="112.5" r="37.5" fill="currentColor">
+        <animate begin=".375s" attributeName="cy" values="112.5;37.5;112.5" dur="2s" repeatCount="indefinite"></animate>
+      </circle>
+      <circle cx="237.5" cy="112.5" r="37.5" fill="currentColor">
+        <animate begin=".75s" attributeName="cy" values="112.5;37.5;112.5" dur="2s" repeatCount="indefinite"></animate>
+      </circle>
+    </svg>
+  </div>
+  <div id="root" class="flex flex-col w-full flex-items-center isolate"></div>
+  <script>
+    window.addEventListener("load", () => {
+      const loader = document.querySelector("#loader");
+      if (loader) {
+        loader.classList.add("op-0", "pointer-events-none");
+      }
+    });
+  </script>
   <script type="module" src="/src/main.tsx"></script>
 </body>
+
+
+
 
 </html>

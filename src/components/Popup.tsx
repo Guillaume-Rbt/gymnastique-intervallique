@@ -19,7 +19,7 @@ export default function Popup({
 
     const [isOpen, setIsOpenTrue, setIsOpenFalse] = useBoolean(false);
 
-    const classesDefault = `${classes ?? ""}  opacity-0 overlay bg-op-90 bg-dark-100 flex position-fixed top-0 left-0 w-full h-full flex-items-center flex-justify-center z-999 ${isOpen ? "pointer-events-auto" : "pointer-events-none"
+    const classesDefault = `${classes ?? ""}  opacity-0 overlay bg-op-90 bg-indigo-950 flex position-fixed top-0 left-0 w-full h-full flex-items-center flex-justify-center z-999 ${isOpen ? "pointer-events-auto" : "pointer-events-none"
         }`;
 
     const root = useRef<HTMLDivElement | null>(null);
@@ -27,13 +27,17 @@ export default function Popup({
 
 
     useEffect(() => {
-        utils.set(root.current!, {
+
+        if (!root.current) return;
+
+        utils.set(root.current, {
             opacity: 0,
             duration: 0,
             easing: "easeInOutQuad"
         })
+        const firstChild = root.current.firstElementChild;
 
-        const firstChild = root.current!.querySelector("*:first-child");
+
         if (firstChild) {
             utils.set(firstChild, {
                 translateY: -40,
@@ -46,7 +50,6 @@ export default function Popup({
             self!.add("fadeIn", () => {
 
                 const timeline = createTimeline({ autoplay: false })
-                const firstChild = root.current!.querySelector("*:first-child");
 
                 timeline.add(root.current!, {
                     opacity: { from: 0, to: 1 },
@@ -69,8 +72,6 @@ export default function Popup({
             self!.add("fadeOut", () => {
 
                 const timeline = createTimeline({ autoplay: false })
-
-                const firstChild = root.current!.querySelector("*:first-child");
                 if (firstChild) {
                     timeline.add(firstChild, {
                         translateY: { from: 0, to: -40 },

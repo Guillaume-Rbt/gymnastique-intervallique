@@ -82,13 +82,14 @@ export default class IntervalPlayer extends Emitter {
 	}
 
 	ready() {
-		this.audio.removeEventListener("canplay", this.ready);
+
+		this.audio.removeEventListener("canplaythrough", this.ready);
 		this.audio.addEventListener("timeupdate", this.onAudioTimeUpdate);
 		this.emit(IntervalPlayer.READY, { interval: this.interval });
 	}
 
 	init() {
-		this.audio.addEventListener("canplay", this.ready);
+		this.audio.addEventListener("canplaythrough", this.ready);
 	}
 
 	isPlaying() {
