@@ -18,7 +18,11 @@ export default defineConfig({
             xxl: "1400px",
         },
         colors: {
-            interactable: "#fc9026",
+            "accent": "#ff375f",
+            "accent-hover": "#db1f45",
+            "dark": "#485966",
+            "dark-hover": "#5f6f7c",
+            "dark-2": "#202020cc"
         },
     },
 })
