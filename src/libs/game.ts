@@ -13,18 +13,15 @@ export enum GAME_STATES {
     ENDED = "ended",
 }
 
-type gameConfig = { allowedIntervals: Map<number, { text: string; enabled: boolean }> }
+type gameConfig = { allowedIntervals: Map<number, { text: string; enabled: boolean }> };
 
 export default class Game extends Emitter {
-
-    config: gameConfig = { allowedIntervals: new Map() }
+    config: gameConfig = { allowedIntervals: new Map() };
     intervals: Interval[] = [];
     allowedIntervals: Map<number, { text: string; enabled: boolean }> = new Map();
     intervalsGenerator: RandomIntervalGenerator = new RandomIntervalGenerator();
     currentIntervalIndex: number = 0;
     #state: GAME_STATES = GAME_STATES.INIT;
-
-
 
     static get STATES() {
         return GAME_STATES;
@@ -39,11 +36,10 @@ export default class Game extends Emitter {
         this.emit(Game.EVENTS.STATE_CHANGED, { state: this.#state });
     }
 
-    static EVENTS =
-        {
-            STATE_CHANGED: "game.state.changed",
-            PROGRESS_CHANGED: "game.progress.changed",
-        }
+    static EVENTS = {
+        STATE_CHANGED: "game.state.changed",
+        PROGRESS_CHANGED: "game.progress.changed",
+    };
 
     constructor(options: Partial<gameConfig> = {}) {
         super();
@@ -52,7 +48,8 @@ export default class Game extends Emitter {
             allowedIntervals: new Map(
                 intervals.map((interval, index) => {
                     return [index, { text: interval, enabled: true }];
-                })),
+                }),
+            ),
             ...options,
         };
 
@@ -69,11 +66,12 @@ export default class Game extends Emitter {
     }
 
     nextInterval() {
-
         if (this.currentIntervalIndex < this.intervals.length - 1) {
-
             this.currentIntervalIndex++;
-            this.emit(Game.EVENTS.PROGRESS_CHANGED, { current: this.currentIntervalIndex, total: this.intervals.length });
+            this.emit(Game.EVENTS.PROGRESS_CHANGED, {
+                current: this.currentIntervalIndex,
+                total: this.intervals.length,
+            });
             return true;
         }
         return false;
