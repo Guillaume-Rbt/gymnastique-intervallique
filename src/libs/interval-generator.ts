@@ -1,17 +1,17 @@
 import { intervals, notes } from "../utils/constants";
 import { randomNumber } from "../utils/numbers";
 
-export type allowedIntervalsType = Map<number, { text: string | string[], enabled: boolean; }>;
+export type allowedIntervals = Map<number, { text: string | string[], enabled: boolean; }>;
 type intervalGeneratorOptions = {
-  allowedIntervals: allowedIntervalsType;
+  allowedIntervals: allowedIntervals;
 };
 
 export default class RandomIntervalGenerator {
   options: intervalGeneratorOptions;
   intervalsKey: number[] = [];
-  #allowedIntervals!: allowedIntervalsType;
+  #allowedIntervals!: allowedIntervals;
 
-  set allowedIntervals(value: allowedIntervalsType) {
+  set allowedIntervals(value: allowedIntervals) {
     this.#allowedIntervals = value;
     this.intervalsKey = Array.from(this.allowedIntervals.keys()).filter((key) => {
       if (this.allowedIntervals.get(key)!.enabled) {
@@ -20,7 +20,7 @@ export default class RandomIntervalGenerator {
     })
   }
 
-  get allowedIntervals(): allowedIntervalsType {
+  get allowedIntervals(): allowedIntervals {
     return this.#allowedIntervals;
   }
 
