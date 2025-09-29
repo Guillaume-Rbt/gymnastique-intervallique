@@ -1,4 +1,4 @@
-import { animate, type Callback, type JSAnimation, type Timeline } from "animejs";
+import { animate, type Callback, type JSAnimation, type Tickable, type Timeline, type Tween } from "animejs";
 import Emitter from "../emitter-mixin";
 
 export type AnimationsOptions = {
@@ -19,6 +19,7 @@ export default class Animation extends Emitter {
     initializer: () => void = () => {};
     executor: () => Timeline;
     name: string = "";
+    completed: boolean = false;
 
     instance: Timeline | null = null;
 
@@ -78,7 +79,7 @@ export default class Animation extends Emitter {
         this.initializer();
     }
 
-    registerCallbacks(instance: Timeline) {
+    registerCallbacks(instance: Timeline | Tickable | Tween) {
         CALLBACK_NAMES.forEach((callbackName) => {
             const callback = (instance as Record<string, any>)[callbackName];
 
@@ -116,6 +117,8 @@ export default class Animation extends Emitter {
                         name: `${callbackName}-${options.name}`,
                     });
 
+                    this.completed = true;
+
                     options.callback(instance);
                 };
             }
@@ -126,8 +129,18 @@ export default class Animation extends Emitter {
         if (!this.instance) {
             this.instance = this.executor();
             this.registerCallbacks(this.instance);
-            console.log(this.instance);
+
+            if (this.instance._hasChildren) {
+                let next = this.instance._head;
+
+                while (next) {
+                    this.registerCallbacks(next);
+                    next = next._next;
+                }
+            }
         }
+
+        console.log(this.instance);
 
         this.instance!.play();
     }

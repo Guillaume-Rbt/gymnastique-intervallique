@@ -153,8 +153,12 @@ export class AnimationManager extends Emitter {
         return false;
     }
 
+    getAnimationById(name: string) {
+        return this.animations.get(name);
+    }
+
     launch(name: string) {
-        const anim = this.animations.get(name);
+        const anim = this.getAnimationById(name);
         if (anim) {
             return anim.launch();
         }

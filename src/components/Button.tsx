@@ -1,8 +1,20 @@
-export default function Button({ label, onClick = () => { }, classes }: { label: string; onClick?: () => void; classes: string[] }) {
+export default function Button({
+    label = "",
+    onClick = () => {},
+    classes,
+}: {
+    label?: string;
+    onClick?: () => void;
+    classes: string[] | string;
+}) {
+    const buttonsClasses = Array.isArray(classes)
+        ? ["cursor-pointer", "btn", ...classes]
+        : ["cursor-pointer", "btn", classes];
 
-
-    const buttonsClasses = ["cursor-pointer", 'btn', ...classes]
-
-
-    return <button className={buttonsClasses.join(" ")} onClick={onClick}>{label}</button>
+    return (
+        <button
+            dangerouslySetInnerHTML={{ __html: label }}
+            className={buttonsClasses.join(" ")}
+            onClick={onClick}></button>
+    );
 }

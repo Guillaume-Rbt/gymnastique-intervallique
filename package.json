@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.33.0",
+    "@types/animejs": "^3.1.13",
     "@types/react": "^19.1.10",
     "@types/react-dom": "^19.1.7",
     "@unocss/preset-wind4": "^66.5.1",

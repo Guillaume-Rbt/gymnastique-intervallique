@@ -33,7 +33,7 @@ export default defineConfig({
             const nbSpacing = parseInt(d) - 1;
 
             return `${selector} {
-            width: calc((100% - ${nbSpacing} * var(--spacing)) / ${d});
+            width: calc((100%  / ${d}) - (${nbSpacing} * var(--spacing)));
         }`
         }],
         [
@@ -56,12 +56,12 @@ export default defineConfig({
                 const selector = e(rawSelector);
                 const axis = a === "x" ? "inline" : "block";
 
-                return `${selector} :first-child
+                return `${selector} > :first-child
                 {
                     margin-${axis}-start: auto;
-                    }
-                    
-                    ${selector} :last-child
+                }
+
+                ${selector} > :last-child
                     {
                         margin-${axis}-end: auto;
                     }`

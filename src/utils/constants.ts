@@ -1,18 +1,18 @@
 export const intervals = [
     'unisson',
-    'seconde mineure',
-    'seconde majeure',
-    'tierce mineure',
-    'tierce majeure',
-    'quarte juste',
-    'quarte aug / quinte dim',
-    'quinte juste',
-    'quinte aug / sixte mineure',
-    'sixte majeure / septième dim',
-    'septième mineure',
-    'septième majeure',
+    'seconde_mineure',
+    'seconde_majeure',
+    'tierce_mineure',
+    'tierce_majeure',
+    'quarte_juste',
+    'quarte_aug/quinte_dim',
+    'quinte_juste',
+    'quinte_aug/sixte_mineure',
+    'sixte_majeure/septieme_dim',
+    'septieme_mineure',
+    'septieme_majeure',
     'octave',
-    'neuvième'
+    'neuvieme_mineure'
 ]
 
 export const buttons = [
