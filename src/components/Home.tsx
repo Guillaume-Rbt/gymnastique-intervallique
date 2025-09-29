@@ -1,18 +1,99 @@
 import Button from "./Button";
+import { useGameContext, type GameContext } from "../hooks/useGameContext";
+import { useLayoutEffect, useRef } from "react";
+import { createScope, createTimeline, Scope, utils, stagger } from "animejs";
 
 export default function Home() {
+    const { game, animManager } = useGameContext() as GameContext;
+
+    const scope = useRef<Scope | null>(null);
+    const root = useRef<HTMLDivElement | null>(null);
+
+    // register animations
+    useLayoutEffect(() => {
+        scope.current = createScope({ root }).add((_) => {
+            if (!root.current) return;
+
+            function homeInit() {
+                utils.set(root.current!, { opacity: 0 });
+
+                utils.set(["h1", "p", "button"], { opacity: 0, translateY: 20 });
+            }
+            function homeEnter() {
+                const timeline = createTimeline({
+                    defaults: { ease: "outQuad" },
+                });
+
+                timeline
+                    .add(root.current!, {
+                        opacity: { from: 0, to: 1 },
+                    })
+                    .add(
+                        ["h1", "p", "button"],
+                        {
+                            opacity: { from: 0, to: 1 },
+                            translateY: 0,
+                            delay: stagger(100),
+                        },
+                        "-=300",
+                    );
+
+                return timeline;
+            }
+
+            function homeExit() {
+                const timeline = createTimeline({
+                    defaults: { ease: "outExpo" },
+                    onComplete: () => ({
+                        name: "home-exit",
+                        callback: () => {
+                            root.current?.classList.add("pointer-events-none");
+                            game.start();
+                        },
+                    }),
+                });
+                timeline.add(root.current!, {
+                    opacity: { from: 1, to: 0 },
+                });
+                return timeline;
+            }
+
+            animManager.register({
+                name: "home-enter",
+                initializer: homeInit,
+                executor: homeEnter,
+            });
+
+            animManager.register({
+                name: "home-exit",
+                initializer: homeInit,
+                executor: homeExit,
+            });
+
+            animManager.launch("home-enter");
+        });
+    }, []);
+
+    const handleStart = () => {
+        animManager.launch("home-exit");
+    };
+
     return (
-        <div className='position-fixed w-full h-full bg-theme-blue z-100 flex flex-items-center flex-justify-center flex-col isolate'>
-            <div className='position-absolute py-4.8 top-0 left-0 w-full h-full z--1'>
+        <div
+            ref={root}
+            className='position-fixed w-full p-7.8 p-be-15 h-full bg-theme-blue z-100 flex flex-items-center flex-col isolate container-margin-y-auto gap-8'>
+            <h1 className='font-bold text-13 color-slate-100 text-center max-w-86'>Gymnastique Intervallique</h1>
+            <div className='position-absolute  top-0 left-0 w-full h-full z--1'>
                 <img
                     src='/images/keyboard.webp'
-                    className='mask-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.5)_100%)] position-absolute w-full bottom-[20%]'
+                    className='mask-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.5)_100%)] position-absolute w-full bottom-[8%]'
                 />
                 <div className='position-absolute w-full h-full bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,var(--colors-theme-blue)_100%)] top-0 left-0'></div>
             </div>
-            <h1 className='font-bold text-15 color-slate-100 text-center mb-6'>Gymnastique Intervallique</h1>
-            <p className='color-slate-100'>Exercez votre oreille à la reconnaissance d'intervalles</p>
-            <Button label='Commencer' classes={["btn-primary"]} />
+            <p className='color-slate-100 text-center text-7 max-w-86'>
+                Exercez votre oreille à la reconnaissance d'intervalles
+            </p>
+            <Button label='Commencer' onClick={handleStart} classes={["btn-primary", "mt-20"]} />
         </div>
     );
 }

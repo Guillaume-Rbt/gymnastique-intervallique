@@ -13,15 +13,17 @@ export enum GAME_STATES {
     ENDED = "ended",
 }
 
-type gameConfig = { allowedIntervals: Map<number, { text: string; enabled: boolean }> };
+type GameConfig = { allowedIntervals: Map<number, { text: string; enabled: boolean }> };
 
 export default class Game extends Emitter {
-    config: gameConfig = { allowedIntervals: new Map() };
+    config: GameConfig = { allowedIntervals: new Map() };
     intervals: Interval[] = [];
     allowedIntervals: Map<number, { text: string; enabled: boolean }> = new Map();
     intervalsGenerator: RandomIntervalGenerator = new RandomIntervalGenerator();
     currentIntervalIndex: number = 0;
     #state: GAME_STATES = GAME_STATES.INIT;
+    listenersPerState: Map<GAME_STATES, Function[]> = new Map();
+    static instance: null | Game = null;
 
     static get STATES() {
         return GAME_STATES;
@@ -41,7 +43,10 @@ export default class Game extends Emitter {
         PROGRESS_CHANGED: "game.progress.changed",
     };
 
-    constructor(options: Partial<gameConfig> = {}) {
+    constructor(options: Partial<GameConfig> = {}) {
+        if (Game.instance) {
+            return Game.instance;
+        }
         super();
 
         this.config = {
@@ -54,11 +59,14 @@ export default class Game extends Emitter {
         };
 
         this.allowedIntervals = this.config.allowedIntervals;
+
+        Game.instance = this;
     }
 
-    startGame() {
+    start() {
         this.currentIntervalIndex = 0;
         this.state = GAME_STATES.STARTED;
+        console.log("Game started");
     }
 
     getCurrentInterval() {
@@ -81,5 +89,13 @@ export default class Game extends Emitter {
         const currentInterval = this.getCurrentInterval();
         if (!currentInterval) return false;
         return currentInterval.name === answer;
+    }
+
+    listenersOnStateValues(state: GAME_STATES) {
+        const listeners = this.listenersPerState.get(state) || [];
+
+        listeners.forEach((listeners) => {
+            listeners();
+        });
     }
 }

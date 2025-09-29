@@ -27,22 +27,47 @@ export default defineConfig({
         },
     },
     rules: [
+        [/col-(\d+)/, ([, d], { rawSelector }) => {
+
+            const selector = e(rawSelector);
+            const nbSpacing = parseInt(d) - 1;
+
+            return `${selector} {
+            width: calc((100% - ${nbSpacing} * var(--spacing)) / ${d});
+        }`
+        }],
         [
-            /margin-(x|y)-(?:(start|end)-)?auto/g,
-            ([, xy, se], { rawSelector }) => {
+            /margin-(x|y)-(?:(start|end)-)?auto/,
+            ([, a, s], { rawSelector }) => {
                 const selector = e(rawSelector);
 
-                getSide(se);
-                {
-                }
+                const axis = a === "x" ? "inline" : "block";
+                const side = s === "start" ? "-start" : s === "end" ? "-end" : "";
 
-                const dir = xy === "x" ? "left right" : "top bottom";
+
                 return `${selector} 
                 {
-
+                    margin-${axis}${side}: auto;
                 }`;
             },
         ],
+        [
+            /container-margin-(y|x)-auto/, ([_, a], { rawSelector }) => {
+                const selector = e(rawSelector);
+                const axis = a === "x" ? "inline" : "block";
+
+                return `${selector} :first-child
+                {
+                    margin-${axis}-start: auto;
+                    }
+                    
+                    ${selector} :last-child
+                    {
+                        margin-${axis}-end: auto;
+                    }`
+
+            }
+        ]
     ],
     shortcuts: {
         btn: "transition-background-color duration-200",

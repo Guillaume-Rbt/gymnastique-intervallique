@@ -7,7 +7,19 @@ function App() {
         <>
             <Home />
             <Header />
-            <Button classes={['mt-20', "color-slate-100", "bg-theme-dark", "hover:bg-theme-dark-hover", "py-2", "rounded-2", "btn-shadow"]} label="Click Me" onClick={() => alert("Button clicked!")} />
+            <Button
+                classes={[
+                    "mt-20",
+                    "color-slate-100",
+                    "bg-theme-dark",
+                    "hover:bg-theme-dark-hover",
+                    "py-2",
+                    "rounded-2",
+                    "btn-shadow",
+                ]}
+                label='Click Me'
+                onClick={() => alert("Button clicked!")}
+            />
         </>
     );
 }
