@@ -1,13 +1,10 @@
 import { createScope, Scope, utils, createTimeline } from "animejs";
 import { useGameContext } from "../hooks/useGameContext";
-import { useGameState } from "../hooks/useGameState";
 import { useEffect, useLayoutEffect, useRef } from "react";
-import { GAME_STATES } from "../libs/game";
+import Game, { GAME_STATES } from "../libs/game";
 
 export function Header() {
-    const { animManager } = useGameContext();
-
-    const state = useGameState();
+    const { animManager, game } = useGameContext();
 
     const scope = useRef<Scope | null>(null);
     const root = useRef<HTMLDivElement | null>(null);
@@ -40,10 +37,13 @@ export function Header() {
     }, []);
 
     useEffect(() => {
-        if (state === GAME_STATES.STARTED && !animManager.getAnimationById("header-enter")?.completed) {
-            animManager.launch("header-enter");
+        function onGameStarted(data: { state: GAME_STATES }) {
+            if (data.state === GAME_STATES.STARTED) {
+                animManager.launch("header-enter");
+            }
         }
-    }, [state]);
+        game.once(Game.EVENTS.STATE_CHANGED, onGameStarted);
+    }, []);
 
     return (
         <header

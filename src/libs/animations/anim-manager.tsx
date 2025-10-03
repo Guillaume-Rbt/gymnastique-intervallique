@@ -105,9 +105,6 @@ export class AnimationManager extends Emitter {
 
             animation.on(Animation.CALLBACK, (event) => {
                 const targetAnimation = event.target;
-
-                console.log(event);
-
                 this.emit(AnimationManager.ANIMATION_CALLBACK, {
                     animation: targetAnimation,
                     callbackData: {

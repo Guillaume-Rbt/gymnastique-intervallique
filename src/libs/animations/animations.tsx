@@ -140,8 +140,6 @@ export default class Animation extends Emitter {
             }
         }
 
-        console.log(this.instance);
-
         this.instance!.play();
     }
 }

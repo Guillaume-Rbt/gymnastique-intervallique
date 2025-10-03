@@ -24,10 +24,20 @@ export default class Game extends Emitter {
     #state: GAME_STATES = GAME_STATES.INIT;
     listenersPerState: Map<GAME_STATES, Function[]> = new Map();
     numberOfIntervals: number = 10;
+    score: number = 0;
+    #questionScore: number = 5;
     static instance: null | Game = null;
 
     static get STATES() {
         return GAME_STATES;
+    }
+
+    get questionScore() {
+        return this.#questionScore;
+    }
+
+    set questionScore(value: number) {
+        this.#questionScore = value;
     }
 
     get state() {
@@ -39,38 +49,33 @@ export default class Game extends Emitter {
         this.emit(Game.EVENTS.STATE_CHANGED, { state: this.#state });
     }
 
-    	set allowedIntervals(allowedIntervals: Map<number, { text: string; enabled: boolean }>) {
-		this.#allowedIntervals = allowedIntervals;
+    set allowedIntervals(allowedIntervals: Map<number, { text: string; enabled: boolean }>) {
+        this.#allowedIntervals = allowedIntervals;
 
+        this.intervalsGenerator.allowedIntervals = allowedIntervals;
 
-		this.intervalsGenerator.allowedIntervals = allowedIntervals;
+        function checkIfIntervalIsAllowed(interval: Interval) {
+            for (const [_, value] of allowedIntervals) {
+                if (value.enabled && value.text === interval.name) {
+                    return true;
+                }
+            }
+            return false;
+        }
 
-		function checkIfIntervalIsAllowed(interval: Interval) {
-			for (const [_, value] of allowedIntervals) {
-				if (value.enabled && value.text === interval.name) {
-					return true;
-				}
-			}
-			return false;
-		}
+        for (let i = this.currentIntervalIndex; i < this.numberOfIntervals; i++) {
+            const interval = this.intervals[i];
+            if (!interval) {
+                this.intervals[i] = this.intervalsGenerator.generateInterval();
+            } else if (!checkIfIntervalIsAllowed(interval)) {
+                this.intervals[i] = this.intervalsGenerator.generateInterval();
+            }
+        }
+    }
 
-		for (let i = this.currentIntervalIndex; i < this.numberOfIntervals; i++) {
-
-			const interval = this.intervals[i];
-			if (!interval) {
-				this.intervals[i] = this.intervalsGenerator.generateInterval();
-			}
-			else if (!checkIfIntervalIsAllowed(interval)) { this.intervals[i] = this.intervalsGenerator.generateInterval(); }
-
-		}
-
-		
-
-	}
-
-	get allowedIntervals() {
-		return this.#allowedIntervals;
-	}
+    get allowedIntervals() {
+        return this.#allowedIntervals;
+    }
 
     static EVENTS = {
         STATE_CHANGED: "game.state.changed",
@@ -122,14 +127,15 @@ export default class Game extends Emitter {
     checkAnswer(answer: string) {
         const currentInterval = this.getCurrentInterval();
         if (!currentInterval) return false;
-        return currentInterval.name === answer;
-    }
 
-    listenersOnStateValues(state: GAME_STATES) {
-        const listeners = this.listenersPerState.get(state) || [];
+        this.state = GAME_STATES.ANSWERED;
 
-        listeners.forEach((listeners) => {
-            listeners();
-        });
+        const isValid = currentInterval.name === answer;
+
+        if (isValid) {
+            this.score += this.questionScore;
+        }
+
+        return isValid;
     }
 }
