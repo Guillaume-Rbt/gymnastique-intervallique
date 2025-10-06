@@ -46,7 +46,6 @@ export default class Game extends Emitter {
 
     set state(value: GAME_STATES) {
         this.#state = value;
-        this.emit(Game.EVENTS.STATE_CHANGED, { state: this.#state });
     }
 
     set allowedIntervals(allowedIntervals: Map<number, { text: string; enabled: boolean }>) {
@@ -81,6 +80,7 @@ export default class Game extends Emitter {
         STATE_CHANGED: "game.state.changed",
         PROGRESS_CHANGED: "game.progress.changed",
         ALLOWED_INTERVALS_CHANGED: "game.allowedIntervals.changed",
+        ANSWERED: "game.answered",
     };
 
     constructor(options: Partial<GameConfig> = {}) {
@@ -105,7 +105,7 @@ export default class Game extends Emitter {
 
     start() {
         this.currentIntervalIndex = 0;
-        this.state = GAME_STATES.STARTED;
+        this.updateState(GAME_STATES.STARTED);
     }
 
     getCurrentInterval() {
@@ -124,11 +124,21 @@ export default class Game extends Emitter {
         return false;
     }
 
+
+    updateState(state: GAME_STATES, data: { [key: string]: any } = {})
+    {
+
+        console.log(data)
+        this.state = state;
+        this.emit(Game.EVENTS.STATE_CHANGED, { state: this.#state, ...data });
+    }
+
     checkAnswer(answer: string) {
         const currentInterval = this.getCurrentInterval();
         if (!currentInterval) return false;
 
-        this.state = GAME_STATES.ANSWERED;
+
+        this.updateState(GAME_STATES.ANSWERED, { answer: answer, expected: currentInterval.name, correct: currentInterval.name === answer });
 
         const isValid = currentInterval.name === answer;
 

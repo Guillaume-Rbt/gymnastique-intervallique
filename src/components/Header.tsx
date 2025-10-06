@@ -1,13 +1,21 @@
 import { createScope, Scope, utils, createTimeline } from "animejs";
 import { useGameContext } from "../hooks/useGameContext";
-import { useEffect, useLayoutEffect, useRef } from "react";
-import Game, { GAME_STATES } from "../libs/game";
+import { useLayoutEffect, useRef } from "react";
+import { GAME_STATES } from "../libs/game";
+import { useGameEffect } from "../hooks/useGameEffect";
 
 export function Header() {
-    const { animManager, game } = useGameContext();
-
+    const { animManager } = useGameContext();
     const scope = useRef<Scope | null>(null);
     const root = useRef<HTMLDivElement | null>(null);
+
+    useGameEffect({
+        onEnter: {
+            [GAME_STATES.STARTED]: () => {
+                animManager.launch("header-enter");
+            },
+        },
+    });
 
     useLayoutEffect(() => {
         scope.current = createScope({ root }).add((_) => {
@@ -34,15 +42,6 @@ export function Header() {
                 executor: headerEnter,
             });
         });
-    }, []);
-
-    useEffect(() => {
-        function onGameStarted(data: { state: GAME_STATES }) {
-            if (data.state === GAME_STATES.STARTED) {
-                animManager.launch("header-enter");
-            }
-        }
-        game.once(Game.EVENTS.STATE_CHANGED, onGameStarted);
     }, []);
 
     return (

@@ -1,17 +1,42 @@
 import { useGameAllowedIntervals } from "../hooks/useGameAllowedIntervals";
 import { buttons } from "../utils/constants";
-import Button from "./Button";
-import { useLayoutEffect, useRef, useEffect } from "react";
+import Button, { buttonVariants } from "./Button";
+import { useLayoutEffect, useRef } from "react";
 import { createScope, Scope, utils, createTimeline, stagger } from "animejs";
 import { useGameContext } from "../hooks/useGameContext";
-import Game, { GAME_STATES } from "../libs/game";
+import { GAME_STATES } from "../libs/game";
+import { useGameEffect } from "../hooks/useGameEffect";
+import useBoolean from "../hooks/useBoolean";
 
 export default function AnswerButtons() {
     const allowedIntervals = useGameAllowedIntervals();
     const scope = useRef<Scope | null>(null);
     const root = useRef<HTMLDivElement | null>(null);
 
+    const [answered, _, __, toggleAnswered] = useBoolean(false);
+
+    const answerDataRef = useRef<{ correct: boolean; answer: string; expected: string } | null>(null);
+
     const { animManager, game } = useGameContext();
+
+    useGameEffect({
+        onEnter: {
+            [GAME_STATES.STARTED]: () => {
+                animManager.launch("answer-buttons");
+            },
+            [GAME_STATES.ANSWERED]: (data) => {
+                answerDataRef.current = { correct: data.correct, answer: data.answer, expected: data.expected };
+                toggleAnswered();
+            },
+        },
+
+        onExit: {
+            [GAME_STATES.ANSWERED]: () => {
+                answerDataRef.current = null;
+                toggleAnswered();
+            },
+        },
+    });
 
     useLayoutEffect(() => {
         scope.current = createScope({ root }).add((_) => {
@@ -39,20 +64,28 @@ export default function AnswerButtons() {
         });
     }, []);
 
-    useEffect(() => {
-        function onGameStarted(data: { state: GAME_STATES }) {
-            if (data.state === GAME_STATES.STARTED) {
-                animManager.launch("answer-buttons");
-            }
+    function getVariant(intervalName: string): keyof typeof buttonVariants {
+        let variant: keyof typeof buttonVariants = "default";
+
+        if (!answered || !answerDataRef.current) return variant;
+
+        variant = "disabled";
+
+        if (answerDataRef.current.answer === intervalName) {
+            variant = answerDataRef.current.correct ? "right" : "wrong";
         }
-        game.once(Game.EVENTS.STATE_CHANGED, (data) => {
-            console.log("test");
-            onGameStarted(data);
-        });
-    }, []);
+
+        if (answerDataRef.current.expected === intervalName) {
+            variant = "right";
+        }
+
+        return variant;
+    }
 
     const buttonsList = buttons.map((buttonLabel, index) => {
         const interval = Array.from(allowedIntervals.values())[index];
+
+        const variant = getVariant(interval.text) || "default";
 
         const isEnabled = interval?.enabled;
 
@@ -63,6 +96,10 @@ export default function AnswerButtons() {
                 classes='col-4 btn-shadow bg-theme-dark hover:bg-theme-dark-hover py-2 px-3 text-3.5 rounded-2'
                 key={interval.text}
                 label={buttonLabel}
+                variant={variant}
+                onClick={() => {
+                    game.checkAnswer(interval.text);
+                }}
             />
         );
     });
