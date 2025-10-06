@@ -124,11 +124,7 @@ export default class Game extends Emitter {
         return false;
     }
 
-
-    updateState(state: GAME_STATES, data: { [key: string]: any } = {})
-    {
-
-        console.log(data)
+    updateState(state: GAME_STATES, data: { [key: string]: any } = {}) {
         this.state = state;
         this.emit(Game.EVENTS.STATE_CHANGED, { state: this.#state, ...data });
     }
@@ -137,8 +133,11 @@ export default class Game extends Emitter {
         const currentInterval = this.getCurrentInterval();
         if (!currentInterval) return false;
 
-
-        this.updateState(GAME_STATES.ANSWERED, { answer: answer, expected: currentInterval.name, correct: currentInterval.name === answer });
+        this.updateState(GAME_STATES.ANSWERED, {
+            answer: answer,
+            expected: currentInterval.name,
+            correct: currentInterval.name === answer,
+        });
 
         const isValid = currentInterval.name === answer;
 

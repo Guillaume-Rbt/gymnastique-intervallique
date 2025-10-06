@@ -1,12 +1,19 @@
 import { useGameAllowedIntervals } from "../hooks/useGameAllowedIntervals";
 import { buttons } from "../utils/constants";
-import Button, { buttonVariants } from "./Button";
+import Button, { type ButtonVariant } from "./Button";
 import { useLayoutEffect, useRef } from "react";
 import { createScope, Scope, utils, createTimeline, stagger } from "animejs";
 import { useGameContext } from "../hooks/useGameContext";
 import { GAME_STATES } from "../libs/game";
 import { useGameEffect } from "../hooks/useGameEffect";
 import useBoolean from "../hooks/useBoolean";
+
+const buttonResponseVariants = {
+    default: "bg-theme-dark",
+    right: "bg-theme-correct pointer-events-none",
+    wrong: "bg-theme-wrong pointer-events-none",
+    disabled: "opacity-50 pointer-events-none bg-theme-dark",
+};
 
 export default function AnswerButtons() {
     const allowedIntervals = useGameAllowedIntervals();
@@ -51,7 +58,20 @@ export default function AnswerButtons() {
                     defaults: { ease: "outExpo", duration: 300 },
                 });
 
-                timeline.add("button", { opacity: 1, delay: stagger(50) });
+                timeline.add("button", {
+                    opacity: 0.5,
+                    delay: stagger(50),
+                    onComplete: () => {
+                        return {
+                            name: "button-completed",
+                            callback: (anim: any) => {
+                                anim.targets.forEach((el: HTMLElement) => {
+                                    el.style.removeProperty("opacity");
+                                });
+                            },
+                        };
+                    },
+                });
 
                 return timeline;
             }
@@ -64,19 +84,19 @@ export default function AnswerButtons() {
         });
     }, []);
 
-    function getVariant(intervalName: string): keyof typeof buttonVariants {
-        let variant: keyof typeof buttonVariants = "default";
-
-        if (!answered || !answerDataRef.current) return variant;
-
-        variant = "disabled";
-
-        if (answerDataRef.current.answer === intervalName) {
-            variant = answerDataRef.current.correct ? "right" : "wrong";
+    function getVariant(intervalName: string): ButtonVariant {
+        let variant: ButtonVariant = "disabled";
+        if (game.state === GAME_STATES.WAIT_ANSWER) {
+            variant = "default";
         }
+        if (answered || answerDataRef.current !== null) {
+            if (answerDataRef.current!.answer === intervalName) {
+                variant = answerDataRef.current!.correct ? "right" : "wrong";
+            }
 
-        if (answerDataRef.current.expected === intervalName) {
-            variant = "right";
+            if (answerDataRef.current!.expected === intervalName) {
+                variant = "right";
+            }
         }
 
         return variant;
@@ -90,13 +110,13 @@ export default function AnswerButtons() {
         const isEnabled = interval?.enabled;
 
         if (!isEnabled) return null;
-
         return (
             <Button
-                classes='col-4 btn-shadow bg-theme-dark hover:bg-theme-dark-hover py-2 px-3 text-3.5 rounded-2'
+                classes='col-4 btn-shadow hover:bg-theme-dark-hover py-2 px-3 text-3.5 rounded-2'
                 key={interval.text}
                 label={buttonLabel}
                 variant={variant}
+                variants={buttonResponseVariants}
                 onClick={() => {
                     game.checkAnswer(interval.text);
                 }}
@@ -105,7 +125,9 @@ export default function AnswerButtons() {
     });
 
     return (
-        <div ref={root} className='color-slate-100 gap-1.5 w-[80%] min-w-[300px] flex flex-wrap flex-justify-center'>
+        <div
+            ref={root}
+            className='color-slate-100 gap-1.5 w-[80%] min-w-[300px] flex flex-wrap flex-justify-center margin-x-auto'>
             {buttonsList}
         </div>
     );
