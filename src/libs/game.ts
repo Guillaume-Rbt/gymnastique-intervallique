@@ -7,9 +7,9 @@ export enum GAME_STATES {
     INIT = "init",
     READY = "ready",
     STARTED = "started",
+    INIT_INTERVAL_PLAYED = "interval.played",
     WAIT_ANSWER = "wait",
     ANSWERED = "answered",
-    INTERVAL_PLAYED = "interval.played",
     ENDED = "ended",
 }
 
