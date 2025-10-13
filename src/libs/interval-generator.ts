@@ -84,7 +84,6 @@ export default class RandomIntervalGenerator {
         return intervals;
     }
 }
-
 class Note {
     name: string | string[];
     octave: number;
