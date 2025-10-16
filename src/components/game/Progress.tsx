@@ -1,7 +1,7 @@
-import { useGameContext } from "../hooks/useGameContext";
+import { useGameContext } from "../../hooks/useGameContext";
 import { useState } from "react";
-import Game from "../libs/game";
-import { useGameEvent } from "../hooks/useGameEvent";
+import Game from "../../libs/game";
+import { useGameEvent } from "../../hooks/useGameEvent";
 
 export default function Progress() {
     const { game } = useGameContext();

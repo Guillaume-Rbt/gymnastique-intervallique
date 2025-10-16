@@ -150,6 +150,10 @@ export class AnimationManager extends Emitter {
         return false;
     }
 
+    unregister(name: string) {
+        return this.animations.delete(name);
+    }
+
     getAnimationById(name: string) {
         return this.animations.get(name);
     }

@@ -1,4 +1,4 @@
-import Utils from "../utils/utils";
+import Utils from "../../utils/utils";
 
 export type ButtonVariants = { [key: string]: string | [] };
 export type ButtonVariant = keyof ButtonVariants;
@@ -10,6 +10,7 @@ type ButtonProps = {
     variant?: ButtonVariant;
     variants?: ButtonVariants;
     children?: any;
+    ref?: React.Ref<HTMLButtonElement>;
 };
 
 export default function Button({
@@ -19,6 +20,7 @@ export default function Button({
     variant = "",
     variants = {},
     children = null,
+    ref = null,
 }: ButtonProps) {
     const variantClasses = Utils.ensureArrayOfStrings(variant ? variants?.[variant] : "");
 
@@ -39,7 +41,7 @@ export default function Button({
     }
 
     return (
-        <button role='button' className={buttonsClasses.join(" ")} onClick={onClick}>
+        <button ref={ref} role='button' className={buttonsClasses.join(" ")} onClick={onClick}>
             {child}
         </button>
     );

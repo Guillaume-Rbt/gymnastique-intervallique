@@ -1,12 +1,12 @@
-import { useGameAllowedIntervals } from "../hooks/useGameAllowedIntervals";
-import { buttons } from "../utils/constants";
-import Button, { type ButtonVariant } from "./Button";
+import { useGameAllowedIntervals } from "../../hooks/useGameAllowedIntervals";
+import { buttons } from "../../utils/constants";
+import Button, { type ButtonVariant } from "../ui/Button";
 import { useLayoutEffect, useRef } from "react";
 import { createScope, Scope, utils, createTimeline, stagger } from "animejs";
-import { useGameContext } from "../hooks/useGameContext";
-import { GAME_STATES } from "../libs/game";
-import { useGameEffect } from "../hooks/useGameEffect";
-import useBoolean from "../hooks/useBoolean";
+import { useGameContext } from "../../hooks/useGameContext";
+import { GAME_STATES } from "../../libs/game";
+import { useGameEffect } from "../../hooks/useGameEffect";
+import useBoolean from "../../hooks/useBoolean";
 
 const buttonResponseVariants = {
     default: "bg-theme-dark",
@@ -26,17 +26,22 @@ export default function AnswerButtons() {
 
     const { animManager, game } = useGameContext();
 
+    const itemRefs = useRef(new Map<string, HTMLElement>());
+
+    const setItemRef = (id: string) => (el: HTMLElement | null) => {
+        if (el) itemRefs.current.set(id, el);
+        else itemRefs.current.delete(id);
+    };
     useGameEffect({
         onEnter: {
             [GAME_STATES.STARTED]: () => {
-                animManager.launch("answer-buttons");
+                animManager.launch("answer-buttons-enter");
             },
             [GAME_STATES.ANSWERED]: (data) => {
                 answerDataRef.current = { correct: data.correct, answer: data.answer, expected: data.expected };
                 toggleAnswered();
             },
         },
-
         onExit: {
             [GAME_STATES.ANSWERED]: () => {
                 answerDataRef.current = null;
@@ -50,7 +55,7 @@ export default function AnswerButtons() {
             if (!root.current) return;
 
             function init() {
-                utils.set("button", { opacity: 0 });
+                utils.set([...itemRefs.current.values()], { opacity: 0 });
             }
 
             function enter() {
@@ -58,13 +63,14 @@ export default function AnswerButtons() {
                     defaults: { ease: "outExpo", duration: 300 },
                 });
 
-                timeline.add("button", {
+                timeline.add([...itemRefs.current.values()], {
                     opacity: 0.5,
                     delay: stagger(50),
                     onComplete: () => {
                         return {
                             name: "button-completed",
                             callback: (anim: any) => {
+                                game.playCurrentInterval();
                                 anim.targets.forEach((el: HTMLElement) => {
                                     el.style.removeProperty("opacity");
                                 });
@@ -77,12 +83,17 @@ export default function AnswerButtons() {
             }
 
             animManager.register({
-                name: "answer-buttons",
+                name: "answer-buttons-enter",
                 initializer: init,
                 executor: enter,
             });
         });
-    }, []);
+        return () => {
+            scope.current?.revert();
+            scope.current = null;
+            animManager.unregister("answer-buttons-enter");
+        };
+    }, [animManager]);
 
     function getVariant(intervalName: string): ButtonVariant {
         let variant: ButtonVariant = "disabled";
@@ -112,6 +123,7 @@ export default function AnswerButtons() {
         if (!isEnabled) return null;
         return (
             <Button
+                ref={setItemRef(interval.text)}
                 classes='col-4 btn-shadow hover:bg-theme-dark-hover py-2 px-3 text-3.5 rounded-2'
                 key={interval.text}
                 label={buttonLabel}

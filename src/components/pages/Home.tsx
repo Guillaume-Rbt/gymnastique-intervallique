@@ -1,7 +1,9 @@
-import Button from "./Button";
-import { useGameContext, type GameContext } from "../hooks/useGameContext";
+import Button from "../ui/Button";
+import { useGameContext, type GameContext } from "../../hooks/useGameContext";
 import { useLayoutEffect, useRef } from "react";
 import { createScope, createTimeline, Scope, utils, stagger } from "animejs";
+import { useGameEffect } from "../../hooks/useGameEffect";
+import Game from "../../libs/game";
 
 export default function Home() {
     const { game, animManager } = useGameContext() as GameContext;
@@ -9,15 +11,34 @@ export default function Home() {
     const scope = useRef<Scope | null>(null);
     const root = useRef<HTMLDivElement | null>(null);
 
+    //use itemsRef to store refs to multiple elements (bug with scope)
+    const itemRefs = useRef(new Map<string, HTMLElement>());
+
+    const setItemRef = (id: string) => (el: HTMLElement | null) => {
+        if (el) itemRefs.current.set(id, el);
+        else itemRefs.current.delete(id); // element unmounted -> cleanup
+    };
+
+    useGameEffect({
+        onEnter: {
+            [Game.STATES.READY]: () => {
+                animManager.launch("home-enter");
+            },
+        },
+    });
+
     // register animations
     useLayoutEffect(() => {
-        scope.current = createScope({ root }).add((_) => {
+        if (!root.current) return;
+        if (scope.current) return;
+
+        scope.current = createScope({ root: root.current }).add((_) => {
             if (!root.current) return;
 
             function homeInit() {
                 utils.set(root.current!, { opacity: 0 });
 
-                utils.set(["h1", "p", "button"], { opacity: 0, translateY: 20 });
+                utils.set([...itemRefs.current.values()], { opacity: 0, translateY: 20 });
             }
             function homeEnter() {
                 const timeline = createTimeline({
@@ -29,7 +50,7 @@ export default function Home() {
                         opacity: { from: 0, to: 1 },
                     })
                     .add(
-                        ["h1", "p", "button"],
+                        [...itemRefs.current.values()],
                         {
                             opacity: { from: 0, to: 1 },
                             translateY: 0,
@@ -69,10 +90,14 @@ export default function Home() {
                 initializer: homeInit,
                 executor: homeExit,
             });
-
-            animManager.launch("home-enter");
         });
-    }, []);
+        return () => {
+            scope.current?.revert();
+            scope.current = null;
+            animManager.unregister("home-enter");
+            animManager.unregister("home-exit");
+        };
+    }, [game, animManager]);
 
     const handleStart = () => {
         animManager.launch("home-exit");
@@ -81,8 +106,10 @@ export default function Home() {
     return (
         <div
             ref={root}
-            className='position-fixed w-full p-7.8 p-be-15 h-full bg-theme-blue z-100 flex flex-items-center flex-col isolate container-margin-y-auto gap-8'>
-            <h1 className='font-bold text-13 color-slate-100 text-center max-w-86'>Gymnastique Intervallique</h1>
+            className=' home position-fixed w-full p-7.8 p-be-15 h-full bg-theme-blue z-100 flex flex-items-center flex-col isolate container-margin-y-auto gap-8'>
+            <h1 ref={setItemRef("home_title")} className='font-bold text-13 color-slate-100 text-center max-w-86'>
+                Gymnastique Intervallique
+            </h1>
             <div className='position-absolute  top-0 left-0 w-full h-full z--1'>
                 <img
                     src='/images/keyboard.webp'
@@ -90,10 +117,15 @@ export default function Home() {
                 />
                 <div className='position-absolute w-full h-full bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,var(--colors-theme-blue)_100%)] top-0 left-0'></div>
             </div>
-            <p className='color-slate-100 text-center text-7 max-w-86'>
+            <p ref={setItemRef("home_sentence")} className='color-slate-100 text-center text-7 max-w-86'>
                 Exercez votre oreille à la reconnaissance d'intervalles
             </p>
-            <Button label='Commencer' onClick={handleStart} classes={["btn-primary", "mt-20"]} />
+            <Button
+                ref={setItemRef("home_button")}
+                label='Commencer'
+                onClick={handleStart}
+                classes={["btn-primary", "mt-20"]}
+            />
         </div>
     );
 }

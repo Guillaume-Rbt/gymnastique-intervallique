@@ -1,10 +1,10 @@
 import { createScope, Scope, utils, createTimeline } from "animejs";
-import { useGameContext } from "../hooks/useGameContext";
+import { useGameContext } from "../../hooks/useGameContext";
 import { useLayoutEffect, useRef } from "react";
-import { GAME_STATES } from "../libs/game";
-import { useGameEffect } from "../hooks/useGameEffect";
-import Timer from "./Timer";
-import Progress from "./Progress";
+import { GAME_STATES } from "../../libs/game";
+import { useGameEffect } from "../../hooks/useGameEffect";
+import Timer from "../ui/Timer";
+import Progress from "../Game/Progress";
 
 export function Header() {
     const { animManager } = useGameContext();
@@ -44,7 +44,12 @@ export function Header() {
                 executor: headerEnter,
             });
         });
-    }, []);
+        return () => {
+            scope.current?.revert();
+            scope.current = null;
+            animManager.unregister("header-enter");
+        };
+    }, [animManager]);
 
     return (
         <header

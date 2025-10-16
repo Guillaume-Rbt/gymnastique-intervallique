@@ -59,10 +59,12 @@ export default class Sequencer extends Emitter {
 
     // --- Existing simple API: play an interval immediately (2 chained notes) ---
     playInterval(interval: Interval, gapMs = 100) {
+        console.log(interval);
+
         this.createSequenceFromNotes(
             [
-                `${interval.startNote.name}${interval.startNote.octave}`,
-                `${interval.endNote.name}${interval.endNote.octave}`,
+                `${interval.startNote.name[0]}${interval.startNote.octave}`,
+                `${interval.endNote.name[0]}${interval.endNote.octave}`,
             ],
             gapMs,
         );
@@ -103,8 +105,8 @@ export default class Sequencer extends Emitter {
     createSequenceFromInterval(interval: Interval, gapMs = 100): PlanStep[] {
         return this.createSequenceFromNotes(
             [
-                `${interval.startNote.name}${interval.startNote.octave}`,
-                `${interval.endNote.name}${interval.endNote.octave}`,
+                `${interval.startNote.name[0]}${interval.startNote.octave}`,
+                `${interval.endNote.name[0]}${interval.endNote.octave}`,
             ],
             gapMs,
         );

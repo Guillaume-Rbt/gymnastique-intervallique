@@ -2,6 +2,7 @@ import Emitter from "./emitter-mixin";
 import { Interval } from "./interval-generator";
 import RandomIntervalGenerator from "./interval-generator";
 import { intervals } from "../utils/constants";
+import Sequencer from "./sequencer";
 
 export enum GAME_STATES {
     INIT = "init",
@@ -26,6 +27,7 @@ export default class Game extends Emitter {
     numberOfIntervals: number = 10;
     score: number = 0;
     #questionScore: number = 5;
+    sequencer: Sequencer = new Sequencer();
     static instance: null | Game = null;
 
     static get STATES() {
@@ -45,6 +47,7 @@ export default class Game extends Emitter {
     }
 
     set state(value: GAME_STATES) {
+        console.log(value);
         this.#state = value;
     }
 
@@ -104,12 +107,21 @@ export default class Game extends Emitter {
     }
 
     start() {
+        console.trace("Game started");
         this.currentIntervalIndex = 0;
         this.updateState(GAME_STATES.STARTED);
     }
 
     getCurrentInterval() {
         return this.intervals[this.currentIntervalIndex];
+    }
+
+    playCurrentInterval() {
+        const currentInterval = this.getCurrentInterval();
+
+        this.sequencer.createSequenceFromInterval(currentInterval!);
+
+        this.sequencer.playSequence();
     }
 
     nextInterval() {
@@ -127,6 +139,12 @@ export default class Game extends Emitter {
     updateState(state: GAME_STATES, data: { [key: string]: any } = {}) {
         this.state = state;
         this.emit(Game.EVENTS.STATE_CHANGED, { state: this.#state, ...data });
+    }
+
+    async init() {
+        await this.sequencer.loadAudioSprite();
+
+        this.updateState(GAME_STATES.READY);
     }
 
     checkAnswer(answer: string) {

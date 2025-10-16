@@ -28,7 +28,6 @@ export default class RandomIntervalGenerator {
     constructor(options: Partial<intervalGeneratorOptions> = {}) {
         this.setDefaultOptions = this.setDefaultOptions.bind(this);
         this.generateInterval = this.generateInterval.bind(this);
-        this.adjustIntervalOctave = this.adjustIntervalOctave.bind(this);
 
         this.options = this.setDefaultOptions(options);
 
@@ -58,24 +57,6 @@ export default class RandomIntervalGenerator {
         return new Interval({ length, name });
     }
 
-    adjustIntervalOctave(interval: Interval) {
-        switch (interval.direction) {
-            case "asc":
-                if (interval.endNote.octave > 2) {
-                    interval.startNote.octave = interval.startNote.octave - 1;
-                    interval.endNote.octave = interval.endNote.octave - 1;
-                }
-                break;
-            case "desc":
-                if (interval.endNote.octave < 0) {
-                    interval.startNote.octave = interval.startNote.octave + 1;
-                    interval.endNote.octave = interval.endNote.octave + 1;
-                }
-                break;
-        }
-        return interval;
-    }
-
     generateAnyIntervals(nbIntervals: number = 10) {
         let intervals = [];
         for (let i = 0; i < nbIntervals; i++) {
@@ -86,13 +67,13 @@ export default class RandomIntervalGenerator {
 }
 class Note {
     name: string | string[];
-    octave: number;
+    octave: number = 3;
     index: number;
 
-    constructor(index: number, octave: number | null = null) {
+    constructor(index: number, octave: number) {
         this.index = index;
         this.name = notes[index];
-        this.octave = octave !== null ? octave : Utils.randomNumber(0, 2);
+        this.octave = octave;
     }
 }
 
@@ -104,13 +85,15 @@ export class Interval {
     isPassOctave: boolean = false;
     startNote: Note;
     endNote: Note;
-
+    octaveRange: [number, number] = [3, 5];
     #notes: { startNote: Note; endNote: Note };
 
-    constructor(data: { length: number; name: string }) {
+    constructor(data: { length: number; name: string; octaveRange?: [number, number] }) {
         this.length = data.length;
         this.name = data.name;
+        this.octaveRange = data.octaveRange ?? [3, 5];
         this.direction = Utils.randomNumber(0, 1) == 0 ? "desc" : "asc";
+
         this.#notes = this.setNotes();
 
         this.startNote = this.#notes.startNote;
@@ -120,15 +103,17 @@ export class Interval {
     }
 
     adjustlOctave({ startNote, endNote }: { startNote: Note; endNote: Note }) {
+        const [octaveMin, octaveMax] = this.octaveRange;
+
         switch (this.direction) {
             case "asc":
-                if (endNote.octave > 2) {
+                if (endNote.octave > octaveMax) {
                     startNote.octave = startNote.octave - 1;
                     endNote.octave = endNote.octave - 1;
                 }
                 break;
             case "desc":
-                if (endNote.octave < 0) {
+                if (endNote.octave < octaveMin) {
                     startNote.octave = startNote.octave + 1;
                     endNote.octave = endNote.octave + 1;
                 }
@@ -139,7 +124,9 @@ export class Interval {
     }
 
     setNotes() {
-        const startNote = new Note(Utils.randomNumber(0, 11));
+        const [octaveMin, octaveMax] = this.octaveRange;
+
+        const startNote = new Note(Utils.randomNumber(0, 11), Utils.randomNumber(octaveMin, octaveMax));
 
         this.isPassOctave =
             this.direction == "asc"
