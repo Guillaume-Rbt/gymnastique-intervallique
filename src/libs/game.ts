@@ -8,7 +8,6 @@ export enum GAME_STATES {
     INIT = "init",
     READY = "ready",
     STARTED = "started",
-    INIT_INTERVAL_PLAYED = "interval.played",
     WAIT_ANSWER = "wait",
     ANSWERED = "answered",
     ENDED = "ended",
@@ -47,7 +46,6 @@ export default class Game extends Emitter {
     }
 
     set state(value: GAME_STATES) {
-        console.log(value);
         this.#state = value;
     }
 
@@ -84,6 +82,8 @@ export default class Game extends Emitter {
         PROGRESS_CHANGED: "game.progress.changed",
         ALLOWED_INTERVALS_CHANGED: "game.allowedIntervals.changed",
         ANSWERED: "game.answered",
+        INTERVAL_PLAYING: "game.interval.playing",
+        INTERVAL_ENDED: "game.interval.ended",
     };
 
     constructor(options: Partial<GameConfig> = {}) {
@@ -104,6 +104,8 @@ export default class Game extends Emitter {
         this.allowedIntervals = this.config.allowedIntervals;
 
         Game.instance = this;
+
+        this.addListeners();
     }
 
     start() {
@@ -164,5 +166,33 @@ export default class Game extends Emitter {
         }
 
         return isValid;
+    }
+
+    handleIntervalEnd() {
+        this.emit(Game.EVENTS.INTERVAL_ENDED);
+    }
+
+    handleIntervalStart() {
+        this.emit(Game.EVENTS.INTERVAL_PLAYING);
+    }
+
+    addListeners() {
+        this.sequencer.on(Sequencer.EVENTS.SEQUENCE_START, this.handleIntervalStart.bind(this));
+
+        this.sequencer.on(Sequencer.EVENTS.SEQUENCE_END, this.handleIntervalEnd.bind(this));
+
+        this.sequencer.once(Sequencer.EVENTS.SEQUENCE_END, () => {
+            this.updateState(GAME_STATES.WAIT_ANSWER);
+        });
+    }
+
+    removeListeners() {
+        this.sequencer.off(Sequencer.EVENTS.SEQUENCE_START, this.handleIntervalStart);
+        this.sequencer.off(Sequencer.EVENTS.SEQUENCE_END, this.handleIntervalEnd);
+    }
+
+    destroy() {
+        this.removeListeners();
+        Game.instance = null;
     }
 }

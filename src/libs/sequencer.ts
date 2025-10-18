@@ -1,3 +1,4 @@
+import { utils } from "animejs";
 import Emitter from "./emitter-mixin";
 import type { Interval } from "./interval-generator";
 
@@ -25,9 +26,20 @@ export default class Sequencer extends Emitter {
     private active: Array<{ src: AudioBufferSourceNode; gain: GainNode }> = [];
     private playing = false;
     private settle: { resolve: () => void; reject: (e: Error) => void } | null = null;
+    private masterGain: GainNode;
 
+    set volume(value: number) {
+        this.masterGain.gain.value = utils.clamp(value, 0, 1);
+    }
+
+    get volume(): number {
+        return this.masterGain.gain.value;
+    }
     constructor() {
         super();
+        this.masterGain = this.audioContext.createGain();
+        this.masterGain.connect(this.audioContext.destination);
+        this.masterGain.gain.value = 1.0;
     }
 
     async loadAudioSprite(name = "piano") {
@@ -102,7 +114,7 @@ export default class Sequencer extends Emitter {
     }
 
     // --- Helper: create a sequence from an Interval (without playing) ---
-    createSequenceFromInterval(interval: Interval, gapMs = 100): PlanStep[] {
+    createSequenceFromInterval(interval: Interval, gapMs = 0): PlanStep[] {
         return this.createSequenceFromNotes(
             [
                 `${interval.startNote.name[0]}${interval.startNote.octave}`,
@@ -140,7 +152,7 @@ export default class Sequencer extends Emitter {
             src.buffer = buffer;
 
             const gain = ac.createGain();
-            src.connect(gain).connect(ac.destination);
+            src.connect(gain).connect(this.masterGain);
 
             const when = startAt + step.startDelayMs / 1000;
             this.applyMiniFade(gain, when, step.durationMs);
@@ -151,6 +163,7 @@ export default class Sequencer extends Emitter {
             if (i === this.plan.length - 1) {
                 src.onended = () => {
                     if (this.playing && this.settle) {
+                        console.log("Sequencer: sequence ended");
                         this.playing = false;
                         this.emit(Sequencer.EVENTS.SEQUENCE_END);
                         this.settle.resolve();

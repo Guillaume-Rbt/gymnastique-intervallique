@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import useBoolean from "../../hooks/useBoolean";
 import { useGameContext } from "../../hooks/useGameContext";
-import { GAME_STATES } from "../../libs/game";
+import Game, { GAME_STATES } from "../../libs/game";
 import { useGameEffect } from "../../hooks/useGameEffect";
+import { useGameEvent } from "../../hooks/useGameEvent";
 
 const Timer = () => {
     const [points, setPoints] = useState(5);
@@ -82,13 +83,12 @@ const Timer = () => {
                 setPausedTrue();
                 pause();
             },
-
-            [GAME_STATES.INIT_INTERVAL_PLAYED]: () => {
-                setPausedFalse();
-                setRunningFalse();
-                reset();
-            },
         },
+    });
+
+    useGameEvent(Game.EVENTS.PROGRESS_CHANGED, () => {
+        setRunningFalse();
+        reset();
     });
 
     const radius = 10;

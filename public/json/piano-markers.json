@@ -1,4 +1,5 @@
 [
+    { "name": "C3", "offset": 2000, "duration": 1950 },
     { "name": "C#3", "offset": 2000, "duration": 1950 },
     { "name": "D3", "offset": 4000, "duration": 1950 },
     { "name": "D#3", "offset": 6000, "duration": 1950 },

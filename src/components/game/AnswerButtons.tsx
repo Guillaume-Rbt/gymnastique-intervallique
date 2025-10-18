@@ -21,6 +21,7 @@ export default function AnswerButtons() {
     const root = useRef<HTMLDivElement | null>(null);
 
     const [answered, _, __, toggleAnswered] = useBoolean(false);
+    const [active, setActiveTrue, setActiveFalse] = useBoolean(false);
 
     const answerDataRef = useRef<{ correct: boolean; answer: string; expected: string } | null>(null);
 
@@ -41,11 +42,19 @@ export default function AnswerButtons() {
                 answerDataRef.current = { correct: data.correct, answer: data.answer, expected: data.expected };
                 toggleAnswered();
             },
+            [GAME_STATES.WAIT_ANSWER]: () => {
+                console.log("Setting active true");
+                setActiveTrue();
+            },
         },
         onExit: {
             [GAME_STATES.ANSWERED]: () => {
                 answerDataRef.current = null;
                 toggleAnswered();
+            },
+
+            [GAME_STATES.WAIT_ANSWER]: () => {
+                setActiveFalse();
             },
         },
     });
@@ -97,7 +106,7 @@ export default function AnswerButtons() {
 
     function getVariant(intervalName: string): ButtonVariant {
         let variant: ButtonVariant = "disabled";
-        if (game.state === GAME_STATES.WAIT_ANSWER) {
+        if (active) {
             variant = "default";
         }
         if (answered || answerDataRef.current !== null) {
