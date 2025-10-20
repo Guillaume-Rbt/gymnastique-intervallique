@@ -102,6 +102,7 @@ export default class Game extends Emitter {
         };
 
         this.allowedIntervals = this.config.allowedIntervals;
+        this.playCurrentInterval = this.playCurrentInterval.bind(this);
 
         Game.instance = this;
 

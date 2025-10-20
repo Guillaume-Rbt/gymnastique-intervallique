@@ -4,7 +4,8 @@ import { useLayoutEffect, useRef } from "react";
 import { GAME_STATES } from "../../libs/game";
 import { useGameEffect } from "../../hooks/useGameEffect";
 import Timer from "../ui/Timer";
-import Progress from "../Game/Progress";
+import Progress from "../game/Progress";
+import Volume from "../ui/Volume";
 
 export function Header() {
     const { animManager } = useGameContext();

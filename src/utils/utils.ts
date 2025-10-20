@@ -1,3 +1,9 @@
+const touchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
+
+const events = {
+    DOWN_START: touchDevice ? "touchstart" : ("mousedown" as keyof MouseEvent),
+};
+
 function ensureArrayOfStrings(value: string | string[]): string[] {
     if (Array.isArray(value)) return value;
 
@@ -19,7 +25,6 @@ function randomNumber(min: number = 0, max: number = 1): number {
 function HTMLFromString(htmlString: string): DocumentFragment {
     const range = document.createRange();
     return range.createContextualFragment(htmlString);
-
 }
 
 export default class Utils {
@@ -27,4 +32,7 @@ export default class Utils {
     static clamp = clamp;
     static randomNumber = randomNumber;
     static HTMLFromString = HTMLFromString;
+    static get EVENTS() {
+        return events;
+    }
 }

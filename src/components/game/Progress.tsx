@@ -1,5 +1,5 @@
 import { useGameContext } from "../../hooks/useGameContext";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Game from "../../libs/game";
 import { useGameEvent } from "../../hooks/useGameEvent";
 
@@ -8,9 +8,11 @@ export default function Progress() {
 
     const [progress, setProgress] = useState(game.currentIntervalIndex + 1);
 
-    useGameEvent(Game.EVENTS.PROGRESS_CHANGED, (data) => {
+    const handleProgressChange = useCallback((data: { currentIntervalIndex: number }) => {
         setProgress(data.currentIntervalIndex + 1);
-    });
+    }, []);
+
+    useGameEvent(Game.EVENTS.PROGRESS_CHANGED, handleProgressChange);
 
     return (
         <div>
