@@ -197,7 +197,7 @@ export default class Sequencer extends Emitter {
         // reject the current promise if we were interrupting a playback
         if (this.playing && this.settle) {
             this.emit(Sequencer.EVENTS.SEQUENCE_ABORT);
-            this.settle.reject(new Error("sequence_cleared"));
+            this.settle.reject(new Error("Sequencer: playback aborted"));
             this.settle = null;
         }
         this.playing = false;
