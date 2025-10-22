@@ -8,6 +8,7 @@ export enum GAME_STATES {
     INIT = "init",
     READY = "ready",
     STARTED = "started",
+    NEW_INTERVAL_PLAYING = "new.interval.playing",
     WAIT_ANSWER = "wait",
     ANSWERED = "answered",
     ENDED = "ended",
@@ -182,6 +183,8 @@ export default class Game extends Emitter {
 
         this.sequencer.on(Sequencer.EVENTS.SEQUENCE_END, this.handleIntervalEnd.bind(this));
 
+        this.sequencer.on(Sequencer.EVENTS.SEQUENCE_ABORT, this.handleIntervalEnd.bind(this));
+
         this.sequencer.once(Sequencer.EVENTS.SEQUENCE_END, () => {
             this.updateState(GAME_STATES.WAIT_ANSWER);
         });
@@ -190,6 +193,7 @@ export default class Game extends Emitter {
     removeListeners() {
         this.sequencer.off(Sequencer.EVENTS.SEQUENCE_START, this.handleIntervalStart);
         this.sequencer.off(Sequencer.EVENTS.SEQUENCE_END, this.handleIntervalEnd);
+        this.sequencer.off(Sequencer.EVENTS.SEQUENCE_ABORT, this.handleIntervalEnd.bind(this));
     }
 
     destroy() {

@@ -25,8 +25,11 @@ export default class Sequencer extends Emitter {
     private plan: PlanStep[] = [];
     private active: Array<{ src: AudioBufferSourceNode; gain: GainNode }> = [];
     private playing = false;
-    private settle: { resolve: () => void; reject: (e: Error) => void } | null = null;
+    private settle: { resolve: (data: { status: "ended" | "aborted" }) => void; reject: (e: Error) => void } | null =
+        null;
     private masterGain: GainNode;
+    private playToken = 0;
+    private aborting = false;
 
     set volume(value: number) {
         this.masterGain.gain.value = utils.clamp(value, 0, 1);
@@ -124,24 +127,26 @@ export default class Sequencer extends Emitter {
         );
     }
 
-    // --- 2) Play the current sequence (returns Promise resolved at the end) ---
-    playSequence(startDelayMs = 0): Promise<void> {
+    // playSequence
+    playSequence(startDelayMs = 0): Promise<{ status: "ended" | "aborted" }> {
         this.requireReady();
         if (!this.plan.length) throw new Error("No sequence. Call createSequence*() first.");
 
-        // if something is already playing, we stop it cleanly
-        this.clear();
+        this.clear(); // pourra résoudre "aborted"
 
-        const buffer = this.buffer!;
         const ac = this.audioContext;
+        const buffer = this.buffer!;
         const startAt = ac.currentTime + startDelayMs / 1000;
+
+        // nouveau token pour cette lecture
+        const token = ++this.playToken;
 
         this.playing = true;
         this.emit(Sequencer.EVENTS.SEQUENCE_START, { at: startAt });
 
-        let resolve!: () => void;
+        let resolve!: (v: { status: "ended" | "aborted" }) => void;
         let reject!: (e: Error) => void;
-        const done = new Promise<void>((res, rej) => {
+        const done = new Promise<{ status: "ended" | "aborted" }>((res, rej) => {
             resolve = res;
             reject = rej;
         });
@@ -156,17 +161,15 @@ export default class Sequencer extends Emitter {
 
             const when = startAt + step.startDelayMs / 1000;
             this.applyMiniFade(gain, when, step.durationMs);
-
-            // start(when, offsetSec, durationSec)
             src.start(when, step.offsetMs / 1000, step.durationMs / 1000);
 
             if (i === this.plan.length - 1) {
                 src.onended = () => {
-                    if (this.playing && this.settle) {
-                        console.log("Sequencer: sequence ended");
+                    // n'émettre "end" que si : même token, pas d'abort en cours, toujours playing
+                    if (this.playing && !this.aborting && this.settle && token === this.playToken) {
                         this.playing = false;
                         this.emit(Sequencer.EVENTS.SEQUENCE_END);
-                        this.settle.resolve();
+                        this.settle.resolve({ status: "ended" });
                         this.settle = null;
                     }
                 };
@@ -178,9 +181,16 @@ export default class Sequencer extends Emitter {
         return done;
     }
 
-    // --- 3) Clear: stop everything and reset the player state ---
+    // clear: coupe les handlers + invalide proprement
     clear() {
-        // stop all scheduled/running sources
+        // neutraliser tous les onended avant stop()
+        for (const { src } of this.active) {
+            try {
+                src.onended = null;
+            } catch {}
+        }
+
+        // stopper/déconnecter
         for (const { src, gain } of this.active) {
             try {
                 src.stop(0);
@@ -194,15 +204,18 @@ export default class Sequencer extends Emitter {
         }
         this.active = [];
 
-        // reject the current promise if we were interrupting a playback
         if (this.playing && this.settle) {
+            this.aborting = true;
             this.emit(Sequencer.EVENTS.SEQUENCE_ABORT);
-            this.settle.reject(new Error("Sequencer: playback aborted"));
+            this.settle.resolve({ status: "aborted" });
             this.settle = null;
+            this.aborting = false;
         }
-        this.playing = false;
-    }
 
+        this.playing = false;
+        // invalide toute fin tardive encore programmée
+        this.playToken++;
+    }
     // --- Utilitaires ---
     isPlaying() {
         return this.playing;
