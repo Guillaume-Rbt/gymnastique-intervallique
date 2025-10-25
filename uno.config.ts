@@ -30,14 +30,22 @@ export default defineConfig({
     },
     rules: [
         [
-            /col-(\d+)/,
-            ([, d], { rawSelector }) => {
-                const selector = e(rawSelector);
-                const nbSpacing = parseInt(d) - 1;
-
-                return `${selector} {
-            width: calc((100%  / ${d}) - (${nbSpacing} * var(--spacing)));
-        }`;
+            /^gap-(\d+(?:\.\d+)?)$/,
+            ([, gap]) => {
+                return {
+                    gap: `${Number(gap) * 0.25}rem`,
+                    "--gap": `${Number(gap) * 0.25}rem`,
+                };
+            },
+        ],
+        [
+            /^col-(\d+)$/,
+            ([, d]) => {
+                const n = Number(d);
+                const nbSpacing = n - 1;
+                return {
+                    width: `calc((100% / ${n}) - ((${nbSpacing} * var(--gap)) / ${n}))`,
+                };
             },
         ],
         [

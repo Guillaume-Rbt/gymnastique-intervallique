@@ -6,7 +6,7 @@ import { useGameEffect } from "../../hooks/useGameEffect";
 import Timer from "../ui/Timer";
 import Progress from "../game/Progress";
 
-export function Header() {
+export default function Header() {
     const { animManager } = useGameContext();
     const scope = useRef<Scope | null>(null);
     const root = useRef<HTMLDivElement | null>(null);
