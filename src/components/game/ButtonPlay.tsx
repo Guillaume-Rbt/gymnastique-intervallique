@@ -29,7 +29,7 @@ export default function ButtonPlay() {
             },
         },
         onExit: {
-            [GAME_STATES.ANSWERED]: () => {
+            [GAME_STATES.WAIT_ANSWER]: () => {
                 disable();
             },
         },
@@ -45,11 +45,11 @@ export default function ButtonPlay() {
                 classes={[
                     "color-slate-100",
                     "margin-x-auto",
-                    "text-7",
+                    "text-6.5",
                     "btn-primary",
                     "p-0",
-                    "w-12",
-                    "h-12",
+                    "w-10",
+                    "h-10",
                     "rounded-full",
                     "flex",
                     "flex-items-center",

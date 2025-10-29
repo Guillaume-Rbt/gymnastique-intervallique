@@ -8,8 +8,9 @@ export default function Progress() {
 
     const [progress, setProgress] = useState(game.currentIntervalIndex + 1);
 
-    const handleProgressChange = useCallback((data: { currentIntervalIndex: number }) => {
-        setProgress(data.currentIntervalIndex + 1);
+    const handleProgressChange = useCallback((data: { current: number }) => {
+        console.log(data);
+        setProgress(data.current + 1);
     }, []);
 
     useGameEvent(Game.EVENTS.PROGRESS_CHANGED, handleProgressChange);

@@ -30,6 +30,15 @@ export default defineConfig({
     },
     rules: [
         [
+            "scrollbar-hover",
+            {
+                overflow: "auto",
+                "scrollbar-width": "none" /* Firefox — cachée par défaut */,
+                "scrollbar-color": "rgba(0,0,0,0.4) transparent",
+            },
+            { layer: "components" },
+        ],
+        [
             /^gap-(\d+(?:\.\d+)?)$/,
             ([, gap]) => {
                 return {

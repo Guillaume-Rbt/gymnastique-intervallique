@@ -1,5 +1,5 @@
 import Utils from "../../utils/utils";
-
+import React from "react";
 export type ButtonVariants = { [key: string]: string | [] };
 export type ButtonVariant = keyof ButtonVariants;
 

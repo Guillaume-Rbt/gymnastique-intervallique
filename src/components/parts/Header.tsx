@@ -54,7 +54,7 @@ export default function Header() {
     return (
         <header
             ref={root}
-            className='bg-slate-100 sm:gap-10 max-xs:gap-7 xs:px-10 text-3 header position-fixed max-xs:flex-justify-center gap-12 sm:gap-10 max-xs:gap-7 xs:px-10 z-10 color-dark-800 w-full top-0 flex-items-center flex-justify-start flex bg-slate-100 h-16'>
+            className='shadow-10 color-slate-200 z-1 overflow-hidden sm:gap-10 max-xs:gap-7 xs:px-10 text-3 header position-fixed max-xs:flex-justify-center gap-12 sm:gap-10 max-xs:gap-7 xs:px-10 z-10  w-full top-0 flex-items-center flex-justify-start flex  h-16 before:content-[""] before:position-absolute before:top-0 before:bottom-0  before:left-0 before:right-0 before:m--1 before:opacity-30 before:bg-theme-blue before:filter-blur-20px before:z--1'>
             <h1 className='font-bold text-4'>Quel est l'intervalle&nbsp;?</h1>
             <Timer />
             <Progress />

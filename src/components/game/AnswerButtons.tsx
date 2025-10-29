@@ -1,12 +1,13 @@
 import { useGameAllowedIntervals } from "../../hooks/useGameAllowedIntervals";
-import { buttons } from "../../utils/constants";
+import { buttons, buttonsMobile } from "../../utils/constants";
 import Button, { type ButtonVariant } from "../ui/Button";
-import { useLayoutEffect, useRef } from "react";
+import { useLayoutEffect, useMemo, useRef } from "react";
 import { createScope, Scope, utils, createTimeline, stagger } from "animejs";
 import { useGameContext } from "../../hooks/useGameContext";
 import Game, { GAME_STATES } from "../../libs/game";
 import { useGameEffect } from "../../hooks/useGameEffect";
 import useBoolean from "../../hooks/useBoolean";
+import { useDevice } from "../../hooks/useDevice";
 
 const buttonResponseVariants = {
     default: "bg-theme-dark",
@@ -22,6 +23,11 @@ export default function AnswerButtons() {
 
     const [answered, _, __, toggleAnswered] = useBoolean(false);
     const [active, setActiveTrue, setActiveFalse] = useBoolean(false);
+    const device = useDevice();
+
+    const buttonsLabel = useMemo(() => {
+        return device.type === "mobile" ? buttonsMobile : buttons;
+    }, [device]);
 
     const answerDataRef = useRef<{ correct: boolean; answer: string; expected: string } | null>(null);
 
@@ -122,7 +128,7 @@ export default function AnswerButtons() {
         return variant;
     }
 
-    const buttonsList = buttons.map((buttonLabel, index) => {
+    const buttonsList = buttonsLabel.map((buttonLabel, index) => {
         const interval = Array.from(allowedIntervals.values())[index];
 
         const variant = getVariant(interval.text) || "default";
@@ -133,7 +139,7 @@ export default function AnswerButtons() {
         return (
             <Button
                 ref={setItemRef(interval.text)}
-                classes='col-4 max-sm:col-1 max-lg:col-2   max-xl:col-3 btn-shadow hover:bg-theme-dark-hover py-2 px-2  max-xxl:text-[max(16px,_0.675rem)] text-3.5 rounded-2'
+                classes='col-4 max-sm:col-1 max-lg:col-2 max-xs:col-2   max-xl:col-3 btn-shadow hover:bg-theme-dark-hover py-2 px-2  max-xxl:text-[max(16px,_0.675rem)] text-3.5 rounded-2'
                 key={interval.text}
                 label={buttonLabel}
                 variant={variant}
@@ -148,7 +154,7 @@ export default function AnswerButtons() {
     return (
         <div
             ref={root}
-            className='color-slate-100 gap-1.5 px-15 min-w-[300px] flex flex-wrap flex-justify-center margin-x-auto'>
+            className='color-slate-100 gap-1.5 max-xs:px-4 px-15 min-w-[300px] flex flex-wrap flex-justify-center margin-x-auto'>
             {buttonsList}
         </div>
     );

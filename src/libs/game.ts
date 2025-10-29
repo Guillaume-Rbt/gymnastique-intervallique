@@ -135,6 +135,12 @@ export default class Game extends Emitter {
                 current: this.currentIntervalIndex,
                 total: this.intervals.length,
             });
+            this.playCurrentInterval();
+            this.updateState(GAME_STATES.NEW_INTERVAL_PLAYING);
+            this.sequencer.once(Sequencer.EVENTS.SEQUENCE_END, () => {
+                this.updateState(GAME_STATES.WAIT_ANSWER);
+            });
+
             return true;
         }
         return false;
