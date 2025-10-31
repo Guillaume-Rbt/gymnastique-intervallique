@@ -27,11 +27,32 @@ function HTMLFromString(htmlString: string): DocumentFragment {
     return range.createContextualFragment(htmlString);
 }
 
+function getEventCoords(event: MouseEvent | TouchEvent): { x: number; y: number } {
+    if (event instanceof MouseEvent) {
+        return { x: event.clientX, y: event.clientY };
+    } else if (event instanceof TouchEvent) {
+        return { x: event.touches[0].clientX, y: event.touches[0].clientY };
+    }
+    return { x: 0, y: 0 };
+}
+
+function getRelativeEventCoords(event: MouseEvent | TouchEvent): { x: number; y: number } {
+    if (!event.currentTarget) return { x: 0, y: 0 };
+    const rect = (event.currentTarget as Element).getBoundingClientRect();
+    const coords = getEventCoords(event);
+    return {
+        x: coords.x - rect.left,
+        y: coords.y - rect.top,
+    };
+}
+
 export default class Utils {
     static ensureArrayOfStrings = ensureArrayOfStrings;
     static clamp = clamp;
     static randomNumber = randomNumber;
     static HTMLFromString = HTMLFromString;
+    static getEventCoords = getEventCoords;
+    static getRelativeEventCoords = getRelativeEventCoords;
     static get EVENTS() {
         return events;
     }

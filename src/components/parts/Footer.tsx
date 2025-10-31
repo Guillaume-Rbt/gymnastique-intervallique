@@ -8,12 +8,16 @@ export default function Footer() {
     const { game } = useGameContext();
 
     return (
-        <footer className='p-x-10 bg-theme-blue bg-opacity-25  position-fixed flex overflow-hidden flex-justify-between flex-items-center flex-items-start h-15 bottom-0 w-full'>
-            <Volume />
-            <ButtonPlay />
-            <Button classes='text-6.5 color-slate-100 p-x-8 h-10 border-1 border-solid border-color-theme-accent rounded-5 hover:bg-theme-accent-hover'>
-                <NextIcon onClick={() => game.nextInterval()} />
-            </Button>
+        <footer className=' z-10 position-fixed flex  flex-justify-between flex-items-end flex-items-start h-16 bottom-0 w-full'>
+            <div className='w-full  flex flex-items-center flex-justify-between bg-opacity-100 h-full px-15 max-xs:px-4'>
+                <Volume />
+                <ButtonPlay />
+                <Button
+                    onClick={() => game.nextInterval()}
+                    classes='text-5.5 color-slate-100 w-10 h-8 flex flex-items-center flex-justify-center border-1 border-solid border-white/40 bg-white/5 rounded-2 hover:bg-white/20'>
+                    <NextIcon />
+                </Button>
+            </div>
         </footer>
     );
 }

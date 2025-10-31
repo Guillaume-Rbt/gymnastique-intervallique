@@ -29,7 +29,7 @@ export default function ButtonPlay() {
             },
         },
         onExit: {
-            [GAME_STATES.WAIT_ANSWER]: () => {
+            [GAME_STATES.ANSWERED]: () => {
                 disable();
             },
         },
@@ -39,17 +39,17 @@ export default function ButtonPlay() {
     useGameEvent(Game.EVENTS.INTERVAL_ENDED, setPlayingFalse);
 
     return (
-        <div className='flex'>
+        <>
             <Button
                 onClick={handleClickPlay}
                 classes={[
                     "color-slate-100",
                     "margin-x-auto",
-                    "text-6.5",
+                    "text-7",
                     "btn-primary",
                     "p-0",
-                    "w-10",
-                    "h-10",
+                    "w-12",
+                    "h-12",
                     "rounded-full",
                     "flex",
                     "flex-items-center",
@@ -58,6 +58,6 @@ export default function ButtonPlay() {
                 ]}>
                 {playing ? <PauseIcon /> : <PlayIcon />}
             </Button>
-        </div>
+        </>
     );
 }

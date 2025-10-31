@@ -20,12 +20,9 @@ export default defineConfig({
         colors: {
             "theme-accent": "#ff375f",
             "theme-accent-hover": "#db1f45",
-            "theme-dark": "#485966",
-            "theme-dark-hover": "#5f6f7c",
-            "theme-dark-2": "#202020ff",
             "theme-blue": "rgba(26, 43, 78, 1)",
-            "theme-correct": "#5cb563",
-            "theme-wrong": "#c74b32",
+            "theme-correct": "#00c951",
+            "theme-wrong": "#fb2c36",
         },
     },
     rules: [
@@ -91,8 +88,6 @@ export default defineConfig({
     ],
     shortcuts: {
         btn: "transition-background-color duration-200",
-        "btn-shadow":
-            "shadow-[0px_0px_0px_0.93px_#0000000d,0px_0.93px_4.66px_0px_#0000004d,0px_0.5px_0.5px_0px_#ffffff40_inset]",
         "btn-primary": "bg-theme-accent hover:bg-theme-accent-hover color-slate-100 px-6 py-2.5 rounded-10 font-bold",
     },
 });

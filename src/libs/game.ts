@@ -184,6 +184,12 @@ export default class Game extends Emitter {
         this.emit(Game.EVENTS.INTERVAL_PLAYING);
     }
 
+    isAtLeast(state: GAME_STATES) {
+        const states = Object.values(GAME_STATES);
+
+        return states.indexOf(this.state) >= states.indexOf(state);
+    }
+
     addListeners() {
         this.sequencer.on(Sequencer.EVENTS.SEQUENCE_START, this.handleIntervalStart.bind(this));
 
