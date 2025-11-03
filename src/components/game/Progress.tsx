@@ -16,7 +16,7 @@ export default function Progress() {
     useGameEvent(Game.EVENTS.PROGRESS_CHANGED, handleProgressChange);
 
     return (
-        <div>
+        <div className='border-1 border-solid border-slate-100/40 line-height-6  rounded-2  py-1.25 px-2.25 text-center'>
             {progress}/{game.numberOfIntervals}
         </div>
     );

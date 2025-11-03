@@ -10,7 +10,7 @@ import useBoolean from "../../hooks/useBoolean";
 import { useDevice } from "../../hooks/useDevice";
 
 const buttonResponseVariants = {
-    default: " bg-white/10 border-white/40  hover:bg-white/20 hover:border-white/40",
+    default: " bg-slate-100/10 border-slate-100/40  hover:bg-slate-100/20 hover:border-slate-100/40",
     right: "bg-theme-correct/40 border-theme-correct/60 pointer-events-none",
     wrong: "bg-theme-wrong/40 border-theme-wrong/60 pointer-events-none",
     disabled: "opacity-50 pointer-events-none",
@@ -139,7 +139,7 @@ export default function AnswerButtons() {
         return (
             <Button
                 ref={setItemRef(interval.text)}
-                classes='col-4 max-sm:col-1 max-lg:col-2 max-xs:col-2 border-solid  border-[1px]    max-xl:col-3  py-2.3 px-2  max-xxl:text-[max(16px,_0.675rem)] text-3.5 rounded-2'
+                classes='col-4 max-sm:col-1 max-lg:col-2 max-xs:col-2 border-solid  border-1    max-xl:col-3  py-2.3 px-2  max-xxl:text-[max(16px,_0.675rem)] text-3.5 rounded-2 font-bold'
                 key={interval.text}
                 label={buttonLabel}
                 variant={variant}

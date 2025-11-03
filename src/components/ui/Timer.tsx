@@ -98,15 +98,18 @@ const Timer = () => {
     return (
         <div className='flex h-[4em] min-w-[48px] aspect-ratio-square  w-[4em] text-3 rounded-full flex-justify-center flex-items-center position-relative'>
             <span className='text-3'>{points} pts</span>
-            <svg className='absolute color-blue w-full h-full ' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'>
+            <svg
+                className='absolute color-slate-100 w-full h-full '
+                xmlns='http://www.w3.org/2000/svg'
+                viewBox='0 0 24 24'>
                 <circle
-                    className='opacity-35'
+                    className='opacity-10'
                     cx='12'
                     cy='12'
                     r={radius}
                     stroke='currentColor'
                     fill='none'
-                    strokeWidth='2'
+                    strokeWidth='0.08rem'
                 />
                 <circle
                     cx='12'
@@ -116,8 +119,8 @@ const Timer = () => {
                     strokeDashoffset={dashOffset}
                     stroke='currentColor'
                     fill='none'
-                    strokeWidth='2'
-                    className='transform-origin-c rotate-270 scale-y--100'
+                    strokeWidth='0.08rem'
+                    className='transform-origin-c rotate-270 scale-y--100 opacity-80'
                     style={{ transition: "stroke-dashoffset 0.25s ease" }}
                 />
             </svg>

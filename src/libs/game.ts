@@ -25,7 +25,7 @@ export default class Game extends Emitter {
     #state: GAME_STATES = GAME_STATES.INIT;
     listenersPerState: Map<GAME_STATES, Function[]> = new Map();
     numberOfIntervals: number = 10;
-    score: number = 0;
+    #score: number = 0;
     #questionScore: number = 5;
     sequencer: Sequencer = new Sequencer();
     static instance: null | Game = null;
@@ -48,6 +48,15 @@ export default class Game extends Emitter {
 
     set state(value: GAME_STATES) {
         this.#state = value;
+    }
+
+    set score(value: number) {
+        this.#score = value;
+        this.emit(Game.EVENTS.SCORE_CHANGED, { score: this.#score });
+    }
+
+    get score() {
+        return this.#score;
     }
 
     set allowedIntervals(allowedIntervals: Map<number, { text: string; enabled: boolean }>) {
@@ -85,6 +94,7 @@ export default class Game extends Emitter {
         ANSWERED: "game.answered",
         INTERVAL_PLAYING: "game.interval.playing",
         INTERVAL_ENDED: "game.interval.ended",
+        SCORE_CHANGED: "game.score.changed",
     };
 
     constructor(options: Partial<GameConfig> = {}) {
@@ -172,7 +182,6 @@ export default class Game extends Emitter {
         if (isValid) {
             this.score += this.questionScore;
         }
-
         return isValid;
     }
 
