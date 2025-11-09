@@ -13,7 +13,9 @@ export default function Footer() {
                 <Volume />
                 <ButtonPlay />
                 <Button
-                    onClick={() => game.nextInterval()}
+                    onClick={() => {
+                        game.nextInterval();
+                    }}
                     classes='text-5.5 color-slate-100 px-2.25 py-1.25 flex flex-items-center flex-justify-center border-1 border-solid border-slate-100/40 bg-slate-100/5 rounded-2 hover:bg-white/20'>
                     <NextIcon />
                 </Button>

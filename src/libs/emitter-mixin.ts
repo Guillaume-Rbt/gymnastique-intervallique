@@ -1,6 +1,9 @@
+import UUID from "./uuid";
+
 type Listener = (...args: any[]) => void;
 
 export default class Emitter {
+    emitId: string = UUID.generate();
     private listeners: Record<string, Listener[]> = {};
 
     addListener(event: string, fn: Listener): this {
@@ -13,7 +16,7 @@ export default class Emitter {
 
     emit(event: string, data?: Record<string, any>): this {
         const fns = this.listeners[event]?.slice() ?? [];
-        for (const fn of fns) fn({ eventName: event, ...(data ?? {}) });
+        for (const fn of fns) fn({ eventName: event, emitter: this, ...(data ?? {}) });
         return this;
     }
 

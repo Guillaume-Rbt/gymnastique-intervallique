@@ -74,8 +74,6 @@ export default class Sequencer extends Emitter {
 
     // --- Existing simple API: play an interval immediately (2 chained notes) ---
     playInterval(interval: Interval, gapMs = 100) {
-        console.log(interval);
-
         this.createSequenceFromNotes(
             [
                 `${interval.startNote.name[0]}${interval.startNote.octave}`,
@@ -132,13 +130,13 @@ export default class Sequencer extends Emitter {
         this.requireReady();
         if (!this.plan.length) throw new Error("No sequence. Call createSequence*() first.");
 
-        this.clear(); // pourra résoudre "aborted"
+        this.clear(); // will resolve "aborted"
 
         const ac = this.audioContext;
         const buffer = this.buffer!;
         const startAt = ac.currentTime + startDelayMs / 1000;
 
-        // nouveau token pour cette lecture
+        // new token for this playback
         const token = ++this.playToken;
 
         this.playing = true;
@@ -165,7 +163,7 @@ export default class Sequencer extends Emitter {
 
             if (i === this.plan.length - 1) {
                 src.onended = () => {
-                    // n'émettre "end" que si : même token, pas d'abort en cours, toujours playing
+                    // only emit "end" if: same token, no abort in progress, still playing
                     if (this.playing && !this.aborting && this.settle && token === this.playToken) {
                         this.playing = false;
                         this.emit(Sequencer.EVENTS.SEQUENCE_END);
@@ -181,16 +179,16 @@ export default class Sequencer extends Emitter {
         return done;
     }
 
-    // clear: coupe les handlers + invalide proprement
+    // clear: stop handlers + invalidate properly
     clear() {
-        // neutraliser tous les onended avant stop()
+        // neutralize all onended before stop()
         for (const { src } of this.active) {
             try {
                 src.onended = null;
             } catch {}
         }
 
-        // stopper/déconnecter
+        // stop/disconnect
         for (const { src, gain } of this.active) {
             try {
                 src.stop(0);
@@ -213,7 +211,7 @@ export default class Sequencer extends Emitter {
         }
 
         this.playing = false;
-        // invalide toute fin tardive encore programmée
+        // invalidate any late ending still programmed
         this.playToken++;
     }
     // --- Utilitaires ---

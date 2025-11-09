@@ -8,6 +8,7 @@ type intervalGeneratorOptions = {
 };
 
 export default class RandomIntervalGenerator {
+    id: string = UUID.generate();
     options: intervalGeneratorOptions;
     intervalsKey: number[] = [];
     #allowedIntervals!: AllowedIntervals;
@@ -66,6 +67,7 @@ export default class RandomIntervalGenerator {
     }
 }
 class Note {
+    id: string = UUID.generate();
     name: string | string[];
     octave: number = 3;
     index: number;

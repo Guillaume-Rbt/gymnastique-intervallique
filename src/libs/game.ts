@@ -22,12 +22,13 @@ export default class Game extends Emitter {
     #allowedIntervals: Map<number, { text: string; enabled: boolean }> = new Map();
     intervalsGenerator: RandomIntervalGenerator = new RandomIntervalGenerator();
     currentIntervalIndex: number = 0;
-    #state: GAME_STATES = GAME_STATES.INIT;
     listenersPerState: Map<GAME_STATES, Function[]> = new Map();
     numberOfIntervals: number = 10;
+    sequencer: Sequencer = new Sequencer();
+    answeredIntervals: Set<{ id: string; answer: string; correct: boolean; expected: string }> = new Set();
     #score: number = 0;
     #questionScore: number = 5;
-    sequencer: Sequencer = new Sequencer();
+    #state: GAME_STATES = GAME_STATES.INIT;
     static instance: null | Game = null;
 
     static get STATES() {
@@ -116,12 +117,10 @@ export default class Game extends Emitter {
         this.playCurrentInterval = this.playCurrentInterval.bind(this);
 
         Game.instance = this;
-
         this.addListeners();
     }
 
     start() {
-        console.trace("Game started");
         this.currentIntervalIndex = 0;
         this.updateState(GAME_STATES.STARTED);
     }
@@ -153,6 +152,9 @@ export default class Game extends Emitter {
 
             return true;
         }
+
+        this.updateState(GAME_STATES.ENDED);
+        this.sequencer.clear();
         return false;
     }
 
@@ -182,6 +184,14 @@ export default class Game extends Emitter {
         if (isValid) {
             this.score += this.questionScore;
         }
+
+        this.answeredIntervals.add({
+            id: this.getCurrentInterval().id,
+            correct: isValid,
+            answer: answer,
+            expected: currentInterval.name,
+        });
+
         return isValid;
     }
 

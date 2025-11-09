@@ -8,7 +8,6 @@ type DeviceSnapshot = {
     ua: string;
 };
 
-
 let lastSnapshot: DeviceSnapshot | null = null;
 
 const getSnapshot = (): DeviceSnapshot => {
@@ -38,7 +37,6 @@ const getSnapshot = (): DeviceSnapshot => {
     lastSnapshot = snapshot;
     return snapshot;
 };
-
 
 const subscribe = (callback: () => void) => {
     let timeoutId: number | null = null;
