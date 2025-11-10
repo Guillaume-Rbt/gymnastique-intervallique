@@ -87,8 +87,10 @@ export default defineConfig({
         ],
     ],
     shortcuts: {
-        btn: "transition-transform duration-200 hover:scale-110",
+        btn: "transition-transform",
         "btn-primary":
-            "bg-[linear-gradient(to_right,_oklch(0.656_0.241_354.308)_0%,_oklch(0.645_0.246_16.439)_100%)] hover:bg-[linear-gradient(to_right,_var(--colors-theme-accent)_0%,_var(--colors-theme-accent)_100%)] color-slate-100 px-6 py-2.5 rounded-10 font-bold",
+            "bg-[linear-gradient(to_right,_oklch(0.656_0.241_354.308)_0%,_oklch(0.645_0.246_16.439)_100%)] hover:bg-[linear-gradient(to_right,_var(--colors-theme-accent)_0%,_var(--colors-theme-accent)_100%)] color-slate-100 px-6 py-2.5 rounded-10 font-bold  duration-200 hover:scale-110 transition-ease-in-out",
+        "btn-secondary":
+            "border-1 border-solid border-theme-accent color-slate-100 px-6 py-2.5 rounded-10 font-bold  duration-200 hover:scale-110 transition-ease-in-out",
     },
 });

@@ -25,7 +25,8 @@ export default class Game extends Emitter {
     listenersPerState: Map<GAME_STATES, Function[]> = new Map();
     numberOfIntervals: number = 10;
     sequencer: Sequencer = new Sequencer();
-    answeredIntervals: Set<{ id: string; answer: string; correct: boolean; expected: string }> = new Set();
+    answeredIntervals: Set<{ id: string; answer: string; correct: boolean; expected: string; interval: Interval }> =
+        new Set();
     #score: number = 0;
     #questionScore: number = 5;
     #state: GAME_STATES = GAME_STATES.INIT;
@@ -137,6 +138,11 @@ export default class Game extends Emitter {
         this.sequencer.playSequence();
     }
 
+    playInterval(interval: Interval) {
+        this.sequencer.createSequenceFromInterval(interval);
+        this.sequencer.playSequence();
+    }
+
     nextInterval() {
         if (this.currentIntervalIndex < this.intervals.length - 1) {
             this.currentIntervalIndex++;
@@ -190,6 +196,7 @@ export default class Game extends Emitter {
             correct: isValid,
             answer: answer,
             expected: currentInterval.name,
+            interval: this.getCurrentInterval(),
         });
 
         return isValid;

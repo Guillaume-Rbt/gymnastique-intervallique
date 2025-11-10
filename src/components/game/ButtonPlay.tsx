@@ -7,16 +7,32 @@ import Game, { GAME_STATES } from "../../libs/game";
 import { useGameContext } from "../../hooks/useGameContext";
 import { useCallback } from "react";
 import { useGameEffect } from "../../hooks/useGameEffect";
+import type { Interval } from "../../libs/interval-generator";
 
-export default function ButtonPlay() {
+export default function ButtonPlay({
+    size = "big",
+    pauseIconWhenPlaying = true,
+    interval,
+    enabledOnInit = false,
+}: {
+    size?: "big" | "small";
+    pauseIconWhenPlaying?: boolean;
+    interval?: Interval;
+    enabledOnInit?: boolean;
+}) {
     const { game } = useGameContext();
     const [playing, setPlayingTrue, setPlayingFalse] = useBoolean(false);
 
-    const [enabled, enable, disable] = useBoolean(false);
+    const [enabled, enable, disable] = useBoolean(enabledOnInit);
 
     const handleClickPlay = useCallback(() => {
         if (playing) {
             game.sequencer.clear();
+            return;
+        }
+
+        if (interval) {
+            game.playInterval(interval);
             return;
         }
         game.playCurrentInterval();
@@ -38,6 +54,8 @@ export default function ButtonPlay() {
     useGameEvent(Game.EVENTS.INTERVAL_PLAYING, setPlayingTrue);
     useGameEvent(Game.EVENTS.INTERVAL_ENDED, setPlayingFalse);
 
+    const sizeClasses = size === "big" ? ["w-12", "text-7"] : ["w-7", "text-5"];
+
     return (
         <>
             <Button
@@ -45,18 +63,17 @@ export default function ButtonPlay() {
                 classes={[
                     "color-slate-100",
                     "margin-x-auto",
-                    "text-7",
                     "btn-primary",
+                    "aspect-square",
                     "p-0",
-                    "w-12",
-                    "h-12",
                     "rounded-full",
                     "flex",
                     "flex-items-center",
                     "flex-justify-center",
                     !enabled ? "opacity-50 pointer-events-none" : "",
+                    ...sizeClasses,
                 ]}>
-                {playing ? <PauseIcon /> : <PlayIcon />}
+                {playing && pauseIconWhenPlaying ? <PauseIcon /> : <PlayIcon />}
             </Button>
         </>
     );
