@@ -68,43 +68,61 @@ export function End() {
                         </Button>
                     </div>
 
-                    <div className='flex grow overflow-auto flex-col'>
-                        <div className='grid grid-cols-3 gap-row-5'>
-                            <span>Intervalle</span>
-                            <span>Votre réponse</span>
+                    <div className='flex grow overflow-auto flex-col flex-items-center'>
+                        <h1 className='mb-8 text-8'>Vos réponses</h1>
+                        <table className='table-auto text-left border-collapse scroll-snap-y scroll-snap-mandatory'>
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th className='border border-solid border-slate-100/30 py-3 px-3'>Intervalle</th>
+                                    <th className='border border-solid border-slate-100/30 py-3 px-3'>Votre réponse</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {[...answeredInterval.values()]
+                                    .map((item) => {
+                                        const answer =
+                                            intervals.indexOf(item.answer) == -1
+                                                ? "Non répondu"
+                                                : buttons[intervals.indexOf(item.answer)];
 
-                            <span></span>
+                                        return {
+                                            expected: buttons[intervals.indexOf(item.expected)],
+                                            answer: answer,
+                                            interval: item.interval,
+                                            correct: item.correct,
+                                        };
+                                    })
+                                    .map((item, i) => {
+                                        const classes = item.correct ? "color-theme-correct" : "color-theme-wrong";
 
-                            {[...answeredInterval.values()]
-                                .map((item) => {
-                                    return {
-                                        expected: buttons[intervals.indexOf(item.expected)],
-                                        answer: buttons[intervals.indexOf(item.answer)],
-                                        interval: item.interval,
-                                        correct: item.correct,
-                                    };
-                                })
-                                .map((item) => {
-                                    const classes = item.correct ? "color-theme-correct" : "color-theme-wrong";
+                                        return (
+                                            <tr key={item.interval.id}>
+                                                <td className='text-center border border-solid border-slate-100/30 py-3 px-3 vertical-middle'>
+                                                    {i + 1}
+                                                </td>
+                                                <td className='border border-solid border-slate-100/30 py-3 px-3 scroll-snap-start '>
+                                                    {" "}
+                                                    <ButtonPlay
+                                                        size='small'
+                                                        interval={item.interval}
+                                                        pauseIconWhenPlaying={false}
+                                                        enabledOnInit={true}
+                                                    />
+                                                </td>
 
-                                    return (
-                                        <div key={item.interval.id} className='contents'>
-                                            <span
-                                                className={classes}
-                                                dangerouslySetInnerHTML={{ __html: item.expected }}></span>
-                                            <span
-                                                className={classes}
-                                                dangerouslySetInnerHTML={{ __html: item.answer }}></span>
-                                            <ButtonPlay
-                                                size='small'
-                                                interval={item.interval}
-                                                pauseIconWhenPlaying={false}
-                                                enabledOnInit={true}
-                                            />
-                                        </div>
-                                    );
-                                })}
-                        </div>
+                                                <td
+                                                    className='vertical-middle border border-solid border-slate-100/30 px-3'
+                                                    dangerouslySetInnerHTML={{ __html: item.expected }}></td>
+                                                <td
+                                                    className={`${classes} border border-solid border-slate-100/30 px-3`}
+                                                    dangerouslySetInnerHTML={{ __html: item.answer }}></td>
+                                            </tr>
+                                        );
+                                    })}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

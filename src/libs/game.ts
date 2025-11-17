@@ -144,6 +144,18 @@ export default class Game extends Emitter {
     }
 
     nextInterval() {
+        const currentInterval = this.getCurrentInterval();
+
+        if (this.state !== Game.STATES.WAIT_ANSWER) {
+            this.answeredIntervals.add({
+                id: currentInterval.id,
+                correct: false,
+                answer: "Non répondu",
+                expected: currentInterval.name,
+                interval: currentInterval,
+            });
+        }
+
         if (this.currentIntervalIndex < this.intervals.length - 1) {
             this.currentIntervalIndex++;
             this.emit(Game.EVENTS.PROGRESS_CHANGED, {
