@@ -30,6 +30,7 @@ export default class Game extends Emitter {
     #score: number = 0;
     #questionScore: number = 5;
     #state: GAME_STATES = GAME_STATES.INIT;
+    answer: string | null = null;
     static instance: null | Game = null;
 
     static get STATES() {
@@ -146,15 +147,13 @@ export default class Game extends Emitter {
     nextInterval() {
         const currentInterval = this.getCurrentInterval();
 
-        if (this.state !== Game.STATES.WAIT_ANSWER) {
-            this.answeredIntervals.add({
-                id: currentInterval.id,
-                correct: false,
-                answer: "Non répondu",
-                expected: currentInterval.name,
-                interval: currentInterval,
-            });
-        }
+        this.answeredIntervals.add({
+            id: currentInterval.id,
+            correct: false,
+            answer: this.answer || "Non répondu",
+            expected: currentInterval.name,
+            interval: currentInterval,
+        });
 
         if (this.currentIntervalIndex < this.intervals.length - 1) {
             this.currentIntervalIndex++;
@@ -162,6 +161,7 @@ export default class Game extends Emitter {
                 current: this.currentIntervalIndex,
                 total: this.intervals.length,
             });
+            this.answer = null;
             this.playCurrentInterval();
             this.updateState(GAME_STATES.NEW_INTERVAL_PLAYING);
             this.sequencer.once(Sequencer.EVENTS.SEQUENCE_END, () => {
@@ -197,19 +197,13 @@ export default class Game extends Emitter {
             correct: currentInterval.name === answer,
         });
 
+        this.answer = answer;
+
         const isValid = currentInterval.name === answer;
 
         if (isValid) {
             this.score += this.questionScore;
         }
-
-        this.answeredIntervals.add({
-            id: this.getCurrentInterval().id,
-            correct: isValid,
-            answer: answer,
-            expected: currentInterval.name,
-            interval: this.getCurrentInterval(),
-        });
 
         return isValid;
     }

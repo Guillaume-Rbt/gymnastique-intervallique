@@ -11,13 +11,13 @@ import type { Interval } from "../../libs/interval-generator";
 
 export default function ButtonPlay({
     size = "big",
-    pauseIconWhenPlaying = true,
-    interval,
+    stateFollowsGame = true,
+    interval = null,
     enabledOnInit = false,
 }: {
     size?: "big" | "small";
-    pauseIconWhenPlaying?: boolean;
-    interval?: Interval;
+    stateFollowsGame?: boolean;
+    interval?: Interval | null;
     enabledOnInit?: boolean;
 }) {
     const { game } = useGameContext();
@@ -26,16 +26,20 @@ export default function ButtonPlay({
     const [enabled, enable, disable] = useBoolean(enabledOnInit);
 
     const handleClickPlay = useCallback(() => {
+        const intervalToPlay = interval || game.getCurrentInterval();
+
         if (playing) {
             game.sequencer.clear();
             return;
         }
 
-        if (interval) {
-            game.playInterval(interval);
+        if (!stateFollowsGame) {
+            game.playInterval(intervalToPlay);
+            setPlayingTrue();
             return;
         }
-        game.playCurrentInterval();
+
+        game.playInterval(intervalToPlay);
     }, [playing]);
 
     useGameEffect({
@@ -51,7 +55,13 @@ export default function ButtonPlay({
         },
     });
 
-    useGameEvent(Game.EVENTS.INTERVAL_PLAYING, setPlayingTrue);
+    const handleIntervalPlaying = useCallback(() => {
+        if (stateFollowsGame) {
+            setPlayingTrue();
+        }
+    }, []);
+
+    useGameEvent(Game.EVENTS.INTERVAL_PLAYING, handleIntervalPlaying);
     useGameEvent(Game.EVENTS.INTERVAL_ENDED, setPlayingFalse);
 
     const sizeClasses = size === "big" ? ["w-12", "text-7"] : ["w-7", "text-5"];
@@ -73,7 +83,7 @@ export default function ButtonPlay({
                     !enabled ? "opacity-50 pointer-events-none" : "",
                     ...sizeClasses,
                 ]}>
-                {playing && pauseIconWhenPlaying ? <PauseIcon /> : <PlayIcon />}
+                {playing ? <PauseIcon /> : <PlayIcon />}
             </Button>
         </>
     );

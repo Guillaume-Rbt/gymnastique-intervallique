@@ -107,7 +107,7 @@ export function End() {
                                                     <ButtonPlay
                                                         size='small'
                                                         interval={item.interval}
-                                                        pauseIconWhenPlaying={false}
+                                                        stateFollowsGame={false}
                                                         enabledOnInit={true}
                                                     />
                                                 </td>
