@@ -68,9 +68,9 @@ export function End() {
                         </Button>
                     </div>
 
-                    <div className='flex grow overflow-auto flex-col flex-items-center'>
+                    <div className='flex grow overflow-auto scrollbar-hover flex-col flex-items-center'>
                         <h1 className='mb-8 text-8'>Vos réponses</h1>
-                        <table className='table-auto text-left border-collapse scroll-snap-y scroll-snap-mandatory'>
+                        <table className='table-auto text-left border-collapse'>
                             <thead>
                                 <tr>
                                     <th></th>
@@ -99,10 +99,10 @@ export function End() {
 
                                         return (
                                             <tr key={item.interval.id}>
-                                                <td className='text-center border border-solid border-slate-100/30 py-3 px-3 vertical-middle'>
+                                                <td className='text-center border border-solid border-slate-100/30 py-2 px-3 vertical-middle'>
                                                     {i + 1}
                                                 </td>
-                                                <td className='border border-solid border-slate-100/30 py-3 px-3 scroll-snap-start '>
+                                                <td className='border border-solid border-slate-100/30 py-2 px-3 scroll-snap-start '>
                                                     {" "}
                                                     <ButtonPlay
                                                         size='small'

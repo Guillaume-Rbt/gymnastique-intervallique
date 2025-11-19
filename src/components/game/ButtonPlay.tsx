@@ -44,6 +44,9 @@ export default function ButtonPlay({
 
     useGameEffect({
         onEnter: {
+            [GAME_STATES.NEW_INTERVAL_PLAYING]: () => {
+                disable();
+            },
             [GAME_STATES.WAIT_ANSWER]: () => {
                 enable();
             },

@@ -6,6 +6,7 @@ import { useGameEffect } from "../../hooks/useGameEffect";
 import Timer from "../ui/Timer";
 import Progress from "../game/Progress";
 import Score from "../game/Score";
+import Settings from "../pages/Settings";
 
 export default function Header() {
     const { animManager } = useGameContext();
@@ -55,13 +56,14 @@ export default function Header() {
     return (
         <header
             ref={root}
-            className='shadow-10 color-slate-200 z-1 overflow-hidden sm:gap-10 max-xs:gap-7 xs:px-10 text-3 header position-fixed max-xs:flex-justify-center gap-12 sm:gap-10 max-xs:gap-7 xs:px-15 z-10  w-full top-0 flex-items-center flex-justify-start flex h-16'>
+            className='shadow-10 color-slate-200 z-1 overflow-hidden sm:gap-5 max-xs:gap-7 xs:px-10 text-3 header position-fixed max-xs:flex-justify-center gap-12 sm:gap-10 max-xs:gap-7 xs:px-15 z-10  w-full top-0 flex-items-center flex-justify-start flex h-16'>
             <h1 className='font-bold text-4'>Quel est l'intervalle&nbsp;?</h1>
 
             <div className='grow'></div>
             <Timer />
             <Progress />
             <Score />
+            <Settings />
         </header>
     );
 }

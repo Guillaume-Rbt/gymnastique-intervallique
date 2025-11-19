@@ -149,7 +149,7 @@ export default class Game extends Emitter {
 
         this.answeredIntervals.add({
             id: currentInterval.id,
-            correct: false,
+            correct: this.answer === currentInterval.name,
             answer: this.answer || "Non répondu",
             expected: currentInterval.name,
             interval: currentInterval,

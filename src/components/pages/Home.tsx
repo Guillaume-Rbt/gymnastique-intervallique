@@ -120,12 +120,10 @@ export default function Home() {
             <p ref={setItemRef("home_sentence")} className='color-slate-100 text-center text-7 max-w-86'>
                 Exercez votre oreille à la reconnaissance d'intervalles
             </p>
-            <Button
-                ref={setItemRef("home_button")}
-                label='Commencer'
-                onClick={handleStart}
-                classes={["btn-primary", "mt-20"]}
-            />
+            <div ref={setItemRef("home_button")}>
+                {" "}
+                <Button label='Commencer' onClick={handleStart} classes={["btn-primary", "mt-20"]} />
+            </div>
         </div>
     );
 }
