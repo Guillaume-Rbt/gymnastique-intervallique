@@ -2,7 +2,7 @@ import { intervals, notes } from "../utils/constants";
 import Utils from "../utils/utils";
 import UUID from "./uuid";
 
-export type AllowedIntervals = Map<number, { text: string | string[]; enabled: boolean }>;
+export type AllowedIntervals = Map<number, { text: string; enabled: boolean }>;
 type intervalGeneratorOptions = {
     allowedIntervals: AllowedIntervals;
 };

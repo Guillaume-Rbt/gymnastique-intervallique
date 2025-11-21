@@ -139,7 +139,7 @@ export default function AnswerButtons() {
             <Button
                 ref={setItemRef(interval.text)}
                 classes='col-4 hover-scale-100 max-sm:col-1 max-lg:col-2 max-xs:col-2 border-solid  border-1 max-xl:col-3  py-2.3 px-2  max-xxl:text-[max(16px,_0.675rem)] text-3.5 rounded-2 font-bold'
-                key={interval.text}
+                key={index}
                 label={buttonLabel}
                 variant={variant}
                 variants={buttonResponseVariants}

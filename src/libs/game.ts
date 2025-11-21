@@ -3,6 +3,7 @@ import { Interval } from "./interval-generator";
 import RandomIntervalGenerator from "./interval-generator";
 import { intervals } from "../utils/constants";
 import Sequencer from "./sequencer";
+import type { AllowedIntervals } from "./interval-generator";
 
 export enum GAME_STATES {
     INIT = "init",
@@ -14,12 +15,12 @@ export enum GAME_STATES {
     ENDED = "ended",
 }
 
-type GameConfig = { allowedIntervals: Map<number, { text: string; enabled: boolean }> };
+type GameConfig = { allowedIntervals: AllowedIntervals };
 
 export default class Game extends Emitter {
     config: GameConfig = { allowedIntervals: new Map() };
     intervals: Interval[] = [];
-    #allowedIntervals: Map<number, { text: string; enabled: boolean }> = new Map();
+    #allowedIntervals: AllowedIntervals = new Map();
     intervalsGenerator: RandomIntervalGenerator = new RandomIntervalGenerator();
     currentIntervalIndex: number = 0;
     listenersPerState: Map<GAME_STATES, Function[]> = new Map();
@@ -62,7 +63,7 @@ export default class Game extends Emitter {
         return this.#score;
     }
 
-    set allowedIntervals(allowedIntervals: Map<number, { text: string; enabled: boolean }>) {
+    set allowedIntervals(allowedIntervals: AllowedIntervals) {
         this.#allowedIntervals = allowedIntervals;
 
         this.intervalsGenerator.allowedIntervals = allowedIntervals;
@@ -84,6 +85,8 @@ export default class Game extends Emitter {
                 this.intervals[i] = this.intervalsGenerator.generateInterval();
             }
         }
+
+        this.emit(Game.EVENTS.ALLOWED_INTERVALS_CHANGED, { allowedIntervals: this.#allowedIntervals });
     }
 
     get allowedIntervals() {
