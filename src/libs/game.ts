@@ -38,6 +38,10 @@ export default class Game extends Emitter {
         return GAME_STATES;
     }
 
+    get currentInterval() {
+        return this.intervals[this.currentIntervalIndex];
+    }
+
     get questionScore() {
         return this.#questionScore;
     }
@@ -65,8 +69,9 @@ export default class Game extends Emitter {
 
     set allowedIntervals(allowedIntervals: AllowedIntervals) {
         this.#allowedIntervals = allowedIntervals;
-
         this.intervalsGenerator.allowedIntervals = allowedIntervals;
+
+        const currentInterval = this.currentInterval;
 
         function checkIfIntervalIsAllowed(interval: Interval) {
             for (const [_, value] of allowedIntervals) {
@@ -84,6 +89,14 @@ export default class Game extends Emitter {
             } else if (!checkIfIntervalIsAllowed(interval)) {
                 this.intervals[i] = this.intervalsGenerator.generateInterval();
             }
+        }
+
+        if (currentInterval && !checkIfIntervalIsAllowed(currentInterval)) {
+            this.playCurrentInterval();
+            this.updateState(GAME_STATES.NEW_INTERVAL_PLAYING);
+            this.sequencer.once(Sequencer.EVENTS.SEQUENCE_END, () => {
+                this.updateState(GAME_STATES.WAIT_ANSWER);
+            });
         }
 
         this.emit(Game.EVENTS.ALLOWED_INTERVALS_CHANGED, { allowedIntervals: this.#allowedIntervals });
@@ -125,9 +138,9 @@ export default class Game extends Emitter {
         this.addListeners();
     }
 
-    start() {
+    start(isFirstStart: boolean = true) {
         this.currentIntervalIndex = 0;
-        this.updateState(GAME_STATES.STARTED);
+        this.updateState(GAME_STATES.STARTED, { isFirstStart });
     }
 
     getCurrentInterval() {
@@ -241,6 +254,28 @@ export default class Game extends Emitter {
         this.sequencer.off(Sequencer.EVENTS.SEQUENCE_START, this.handleIntervalStart);
         this.sequencer.off(Sequencer.EVENTS.SEQUENCE_END, this.handleIntervalEnd);
         this.sequencer.off(Sequencer.EVENTS.SEQUENCE_ABORT, this.handleIntervalEnd.bind(this));
+    }
+
+    launchSession() {
+        if (this.currentIntervalIndex !== 0) {
+            console.warn("Game already started");
+            return;
+        }
+
+        this.updateState(GAME_STATES.NEW_INTERVAL_PLAYING);
+        this.playCurrentInterval();
+    }
+
+    reset() {
+        this.score = 0;
+        this.currentIntervalIndex = 0;
+        this.answeredIntervals.clear();
+        this.emit(Game.EVENTS.PROGRESS_CHANGED, {
+            current: this.currentIntervalIndex,
+            total: this.intervals.length,
+        });
+        this.intervals = this.intervalsGenerator.generateAnyIntervals(this.numberOfIntervals);
+        this.start(false);
     }
 
     destroy() {

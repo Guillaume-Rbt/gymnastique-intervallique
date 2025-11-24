@@ -4,7 +4,7 @@ import Button, { type ButtonVariant } from "../ui/Button";
 import { useLayoutEffect, useMemo, useRef } from "react";
 import { createScope, Scope, utils, createTimeline, stagger } from "animejs";
 import { useGameContext } from "../../hooks/useGameContext";
-import Game, { GAME_STATES } from "../../libs/game";
+import { GAME_STATES } from "../../libs/game";
 import { useGameEffect } from "../../hooks/useGameEffect";
 import useBoolean from "../../hooks/useBoolean";
 import { useDevice } from "../../hooks/useDevice";
@@ -41,7 +41,9 @@ export default function AnswerButtons() {
     };
     useGameEffect({
         onEnter: {
-            [GAME_STATES.STARTED]: () => {
+            [GAME_STATES.STARTED]: (data) => {
+                const { isFirstStart } = data;
+                if (!isFirstStart) return;
                 animManager.launch("answer-buttons-enter");
             },
             [GAME_STATES.ANSWERED]: (data) => {
@@ -84,8 +86,7 @@ export default function AnswerButtons() {
                         return {
                             name: "button-completed",
                             callback: (anim: any) => {
-                                game.state = Game.STATES.NEW_INTERVAL_PLAYING;
-                                game.playCurrentInterval();
+                                game.launchSession();
                                 anim.targets.forEach((el: HTMLElement) => {
                                     el.style.removeProperty("opacity");
                                 });

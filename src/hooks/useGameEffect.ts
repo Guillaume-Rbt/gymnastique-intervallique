@@ -80,7 +80,7 @@ export function useGameEffect({ onEnter, onExit, runEnterIfAlreadyInState = fals
             const next = data.state;
             const prev = prevStateRef.current;
             if (prev === next) return;
-
+            prevStateRef.current = next;
             const exitCallbacks = getCallbacks(exitRef.current, prev);
             for (const { fn, once } of exitCallbacks) {
                 fn({ ...data, prev: prev });
@@ -102,8 +102,6 @@ export function useGameEffect({ onEnter, onExit, runEnterIfAlreadyInState = fals
                         : undefined;
                 }
             }
-
-            prevStateRef.current = next;
         };
 
         // Subscribe to game state change events

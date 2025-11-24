@@ -37,12 +37,19 @@ export function End() {
                 root.current?.classList.remove("opacity-0", "pointer-events-none");
             },
         },
+
+        onExit: {
+            [GAME_STATES.ENDED]: () => {
+                root.current?.classList.add("opacity-0", "pointer-events-none");
+                game.launchSession();
+            },
+        },
     });
 
     return (
         <div
             ref={root}
-            className=' bg-[url(./images/background.webp)] bg-center bg-fixed bg-cover bg-no-repeat text-slate-100 position-fixed w-full h-full bg-theme-blue z-999'>
+            className=' bg-[url(./images/background.webp)] bg-center bg-fixed bg-cover bg-no-repeat text-slate-100 position-fixed w-full h-full bg-theme-blue z-999 transition-opacity duration-200'>
             <div className='flex flex-col flex-items-center justify-center h-full w-full bg-theme-blue/80 backdrop-blur-3xl gap-6 p-6 text-center'>
                 {!resultsShown && (
                     <>
@@ -54,7 +61,7 @@ export function End() {
                         </div>{" "}
                         <div className='flex flex-col gap-3 flex-items-stretch'>
                             <Button onClick={showResult} classes={"btn-secondary"} label='Voir les résultats' />
-                            <Button classes={"btn-primary"} label='Nouvelle partie' />
+                            <Button onClick={() => game.reset()} classes={"btn-primary"} label='Nouvelle partie' />
                         </div>
                     </>
                 )}
