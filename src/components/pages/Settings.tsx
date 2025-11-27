@@ -68,16 +68,25 @@ export default function Settings() {
             {createPortal(
                 <div
                     className={` bg-[url(./images/background.webp)] bg-center bg-fixed bg-cover bg-no-repeat position-fixed transition-opacity  duration-200 top-0 left-0 w-full h-full z-20 ${classes}`}>
-                    <div className='w-full h-full bg-theme-blue/80 backdrop-blur-3xl p-4'>
+                    <div className='w-full flex flex-col  color-slate-100 h-full bg-theme-blue/80 backdrop-blur-3xl p-4'>
                         {" "}
-                        <div className='flex w-full'>
+                        <div className='flex w-full '>
                             <Button
                                 onClick={hide}
-                                classes='text-5.5 color-slate-100 px-2.25 py-1.25 flex flex-items-center flex-justify-center border-1 border-solid border-slate-100/40 bg-slate-100/5 rounded-2 hover:bg-white/20'>
+                                classes='text-5.5  px-2.25 py-1.25 flex flex-items-center flex-justify-center border-1 border-solid border-slate-100/40 bg-slate-100/5 rounded-2 hover:bg-white/20'>
                                 <BackIcon />
                             </Button>
                         </div>
-                        {toggleList}
+                        <div className='w-230 max-w-[100%] m-x-auto flex grow overflow-auto scrollbar-hover flex-col'>
+                            <h2 className='text-8 text-center mb-6 mt-4'>Paramètres</h2>
+                            <h3 className='mb-2 text-5'>Sélection des intervalles</h3>
+                            <p className='color-slate-100/70 text-3 mb-6'>
+                                Vous devez sélectionner au moins trois intervalles.
+                            </p>
+                            <div className='grid grid-cols-3 gap-2 max-md:grid-cols-2 max-sm:grid-cols-1'>
+                                {toggleList}
+                            </div>
+                        </div>
                     </div>
                 </div>,
                 document.querySelector("#root")!,
