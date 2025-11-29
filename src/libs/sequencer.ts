@@ -76,8 +76,8 @@ export default class Sequencer extends Emitter {
     playInterval(interval: Interval, gapMs = 100) {
         this.createSequenceFromNotes(
             [
-                `${interval.startNote.name[0]}${interval.startNote.octave}`,
-                `${interval.endNote.name[0]}${interval.endNote.octave}`,
+                `${interval.startNote.name}${interval.startNote.octave}`,
+                `${interval.endNote.name}${interval.endNote.octave}`,
             ],
             gapMs,
         );
@@ -93,11 +93,20 @@ export default class Sequencer extends Emitter {
 
         for (const item of notes) {
             const name = typeof item === "string" ? item : item.name;
+            console.log(name);
             const m = this.markers.find((x) => x.name === name);
             if (!m) {
                 console.warn(`[Sequencer] Marker not found for note "${name}"`);
                 continue;
             }
+
+            console.log({
+                name,
+                offsetMs: m.offset,
+                durationMs: m.duration,
+                startDelayMs: cursorMs,
+            });
+
             this.plan.push({
                 name,
                 offsetMs: m.offset,
@@ -116,6 +125,8 @@ export default class Sequencer extends Emitter {
 
     // --- Helper: create a sequence from an Interval (without playing) ---
     createSequenceFromInterval(interval: Interval, gapMs = 0): PlanStep[] {
+        console.log(interval.startNote.name, interval.endNote.name);
+
         return this.createSequenceFromNotes(
             [
                 `${interval.startNote.name[0]}${interval.startNote.octave}`,
