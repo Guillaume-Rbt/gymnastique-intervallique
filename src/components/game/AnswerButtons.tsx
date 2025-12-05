@@ -8,6 +8,7 @@ import { GAME_STATES } from "../../libs/game";
 import { useGameEffect } from "../../hooks/useGameEffect";
 import useBoolean from "../../hooks/useBoolean";
 import { useDevice } from "../../hooks/useDevice";
+import type { JSAnimation, Target } from "animejs";
 
 const buttonResponseVariants = {
     default: " bg-slate-100/10 border-slate-100/40  hover:bg-slate-100/20 hover:border-slate-100/40",
@@ -85,10 +86,11 @@ export default function AnswerButtons() {
                     onComplete: () => {
                         return {
                             name: "button-completed",
-                            callback: (anim: any) => {
+                            callback: (anim: JSAnimation) => {
+                                console.log(anim);
                                 game.launchSession();
-                                anim.targets.forEach((el: HTMLElement) => {
-                                    el.style.removeProperty("opacity");
+                                anim.targets.forEach((el: Target) => {
+                                    (el as HTMLElement).style.removeProperty("opacity");
                                 });
                             },
                         };

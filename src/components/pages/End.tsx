@@ -6,23 +6,17 @@ import Button from "../ui/Button";
 import useBoolean from "../../hooks/useBoolean";
 import BackIcon from "../../assets/images/back.svg?react";
 import ButtonPlay from "../game/ButtonPlay";
-import type { Interval } from "../../libs/interval-generator";
+import type { AnsweredIntervalType } from "../../libs/game";
 import { buttons, intervals } from "../../utils/constants";
 
 export function End() {
     const root = useRef<HTMLDivElement | null>(null);
 
     const { game } = useGameContext();
+
+    const [visible, setVisibleTrue, setVisibleFalse] = useBoolean(false);
     const [resultsShown, showResult, hideResult] = useBoolean(false);
-    const [answeredInterval, setAnsweredInterval] = useState<
-        Set<{
-            id: string;
-            answer: string;
-            correct: boolean;
-            expected: string;
-            interval: Interval;
-        }>
-    >(new Set());
+    const [answeredInterval, setAnsweredInterval] = useState<AnsweredIntervalType[]>([]);
 
     useLayoutEffect(() => {
         if (!root.current) return;
@@ -33,14 +27,14 @@ export function End() {
     useGameEffect({
         onEnter: {
             [GAME_STATES.ENDED]: () => {
-                setAnsweredInterval(game.answeredIntervals);
-                root.current?.classList.remove("opacity-0", "pointer-events-none");
+                setAnsweredInterval([...game.answeredIntervals.values()]);
+                setVisibleTrue();
             },
         },
 
         onExit: {
             [GAME_STATES.ENDED]: () => {
-                root.current?.classList.add("opacity-0", "pointer-events-none");
+                setVisibleFalse();
                 game.launchSession();
             },
         },
@@ -49,7 +43,7 @@ export function End() {
     return (
         <div
             ref={root}
-            className=' bg-[url(./images/background.webp)] bg-center bg-fixed bg-cover bg-no-repeat text-slate-100 position-fixed w-full h-full bg-theme-blue z-999 transition-opacity duration-200'>
+            className={`bg-[url(./images/background.webp)] bg-center bg-fixed bg-cover bg-no-repeat text-slate-100 position-fixed w-full h-full bg-theme-blue z-999 transition-opacity duration-200 ${visible ? "" : "opacity-0 pointer-events-none"}`}>
             <div className='flex flex-col flex-items-center justify-center h-full w-full bg-theme-blue/80 backdrop-blur-3xl gap-6 p-6 text-center'>
                 {!resultsShown && (
                     <>
@@ -87,7 +81,7 @@ export function End() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {[...answeredInterval.values()]
+                                {answeredInterval
                                     .map((item) => {
                                         const answer =
                                             intervals.indexOf(item.answer) == -1

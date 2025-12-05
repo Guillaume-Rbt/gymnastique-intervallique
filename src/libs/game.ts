@@ -16,6 +16,13 @@ export enum GAME_STATES {
 }
 
 type GameConfig = { allowedIntervals: AllowedIntervals };
+export type AnsweredIntervalType = {
+    id: string;
+    answer: string;
+    correct: boolean;
+    expected: string;
+    interval: Interval;
+};
 
 export default class Game extends Emitter {
     config: GameConfig = { allowedIntervals: new Map() };
@@ -26,8 +33,7 @@ export default class Game extends Emitter {
     listenersPerState: Map<GAME_STATES, Function[]> = new Map();
     numberOfIntervals: number = 10;
     sequencer: Sequencer = new Sequencer();
-    answeredIntervals: Set<{ id: string; answer: string; correct: boolean; expected: string; interval: Interval }> =
-        new Set();
+    answeredIntervals: Set<AnsweredIntervalType> = new Set();
     #score: number = 0;
     #questionScore: number = 5;
     #state: GAME_STATES = GAME_STATES.INIT;
@@ -181,6 +187,7 @@ export default class Game extends Emitter {
             this.playCurrentInterval();
             this.updateState(GAME_STATES.NEW_INTERVAL_PLAYING);
             this.sequencer.once(Sequencer.EVENTS.SEQUENCE_END, () => {
+                if (this.state !== GAME_STATES.NEW_INTERVAL_PLAYING) return;
                 this.updateState(GAME_STATES.WAIT_ANSWER);
             });
 
@@ -246,6 +253,7 @@ export default class Game extends Emitter {
         this.sequencer.on(Sequencer.EVENTS.SEQUENCE_ABORT, this.handleIntervalEnd.bind(this));
 
         this.sequencer.once(Sequencer.EVENTS.SEQUENCE_END, () => {
+            if (this.state !== GAME_STATES.NEW_INTERVAL_PLAYING) return;
             this.updateState(GAME_STATES.WAIT_ANSWER);
         });
     }
