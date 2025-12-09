@@ -4,6 +4,7 @@ import { useLayoutEffect, useRef } from "react";
 import { createScope, createTimeline, Scope, utils, stagger } from "animejs";
 import { useGameEffect } from "../../hooks/useGameEffect";
 import Game from "../../libs/game";
+import useBoolean from "../../hooks/useBoolean";
 
 export default function Home() {
     const { game, animManager } = useGameContext() as GameContext;
@@ -19,9 +20,12 @@ export default function Home() {
         else itemRefs.current.delete(id); // element unmounted -> cleanup
     };
 
+    const [shown, setShownTrue, setShownFalse] = useBoolean(false);
+
     useGameEffect({
         onEnter: {
             [Game.STATES.READY]: () => {
+                document.querySelector(".loader")?.remove();
                 animManager.launch("home-enter");
             },
         },
@@ -43,6 +47,14 @@ export default function Home() {
             function homeEnter() {
                 const timeline = createTimeline({
                     defaults: { ease: "outQuad" },
+                    onBegin: () => {
+                        return {
+                            name: "home-enter",
+                            callback: () => {
+                                setShownTrue();
+                            },
+                        };
+                    },
                 });
 
                 timeline
@@ -68,7 +80,7 @@ export default function Home() {
                     onComplete: () => ({
                         name: "home-exit",
                         callback: () => {
-                            root.current?.classList.add("pointer-events-none");
+                            setShownFalse();
                             game.start();
                         },
                     }),
@@ -106,7 +118,7 @@ export default function Home() {
     return (
         <div
             ref={root}
-            className=' home position-fixed w-full p-7.8 p-be-15 h-full bg-[url(./images/background.webp)] bg-center bg-fixed bg-cover bg-no-repeat z-100 flex flex-items-center flex-col isolate container-margin-y-auto gap-8'>
+            className={`home position-fixed w-full p-7.8 p-be-15 h-full bg-[url(./images/background.webp)] bg-center bg-fixed bg-cover bg-no-repeat z-100 flex flex-items-center flex-col isolate container-margin-y-auto gap-8 ${shown ? "" : "pointer-events-none"}`}>
             <h1 ref={setItemRef("home_title")} className='font-bold text-13 color-slate-100 text-center max-w-86'>
                 Gymnastique Intervallique
             </h1>

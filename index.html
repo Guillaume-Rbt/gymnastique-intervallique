@@ -7,10 +7,41 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gymnastique Intervallique</title>
 </head>
+<style>
+  .loader {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: rgba(26, 43, 78, 1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .spinner {
+    width: 17.6px;
+    height: 17.6px;
+    border-radius: 17.6px;
+    box-shadow: 44px 0px 0 0 rgba(255, 255, 255, 0.2), 35.6px 26px 0 0 rgba(255, 255, 255, 0.4), 13.64px 41.8px 0 0 rgba(255, 255, 255, 0.6), -13.64px 41.8px 0 0 rgba(255, 255, 255, 0.8), -35.6px 26px 0 0 #ffffff;
+    animation: spinner-b87k6z 1s infinite linear;
+  }
+
+  @keyframes spinner-b87k6z {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
 
 <body
   class="font-urbanist bg-[url('/images/background.webp')]  overflow-hidden bg-center bg-fixed bg-cover bg-no-repeat h-full">
+  <div id="setting-root" class="w-full h-full  absolute"></div>
   <div id="root" class="w-full h-full bg-theme-blue bg-opacity-80 backdrop-blur-3xl"></div>
+  <div class="loader">
+    <div class="spinner"></div>
+  </div>
   <script type="module" src="/src/main.tsx"></script>
 </body>
 

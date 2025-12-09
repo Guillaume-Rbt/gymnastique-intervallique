@@ -89,7 +89,7 @@ export default function Settings() {
                         </div>
                     </div>
                 </div>,
-                document.querySelector("#root")!,
+                document.querySelector("#setting-root")!,
             )}
         </>
     );
