@@ -3,6 +3,7 @@ import Emitter from "../emitter-mixin";
 
 export type AnimationsOptions = {
     name?: string;
+    initOnLaunch?: boolean;
     initializer: () => void;
     executor: () => Timeline;
 };
@@ -20,6 +21,7 @@ export default class Animation extends Emitter {
     executor: () => Timeline;
     name: string = "";
     completed: boolean = false;
+    initOnLaunch: boolean = false;
 
     instance: Timeline | null = null;
 
@@ -72,10 +74,12 @@ export default class Animation extends Emitter {
         this.initializer = options.initializer || this.initializer;
         this.executor = options.executor;
         this.name = options.name || this.name;
+        this.initOnLaunch = options.initOnLaunch || false;
         this.init();
     }
 
     init() {
+        if (this.initOnLaunch) return;
         this.initializer();
     }
 
@@ -126,6 +130,9 @@ export default class Animation extends Emitter {
     }
 
     launch() {
+        if (this.initOnLaunch) {
+            this.initializer();
+        }
         if (!this.instance) {
             this.instance = this.executor();
             this.registerCallbacks(this.instance);

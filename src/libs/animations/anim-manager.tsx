@@ -59,6 +59,7 @@ export class AnimationManager extends Emitter {
     ) {
         const animation = new Animation({
             name: options.name,
+            initOnLaunch: options.initOnLaunch || false,
             initializer: options.initializer,
             executor: options.executor,
         });

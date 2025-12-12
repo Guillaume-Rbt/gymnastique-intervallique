@@ -8,34 +8,106 @@ import BackIcon from "../../assets/images/back.svg?react";
 import ButtonPlay from "../game/ButtonPlay";
 import type { AnsweredIntervalType } from "../../libs/game";
 import { buttons, intervals } from "../../utils/constants";
+import { createScope, createTimeline, Scope, utils } from "animejs";
 
 export function End() {
     const root = useRef<HTMLDivElement | null>(null);
+    const scope = useRef<Scope | null>(null);
 
-    const { game } = useGameContext();
+    const { game, animManager } = useGameContext();
 
+    const itemsRef = useRef(new Map<string, HTMLElement>());
+
+    const setItemRef = (id: string) => (el: HTMLElement | null) => {
+        if (el) itemsRef.current.set(id, el);
+        else itemsRef.current.delete(id); // element unmounted -> cleanup
+    };
     const [visible, setVisibleTrue, setVisibleFalse] = useBoolean(false);
     const [resultsShown, showResult, hideResult] = useBoolean(false);
     const [answeredInterval, setAnsweredInterval] = useState<AnsweredIntervalType[]>([]);
 
     useLayoutEffect(() => {
         if (!root.current) return;
+        if (scope.current) return;
 
-        root.current.classList.add("opacity-0", "pointer-events-none");
+        scope.current = createScope({ root: root.current }).add((_) => {
+            if (!root.current) return;
+
+            function endEnterInit() {
+                utils.set(root.current!, { opacity: 0 });
+            }
+
+            function endEnterPlay() {
+                const timeline = createTimeline({
+                    defaults: { ease: "outQuad" },
+                    onBegin: () => {
+                        return {
+                            name: "end-enter",
+                            callback: () => {
+                                setVisibleTrue();
+                            },
+                        };
+                    },
+                });
+
+                timeline.add(root.current!, {
+                    opacity: [0, 1],
+                    duration: 400,
+                });
+
+                return timeline;
+            }
+
+            function endExitInit() {
+                utils.set(root.current!, { opacity: 1 });
+            }
+
+            function endExitPlay() {
+                const timeline = createTimeline({
+                    defaults: { ease: "outQuad" },
+                    onComplete: () => {
+                        return {
+                            name: "end-exit-end",
+                            callback: () => {
+                                setVisibleFalse();
+                                game.launchSession();
+                            },
+                        };
+                    },
+                });
+                timeline.add(root.current!, {
+                    opacity: [1, 0],
+                    duration: 400,
+                });
+                return timeline;
+            }
+
+            animManager.register({
+                name: "end-enter",
+                initializer: endEnterInit,
+                executor: endEnterPlay,
+            });
+
+            animManager.register({
+                name: "end-exit",
+                initOnLaunch: true,
+                initializer: endExitInit,
+                executor: endExitPlay,
+            });
+        });
     }, []);
 
     useGameEffect({
         onEnter: {
             [GAME_STATES.ENDED]: () => {
                 setAnsweredInterval([...game.answeredIntervals.values()]);
-                setVisibleTrue();
+                animManager.launch("end-enter");
             },
         },
 
         onExit: {
             [GAME_STATES.ENDED]: () => {
-                setVisibleFalse();
-                game.launchSession();
+                animManager.launch("end-exit");
             },
         },
     });
@@ -43,17 +115,20 @@ export function End() {
     return (
         <div
             ref={root}
-            className={`bg-[url(./images/background.webp)] bg-center bg-fixed bg-cover bg-no-repeat text-slate-100 position-fixed w-full h-full bg-theme-blue z-999 transition-opacity duration-200 ${visible ? "" : "opacity-0 pointer-events-none"}`}>
-            <div className='flex flex-col flex-items-center justify-center h-full w-full bg-theme-blue/80 backdrop-blur-3xl gap-6 p-6 text-center'>
+            className={`bg-[url(./images/background.webp)] bg-center bg-fixed bg-cover bg-no-repeat text-slate-100 position-fixed w-full h-full bg-theme-blue z-999 transition-opacity duration-200 ${visible ? "" : "pointer-events-none"}`}>
+            <div className='flex flex-col flex-items-center justify-center h-full w-full bg-theme-blue/80 backdrop-blur-3xl gap-10 p-6 text-center'>
                 {!resultsShown && (
                     <>
-                        <h1 className='text-4xl font-bold'>Gymnastique Intervallique</h1>
-                        <p>Partie terminée</p>
-                        <div className='flex flex-col'>
+                        <h1 ref={setItemRef("title")} className='text-4xl font-bold'>
+                            Gymnastique Intervallique
+                        </h1>
+                        <div
+                            ref={setItemRef("result")}
+                            className='flex flex-col gap-2 text-7 border-1 border-solid border-slate-100 p-5 rounded-3'>
                             <p>Vous avez obtenu&nbsp;:</p>
                             <p>{game.score} points</p>
-                        </div>{" "}
-                        <div className='flex flex-col gap-3 flex-items-stretch'>
+                        </div>
+                        <div ref={setItemRef("buttons")} className='flex flex-col gap-3 flex-items-stretch'>
                             <Button onClick={showResult} classes={"btn-secondary"} label='Voir les résultats' />
                             <Button onClick={() => game.reset()} classes={"btn-primary"} label='Nouvelle partie' />
                         </div>

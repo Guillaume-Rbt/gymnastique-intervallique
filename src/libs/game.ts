@@ -265,6 +265,7 @@ export default class Game extends Emitter {
     }
 
     launchSession() {
+        console.trace();
         if (this.currentIntervalIndex !== 0) {
             console.warn("Game already started");
             return;
