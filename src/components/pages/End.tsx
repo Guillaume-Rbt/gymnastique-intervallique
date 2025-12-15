@@ -82,6 +82,7 @@ export function End() {
                         return {
                             name: "end-exit-end",
                             callback: () => {
+                                animManager.getAnimationById("end-enter")?.reset();
                                 animManager.getAnimationById("end-exit")?.reset();
                                 setVisibleFalse();
                                 game.launchSession();
@@ -114,6 +115,7 @@ export function End() {
     useGameEffect({
         onEnter: {
             [GAME_STATES.ENDED]: () => {
+                console.log("Game ended, showing end page");
                 setAnsweredInterval([...game.answeredIntervals.values()]);
                 animManager.launch("end-enter");
             },
