@@ -15,13 +15,15 @@ const getSnapshot = (): DeviceSnapshot => {
     const ua = navigator.userAgent;
 
     let type: DeviceType;
-    if (width <= 480 || /Mobi|Android|iPhone|iPod/.test(ua)) {
+    if (width <= 480) {
         type = "mobile";
-    } else if ((width > 480 && width <= 1024) || /Tablet|iPad/.test(ua)) {
+    } else if (width > 480 && width <= 1024) {
         type = "tablet";
     } else {
         type = "desktop";
     }
+
+    console.log("Device type:", type);
 
     const snapshot: DeviceSnapshot = { type, width, ua };
 

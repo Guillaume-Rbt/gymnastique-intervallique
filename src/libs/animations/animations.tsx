@@ -83,6 +83,12 @@ export default class Animation extends Emitter {
         this.initializer();
     }
 
+    reset() {
+        this.completed = false;
+        this.instance = null;
+        this.init();
+    }
+
     registerCallbacks(instance: Timeline | Tickable | Tween) {
         CALLBACK_NAMES.forEach((callbackName) => {
             const callback = (instance as Record<string, any>)[callbackName];

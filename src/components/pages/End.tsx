@@ -8,7 +8,7 @@ import BackIcon from "../../assets/images/back.svg?react";
 import ButtonPlay from "../game/ButtonPlay";
 import type { AnsweredIntervalType } from "../../libs/game";
 import { buttons, intervals } from "../../utils/constants";
-import { createScope, createTimeline, Scope, utils } from "animejs";
+import { createScope, createTimeline, Scope, utils, stagger } from "animejs";
 
 export function End() {
     const root = useRef<HTMLDivElement | null>(null);
@@ -35,6 +35,8 @@ export function End() {
 
             function endEnterInit() {
                 utils.set(root.current!, { opacity: 0 });
+
+                utils.set([...itemsRef.current.values()], { opacity: 0, translateY: -20 });
             }
 
             function endEnterPlay() {
@@ -50,10 +52,21 @@ export function End() {
                     },
                 });
 
-                timeline.add(root.current!, {
-                    opacity: [0, 1],
-                    duration: 400,
-                });
+                timeline
+                    .add(root.current!, {
+                        opacity: [0, 1],
+                        duration: 400,
+                    })
+                    .add(
+                        [...itemsRef.current.values()],
+                        {
+                            opacity: [0, 1],
+                            translateY: [-20, 0],
+                            duration: 400,
+                            delay: stagger(100),
+                        },
+                        "+=200",
+                    );
 
                 return timeline;
             }
@@ -69,6 +82,7 @@ export function End() {
                         return {
                             name: "end-exit-end",
                             callback: () => {
+                                animManager.getAnimationById("end-exit")?.reset();
                                 setVisibleFalse();
                                 game.launchSession();
                             },
@@ -128,9 +142,18 @@ export function End() {
                             <p>Vous avez obtenu&nbsp;:</p>
                             <p>{game.score} points</p>
                         </div>
-                        <div ref={setItemRef("buttons")} className='flex flex-col gap-3 flex-items-stretch'>
-                            <Button onClick={showResult} classes={"btn-secondary"} label='Voir les résultats' />
-                            <Button onClick={() => game.reset()} classes={"btn-primary"} label='Nouvelle partie' />
+                        <div className='flex flex-col gap-3 flex-items-stretch'>
+                            <div ref={setItemRef("button-results")}>
+                                <Button onClick={showResult} classes={"btn-secondary"} label='Voir les résultats' />
+                            </div>
+
+                            <div ref={setItemRef("button-new-game")}>
+                                <Button
+                                    onClick={() => game.reset()}
+                                    classes={"btn-primary w-full"}
+                                    label='Nouvelle partie'
+                                />
+                            </div>
                         </div>
                     </>
                 )}
