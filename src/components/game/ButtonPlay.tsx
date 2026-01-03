@@ -48,7 +48,6 @@ export default function ButtonPlay({
                 disable();
             },
             [GAME_STATES.WAIT_ANSWER]: () => {
-                console.log("enabling play button");
                 enable();
             },
         },

@@ -31,7 +31,6 @@ export default function Volume() {
         const trackRect = trackRef.current.getBoundingClientRect();
         const thumbRect = thumbRef.current.getBoundingClientRect();
         const offsetY = trackRect.bottom - e.clientY;
-        console.log(offsetY / (trackRect.height - thumbRect.height));
         const newVolume = Utils.clamp(0, offsetY / (trackRect.height - thumbRect.height), 1);
         setVolume(newVolume);
         game.sequencer.volume = newVolume;

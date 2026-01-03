@@ -87,7 +87,6 @@ export default function AnswerButtons() {
                         return {
                             name: "button-completed",
                             callback: (anim: JSAnimation) => {
-                                console.log(anim);
                                 game.launchSession();
                                 anim.targets.forEach((el: Target) => {
                                     (el as HTMLElement).style.removeProperty("opacity");

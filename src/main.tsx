@@ -17,7 +17,6 @@ createRoot(document.getElementById("root")!).render(
 window.addEventListener("load", () => {
     const loader = document.querySelector(".loader") as HTMLElement;
 
-    console.log("loader");
     if (loader) {
         loader.style.opacity = "0";
     }

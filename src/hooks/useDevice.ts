@@ -23,8 +23,6 @@ const getSnapshot = (): DeviceSnapshot => {
         type = "desktop";
     }
 
-    console.log("Device type:", type);
-
     const snapshot: DeviceSnapshot = { type, width, ua };
 
     if (
