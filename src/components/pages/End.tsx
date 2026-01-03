@@ -130,7 +130,7 @@ export function End() {
     return (
         <div
             ref={root}
-            className={`bg-[url(/images/background.webp)] bg-center bg-fixed bg-cover bg-no-repeat text-slate-100 position-fixed w-full h-full bg-theme-blue z-999 transition-opacity duration-200 ${visible ? "" : "pointer-events-none"}`}>
+            className={`bg-[image:inherit] bg-center bg-fixed bg-cover bg-no-repeat text-slate-100 position-fixed w-full h-full bg-theme-blue z-999 transition-opacity duration-200 ${visible ? "" : "pointer-events-none"}`}>
             <div className='flex flex-col flex-items-center justify-center h-full w-full bg-theme-blue/80 backdrop-blur-3xl gap-10 p-6 text-center'>
                 {!resultsShown && (
                     <>

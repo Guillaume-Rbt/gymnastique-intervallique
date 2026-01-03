@@ -118,7 +118,7 @@ export default function Home() {
     return (
         <div
             ref={root}
-            className={`home position-fixed w-full p-7.8 p-be-15 h-full bg-[url(./images/background.webp)] bg-center bg-fixed bg-cover bg-no-repeat z-100 flex flex-items-center flex-col isolate container-margin-y-auto gap-8 ${shown ? "" : "pointer-events-none"}`}>
+            className={`home position-fixed w-full p-7.8 p-be-15 h-full bg-[image:inherit] bg-center bg-fixed bg-cover bg-no-repeat z-100 flex flex-items-center flex-col isolate container-margin-y-auto gap-8 ${shown ? "" : "pointer-events-none"}`}>
             <h1 ref={setItemRef("home_title")} className='font-bold text-13 color-slate-100 text-center max-w-86'>
                 Gymnastique Intervallique
             </h1>
