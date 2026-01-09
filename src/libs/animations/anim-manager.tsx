@@ -1,6 +1,6 @@
 import Emitter from "../emitter-mixin";
 import Animation from "./animations";
-import type { AnimationsOptions } from "./animations";
+import type { AnimationsOptions } from "../types";
 
 export class AnimationManager extends Emitter {
     static get ANIMATION_BEGIN() {

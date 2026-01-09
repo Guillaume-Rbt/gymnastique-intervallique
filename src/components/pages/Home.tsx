@@ -1,5 +1,6 @@
 import Button from "../ui/Button";
-import { useGameContext, type GameContext } from "../../hooks/useGameContext";
+import { useGameContext } from "../../hooks/useGameContext";
+import { type GameContext } from "../../libs/types";
 import { useLayoutEffect, useRef } from "react";
 import { createScope, createTimeline, Scope, utils, stagger } from "animejs";
 import { useGameEffect } from "../../hooks/useGameEffect";

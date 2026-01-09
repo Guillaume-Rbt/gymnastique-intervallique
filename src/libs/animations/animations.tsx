@@ -1,12 +1,6 @@
 import { animate, type Callback, type JSAnimation, type Tickable, type Timeline, type Tween } from "animejs";
+import type { AnimationsOptions } from "../types";
 import Emitter from "../emitter-mixin";
-
-export type AnimationsOptions = {
-    name?: string;
-    initOnLaunch?: boolean;
-    initializer: () => void;
-    executor: () => Timeline;
-};
 
 const CALLBACK_NAMES = ["onBegin", "onComplete", "onBeforeUpdate", "onUpdate", "onLoop", "onPause"];
 

@@ -6,7 +6,7 @@ import Toggle from "../ui/Toggle";
 import { intervals, buttons } from "../../utils/constants";
 import { useGameContext } from "../../hooks/useGameContext";
 import { useEffect, useReducer } from "react";
-import type { AllowedIntervals } from "../../libs/interval-generator";
+import type { AllowedIntervals } from "../../libs/types";
 import BackIcon from "../../assets/images/back.svg?react";
 
 function reducer(state: AllowedIntervals, action: { type: string; interval: number }): AllowedIntervals {

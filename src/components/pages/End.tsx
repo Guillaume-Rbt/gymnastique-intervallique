@@ -6,7 +6,7 @@ import Button from "../ui/Button";
 import useBoolean from "../../hooks/useBoolean";
 import BackIcon from "../../assets/images/back.svg?react";
 import ButtonPlay from "../game/ButtonPlay";
-import type { AnsweredIntervalType } from "../../libs/game";
+import type { AnsweredIntervalType } from "../../libs/types";
 import { buttons, intervals } from "../../utils/constants";
 import { createScope, createTimeline, Scope, utils, stagger } from "animejs";
 

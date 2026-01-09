@@ -1,18 +1,6 @@
+import type { ButtonProps } from "../../libs/types";
 import Utils from "../../utils/utils";
 import React from "react";
-export type ButtonVariants = { [key: string]: string | [] };
-export type ButtonVariant = keyof ButtonVariants;
-
-type ButtonProps = {
-    label?: string;
-    onClick?: () => void;
-    classes?: string | string[];
-    variant?: ButtonVariant;
-    variants?: ButtonVariants;
-    children?: any;
-    ref?: React.Ref<HTMLButtonElement>;
-};
-
 export default function Button({
     label = "",
     onClick = () => {},

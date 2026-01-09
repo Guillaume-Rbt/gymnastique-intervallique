@@ -3,7 +3,8 @@ import { Interval } from "./interval-generator";
 import RandomIntervalGenerator from "./interval-generator";
 import { intervals } from "../utils/constants";
 import Sequencer from "./sequencer";
-import type { AllowedIntervals } from "./interval-generator";
+import type { AllowedIntervals } from "./types";
+import type { GameConfig, AnsweredIntervalType } from "./types";
 
 export enum GAME_STATES {
     INIT = "init",
@@ -14,15 +15,6 @@ export enum GAME_STATES {
     ANSWERED = "answered",
     ENDED = "ended",
 }
-
-type GameConfig = { allowedIntervals: AllowedIntervals };
-export type AnsweredIntervalType = {
-    id: string;
-    answer: string;
-    correct: boolean;
-    expected: string;
-    interval: Interval;
-};
 
 export default class Game extends Emitter {
     config: GameConfig = { allowedIntervals: new Map() };
@@ -265,7 +257,6 @@ export default class Game extends Emitter {
     }
 
     launchSession() {
-        console.trace();
         if (this.currentIntervalIndex !== 0) {
             console.warn("Game already started");
             return;

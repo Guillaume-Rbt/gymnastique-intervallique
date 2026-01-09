@@ -1,6 +1,7 @@
 import { useGameAllowedIntervals } from "../../hooks/useGameAllowedIntervals";
 import { buttons, buttonsMobile } from "../../utils/constants";
-import Button, { type ButtonVariant } from "../ui/Button";
+import Button from "../ui/Button";
+import { type ButtonVariant } from "../../libs/types";
 import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
 import { createScope, Scope, utils, createTimeline, stagger } from "animejs";
 import { useGameContext } from "../../hooks/useGameContext";

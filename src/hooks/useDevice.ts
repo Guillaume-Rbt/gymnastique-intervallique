@@ -1,12 +1,5 @@
 import { useSyncExternalStore } from "react";
-
-export type DeviceType = "mobile" | "tablet" | "desktop";
-
-type DeviceSnapshot = {
-    type: DeviceType;
-    width: number;
-    ua: string;
-};
+import type { DeviceSnapshot, DeviceType } from "../libs/types";
 
 let lastSnapshot: DeviceSnapshot | null = null;
 

@@ -1,11 +1,7 @@
 import { createContext, useContext, useRef } from "react";
 import Game from "../libs/game";
 import { AnimationManager } from "../libs/animations/anim-manager";
-
-export type GameContext = {
-    game: Game;
-    animManager: AnimationManager;
-};
+import type { GameContext } from "../libs/types";
 
 const GameContext = createContext<GameContext | undefined>(undefined);
 

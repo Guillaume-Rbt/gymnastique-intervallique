@@ -1,11 +1,7 @@
 import { intervals, notes } from "../utils/constants";
 import Utils from "../utils/utils";
+import type { intervalGeneratorOptions, AllowedIntervals } from "./types";
 import UUID from "./uuid";
-
-export type AllowedIntervals = Map<number, { text: string; enabled: boolean }>;
-type intervalGeneratorOptions = {
-    allowedIntervals: AllowedIntervals;
-};
 
 export default class RandomIntervalGenerator {
     id: string = UUID.generate();
