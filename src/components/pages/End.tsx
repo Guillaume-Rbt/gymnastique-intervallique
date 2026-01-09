@@ -112,6 +112,8 @@ export function End() {
         });
     }, []);
 
+    console.log(game);
+
     useGameEffect({
         onEnter: {
             [GAME_STATES.ENDED]: () => {

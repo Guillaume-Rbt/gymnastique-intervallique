@@ -97,10 +97,10 @@ export class Interval {
         this.startNote = this.#notes.startNote;
         this.endNote = this.#notes.endNote;
 
-        this.adjustlOctave = this.adjustlOctave.bind(this);
+        this.adjustOctave = this.adjustOctave.bind(this);
     }
 
-    adjustlOctave({ startNote, endNote }: { startNote: Note; endNote: Note }) {
+    adjustOctave({ startNote, endNote }: { startNote: Note; endNote: Note }) {
         const [octaveMin, octaveMax] = this.octaveRange;
 
         switch (this.direction) {
@@ -138,10 +138,10 @@ export class Interval {
         const endNoteIndex =
             this.direction == "asc"
                 ? startNote.index + this.length > 11
-                    ? startNote.index + this.length - 12
+                    ? (startNote.index + this.length) % 12
                     : startNote.index + this.length
                 : startNote.index - this.length < 0
-                  ? 12 + (startNote.index - this.length)
+                  ? (((startNote.index - this.length) % 12) + 12) % 12
                   : startNote.index - this.length;
 
         const endNote = new Note(
@@ -152,6 +152,6 @@ export class Interval {
                     : startNote.octave - 1
                 : startNote.octave,
         );
-        return this.adjustlOctave({ startNote, endNote });
+        return this.adjustOctave({ startNote, endNote });
     }
 }

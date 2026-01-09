@@ -133,7 +133,6 @@ export default class Game extends Emitter {
         this.playCurrentInterval = this.playCurrentInterval.bind(this);
 
         Game.instance = this;
-        this.addListeners();
     }
 
     start(isFirstStart: boolean = true) {
@@ -187,6 +186,7 @@ export default class Game extends Emitter {
         }
 
         this.updateState(GAME_STATES.ENDED);
+        this.removeListeners();
         this.sequencer.clear();
         return false;
     }
@@ -243,16 +243,11 @@ export default class Game extends Emitter {
         this.sequencer.on(Sequencer.EVENTS.SEQUENCE_END, this.handleIntervalEnd.bind(this));
 
         this.sequencer.on(Sequencer.EVENTS.SEQUENCE_ABORT, this.handleIntervalEnd.bind(this));
-
-        this.sequencer.once(Sequencer.EVENTS.SEQUENCE_END, () => {
-            if (this.state !== GAME_STATES.NEW_INTERVAL_PLAYING) return;
-            this.updateState(GAME_STATES.WAIT_ANSWER);
-        });
     }
 
     removeListeners() {
         this.sequencer.off(Sequencer.EVENTS.SEQUENCE_START, this.handleIntervalStart);
-        this.sequencer.off(Sequencer.EVENTS.SEQUENCE_END, this.handleIntervalEnd);
+        this.sequencer.off(Sequencer.EVENTS.SEQUENCE_END);
         this.sequencer.off(Sequencer.EVENTS.SEQUENCE_ABORT, this.handleIntervalEnd.bind(this));
     }
 
@@ -261,8 +256,16 @@ export default class Game extends Emitter {
             console.warn("Game already started");
             return;
         }
-
+        this.addListeners();
         this.updateState(GAME_STATES.NEW_INTERVAL_PLAYING);
+
+        this.sequencer.once(Sequencer.EVENTS.SEQUENCE_END, () => {
+            if (this.state !== GAME_STATES.NEW_INTERVAL_PLAYING) return;
+            this.updateState(GAME_STATES.WAIT_ANSWER);
+        });
+
+        this.sequencer.on(Sequencer.EVENTS.SEQUENCE_END, this.handleIntervalEnd.bind(this));
+
         this.playCurrentInterval();
     }
 

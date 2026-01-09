@@ -31,7 +31,13 @@ export default class Emitter {
         }
         return this;
     }
-    off(event: string, fn: Listener): this {
+    off(event: string, fn?: Listener | undefined): this {
+        if (!fn) {
+            this.listeners[event] = [];
+            delete this.listeners[event];
+            return this;
+        }
+
         return this.removeListener(event, fn);
     }
 
