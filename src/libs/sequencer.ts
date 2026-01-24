@@ -6,8 +6,8 @@ type Marker = { name: string; offset: number; duration: number };
 type PlanStep = { name: string; offsetMs: number; durationMs: number; startDelayMs: number };
 
 export default class Sequencer extends Emitter {
-    static JSON_URL = "/json/";
-    static AUDIO_URL = "/audio/";
+    static JSON_URL = "./json/";
+    static AUDIO_URL = "./audio/";
 
     static EVENTS = {
         AUDIO_READY: "audio.ready",

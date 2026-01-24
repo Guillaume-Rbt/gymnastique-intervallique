@@ -1,11 +1,11 @@
-import Button from "../ui/Button";
-import { useGameContext } from "../../hooks/useGameContext";
-import { type GameContext } from "../../libs/types";
+import Button from "../components/ui/Button";
+import { useGameContext } from "../hooks/useGameContext";
+import { type GameContext } from "../libs/types";
 import { useLayoutEffect, useRef } from "react";
 import { createScope, createTimeline, Scope, utils, stagger } from "animejs";
-import { useGameEffect } from "../../hooks/useGameEffect";
-import Game from "../../libs/game";
-import useBoolean from "../../hooks/useBoolean";
+import { useGameEffect } from "../hooks/useGameEffect";
+import Game from "../libs/game";
+import useBoolean from "../hooks/useBoolean";
 
 export default function Home() {
     const { game, animManager } = useGameContext() as GameContext;
@@ -125,7 +125,7 @@ export default function Home() {
             </h1>
             <div className='position-absolute backdrop-blur-3xl bg-theme-blue bg-opacity-80  top-0 left-0 w-full h-full z--1'>
                 <img
-                    src='/images/keyboard.webp'
+                    src='./images/keyboard.webp'
                     className='mask-[linear-gradient(180deg,rgba(0,0,0,0)_0%,rgba(0,0,0,0.5)_100%)] position-absolute w-full bottom-[8%]'
                 />
                 <div className='position-absolute w-full h-full bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,var(--colors-theme-blue)_100%)] top-0 left-0'></div>

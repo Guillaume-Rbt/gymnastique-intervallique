@@ -6,7 +6,7 @@ import { useGameEffect } from "../../hooks/useGameEffect";
 import Timer from "../ui/Timer";
 import Progress from "../game/Progress";
 import Score from "../game/Score";
-import Settings from "../pages/Settings";
+import Settings from "../../pages/Settings";
 
 export default function Header() {
     const { animManager } = useGameContext();

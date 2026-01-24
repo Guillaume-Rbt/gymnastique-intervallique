@@ -12,6 +12,7 @@
   "dependencies": {
     "@unocss/reset": "^66.5.1",
     "animejs": "^4.1.4",
+    "pipwerks-scorm-api-wrapper": "^0.1.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

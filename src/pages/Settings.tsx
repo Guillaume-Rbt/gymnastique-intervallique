@@ -1,13 +1,13 @@
-import useBoolean from "../../hooks/useBoolean";
-import Button from "../ui/Button";
-import SettingsIcon from "../../assets/images/settings.svg?react";
+import useBoolean from "../hooks/useBoolean";
+import Button from "../components/ui/Button";
+import SettingsIcon from "../assets/images/settings.svg?react";
 import { createPortal } from "react-dom";
-import Toggle from "../ui/Toggle";
-import { intervals, buttons } from "../../utils/constants";
-import { useGameContext } from "../../hooks/useGameContext";
+import Toggle from "../components/ui/Toggle";
+import { intervals, buttons } from "../utils/constants";
+import { useGameContext } from "../hooks/useGameContext";
 import { useEffect, useReducer } from "react";
-import type { AllowedIntervals } from "../../libs/types";
-import BackIcon from "../../assets/images/back.svg?react";
+import type { AllowedIntervals } from "../libs/types";
+import BackIcon from "../assets/images/back.svg?react";
 
 function reducer(state: AllowedIntervals, action: { type: string; interval: number }): AllowedIntervals {
     const enabledIntervalsNumber = [...state.values()].filter((v) => v.enabled).length;
