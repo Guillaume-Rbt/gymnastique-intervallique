@@ -120,7 +120,7 @@ export default function Home() {
         <div
             ref={root}
             className={`home position-fixed w-full p-7.8 p-be-15 h-full bg-[image:inherit] bg-center bg-fixed bg-cover bg-no-repeat z-100 flex flex-items-center flex-col isolate container-margin-y-auto gap-8 ${shown ? "" : "pointer-events-none"}`}>
-            <h1 ref={setItemRef("home_title")} className='font-bold text-13 color-slate-100 text-center max-w-86'>
+            <h1 ref={setItemRef("home_title")} className='font-bold text-13 color-theme-light text-center max-w-86'>
                 Gymnastique Intervallique
             </h1>
             <div className='position-absolute backdrop-blur-3xl bg-theme-blue bg-opacity-80  top-0 left-0 w-full h-full z--1'>
@@ -130,7 +130,7 @@ export default function Home() {
                 />
                 <div className='position-absolute w-full h-full bg-[radial-gradient(circle_at_center,rgba(0,0,0,0)_0%,var(--colors-theme-blue)_100%)] top-0 left-0'></div>
             </div>
-            <p ref={setItemRef("home_sentence")} className='color-slate-100 text-center text-7 max-w-86'>
+            <p ref={setItemRef("home_sentence")} className='color-theme-light text-center text-7 max-w-86'>
                 Exercez votre oreille à la reconnaissance d'intervalles
             </p>
             <div ref={setItemRef("home_button")}>

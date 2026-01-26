@@ -31,7 +31,12 @@ function getEventCoords(event: MouseEvent | TouchEvent): { x: number; y: number 
     if (event instanceof MouseEvent) {
         return { x: event.clientX, y: event.clientY };
     } else if (event instanceof TouchEvent) {
-        return { x: event.touches[0].clientX, y: event.touches[0].clientY };
+        const touch = event.changedTouches[0] || event.touches[0];
+
+        return {
+            x: touch.clientX,
+            y: touch.clientY,
+        };
     }
     return { x: 0, y: 0 };
 }

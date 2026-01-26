@@ -12,7 +12,7 @@ import { useDevice } from "../../hooks/useDevice";
 import type { JSAnimation, Target } from "animejs";
 
 const buttonResponseVariants = {
-    default: " bg-slate-100/10 border-slate-100/40  hover:bg-slate-100/20 hover:border-slate-100/40",
+    default: " bg-theme-light/10 border-theme-light/40  hover:bg-theme-light/20 hover:border-theme-light/40",
     right: "bg-theme-correct/40 border-theme-correct/60 pointer-events-none",
     wrong: "bg-theme-wrong/40 border-theme-wrong/60 pointer-events-none",
     disabled: "opacity-50 pointer-events-none",
@@ -171,7 +171,7 @@ export default function AnswerButtons() {
     return (
         <div
             ref={root}
-            className='color-slate-100 gap-1.5 max-xs:px-4 px-15 min-w-[300px] flex flex-wrap flex-justify-center margin-x-auto'>
+            className='color-theme-light gap-1.5 max-xs:px-4 px-15 min-w-[300px] flex flex-wrap flex-justify-center margin-x-auto'>
             {buttonsList}
         </div>
     );

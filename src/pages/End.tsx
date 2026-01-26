@@ -8,6 +8,7 @@ import BackIcon from "../assets/images/back.svg?react";
 import ButtonPlay from "../components/game/ButtonPlay";
 import type { AnsweredIntervalType } from "../libs/types";
 import { buttons, intervals } from "../utils/constants";
+import { scormWrapper } from "../libs/scormWrapper";
 import { createScope, createTimeline, Scope, utils, stagger } from "animejs";
 
 export function End() {
@@ -112,11 +113,10 @@ export function End() {
         });
     }, []);
 
-    console.log(game);
-
     useGameEffect({
         onEnter: {
             [GAME_STATES.ENDED]: () => {
+                scormWrapper.saveNewScore(game.score);
                 setAnsweredInterval([...game.answeredIntervals.values()]);
                 animManager.launch("end-enter");
             },
@@ -132,7 +132,7 @@ export function End() {
     return (
         <div
             ref={root}
-            className={`bg-[image:inherit] bg-center bg-fixed bg-cover bg-no-repeat text-slate-100 position-fixed w-full h-full bg-theme-blue z-999 transition-opacity duration-200 ${visible ? "" : "pointer-events-none"}`}>
+            className={`bg-[image:inherit] bg-center bg-fixed bg-cover bg-no-repeat text-theme-light position-fixed w-full h-full bg-theme-blue z-999 transition-opacity duration-200 ${visible ? "" : "pointer-events-none"}`}>
             <div className='flex flex-col flex-items-center justify-center h-full w-full bg-theme-blue/80 backdrop-blur-3xl gap-10 p-6 text-center'>
                 {!resultsShown && (
                     <>
@@ -141,9 +141,11 @@ export function End() {
                         </h1>
                         <div
                             ref={setItemRef("result")}
-                            className='flex flex-col gap-2 text-7 border-1 border-solid border-slate-100 p-5 rounded-3'>
+                            className='flex flex-col gap-2 text-7 border-1 border-solid border-theme-light p-5 rounded-3 bg-theme-light/10'>
                             <p>Vous avez obtenu&nbsp;:</p>
-                            <p>{game.score} points</p>
+                            <p>
+                                {game.score} point{game.score > 1 ? "s" : ""}
+                            </p>
                         </div>
                         <div className='flex flex-col gap-3 flex-items-stretch'>
                             <div ref={setItemRef("button-results")}>
@@ -165,7 +167,7 @@ export function End() {
                     <div className='flex w-full'>
                         <Button
                             onClick={hideResult}
-                            classes='text-5.5 color-slate-100 px-2.25 py-1.25 flex flex-items-center flex-justify-center border-1 border-solid border-slate-100/40 bg-slate-100/5 rounded-2 hover:bg-white/20'>
+                            classes='text-5.5 color-theme-light px-2.25 py-1.25 flex flex-items-center flex-justify-center border-1 border-solid border-theme-light/40 bg-theme-light/5 rounded-2 hover:bg-white/20'>
                             <BackIcon />
                         </Button>
                     </div>
@@ -177,8 +179,10 @@ export function End() {
                                 <tr>
                                     <th></th>
                                     <th></th>
-                                    <th className='border border-solid border-slate-100/30 py-3 px-3'>Intervalle</th>
-                                    <th className='border border-solid border-slate-100/30 py-3 px-3'>Votre réponse</th>
+                                    <th className='border border-solid border-theme-light/30 py-3 px-3'>Intervalle</th>
+                                    <th className='border border-solid border-theme-light/30 py-3 px-3'>
+                                        Votre réponse
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -201,10 +205,10 @@ export function End() {
 
                                         return (
                                             <tr key={item.interval.id}>
-                                                <td className='text-center border border-solid border-slate-100/30 py-2 px-3 vertical-middle'>
+                                                <td className='text-center border border-solid border-theme-light/30 py-2 px-3 vertical-middle'>
                                                     {i + 1}
                                                 </td>
-                                                <td className='border border-solid border-slate-100/30 py-2 px-3 scroll-snap-start '>
+                                                <td className='border border-solid border-theme-light/30 py-2 px-3 scroll-snap-start '>
                                                     {" "}
                                                     <ButtonPlay
                                                         size='small'
@@ -215,10 +219,10 @@ export function End() {
                                                 </td>
 
                                                 <td
-                                                    className='vertical-middle border border-solid border-slate-100/30 px-3'
+                                                    className='vertical-middle border border-solid border-theme-light/30 px-3'
                                                     dangerouslySetInnerHTML={{ __html: item.expected }}></td>
                                                 <td
-                                                    className={`${classes} border border-solid border-slate-100/30 px-3`}
+                                                    className={`${classes} border border-solid border-theme-light/30 px-3`}
                                                     dangerouslySetInnerHTML={{ __html: item.answer }}></td>
                                             </tr>
                                         );

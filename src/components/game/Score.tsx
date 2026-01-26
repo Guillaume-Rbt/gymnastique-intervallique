@@ -11,7 +11,7 @@ export default function Score() {
     });
 
     return (
-        <div className='flex rounded-2 py-1.25 px-2.25 border-1 border-slate-100/40 border-solid gap-1 flex-items-center'>
+        <div className='flex rounded-2 py-1.25 px-2.25 border-1 border-theme-light/40 border-solid gap-1 flex-items-center'>
             <ScoreIcon className='text-6' />
 
             <span>{score}&nbsp;pts</span>

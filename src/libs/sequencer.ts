@@ -42,7 +42,7 @@ export default class Sequencer extends Emitter {
         super();
         this.masterGain = this.audioContext.createGain();
         this.masterGain.connect(this.audioContext.destination);
-        this.masterGain.gain.value = 1.0;
+        this.masterGain.gain.value = 0;
     }
 
     async loadAudioSprite(name = "piano") {

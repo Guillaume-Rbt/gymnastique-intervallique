@@ -20,7 +20,7 @@ export default function Toggle({
             {label && (
                 <span
                     dangerouslySetInnerHTML={{ __html: label }}
-                    className={`color-slate-100 transition-opacity duration-200 ${value ? "opacity-100" : "opacity-60"}`}></span>
+                    className={`color-theme-light transition-opacity duration-200 ${value ? "opacity-100" : "opacity-60"}`}></span>
             )}
         </div>
     );

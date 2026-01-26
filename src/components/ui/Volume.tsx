@@ -73,7 +73,7 @@ export default function Volume() {
             <Button
                 onClick={toggleOpen}
                 classes={[
-                    "color-slate-100",
+                    "color-theme-light",
                     "margin-x-auto",
                     "text-5.5",
                     "px-2.25",

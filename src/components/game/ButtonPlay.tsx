@@ -74,7 +74,7 @@ export default function ButtonPlay({
             <Button
                 onClick={handleClickPlay}
                 classes={[
-                    "color-slate-100",
+                    "color-theme-light",
                     "margin-x-auto",
                     "btn-primary",
                     "aspect-square",

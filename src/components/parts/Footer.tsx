@@ -56,7 +56,7 @@ export default function Footer() {
                     onClick={() => {
                         game.nextInterval();
                     }}
-                    classes='text-5.5 color-slate-100 px-2.25 py-1.25 flex flex-items-center flex-justify-center border-1 border-solid border-slate-100/40 bg-slate-100/5 rounded-2 hover:bg-white/20'>
+                    classes='text-5.5 color-theme-light px-2.25 py-1.25 flex flex-items-center flex-justify-center border-1 border-solid border-theme-light/40 bg-theme-light/5 rounded-2 hover:bg-white/20'>
                     <NextIcon />
                 </Button>
             </div>

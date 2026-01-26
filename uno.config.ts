@@ -19,6 +19,7 @@ export default defineConfig({
         },
         colors: {
             "theme-accent": "#ff375f",
+            "theme-light": "rgb(219, 224, 235)",
             "theme-accent-hover": "#e60076",
             "theme-blue": "rgba(26, 43, 78, 1)",
             "theme-correct": "#00c951",
@@ -93,8 +94,8 @@ export default defineConfig({
     shortcuts: {
         btn: "transition-transform",
         "btn-primary":
-            "bg-[linear-gradient(to_right,_oklch(0.656_0.241_354.308)_0%,_oklch(0.645_0.246_16.439)_100%)] hover:bg-[linear-gradient(to_right,_var(--colors-theme-accent)_0%,_var(--colors-theme-accent)_100%)] color-slate-100 px-6 py-2.5 rounded-10 font-bold  duration-200 hover:scale-103 transition-ease-in-out",
+            "bg-[linear-gradient(to_right,_oklch(0.656_0.241_354.308)_0%,_oklch(0.645_0.246_16.439)_100%)] hover:bg-[linear-gradient(to_right,_var(--colors-theme-accent)_0%,_var(--colors-theme-accent)_100%)] color-theme-light px-6 py-2.5 rounded-10 font-bold  duration-200 hover:scale-103 transition-ease-in-out",
         "btn-secondary":
-            "border-1 border-solid border-theme-accent color-slate-100 px-6 py-2.5 rounded-10 font-bold  duration-200 hover:scale-103 transition-ease-in-out",
+            "border-1 border-solid border-theme-accent color-theme-light px-6 py-2.5 rounded-10 font-bold  duration-200 hover:scale-103 transition-ease-in-out",
     },
 });

@@ -1,4 +1,5 @@
 import { SCORM } from "pipwerks-scorm-api-wrapper";
+import { type scormData } from "./types";
 
 class ScormWrapper {
     #mode: "local" | "scorm" = "local";
@@ -8,17 +9,20 @@ class ScormWrapper {
         return this.#mode;
     }
 
-    get localData(): Record<string, any> {
+    get localData(): scormData {
         try {
             const gameData = JSON.parse(localStorage.getItem("gi_game-data") || "{}");
             return gameData;
         } catch (e) {
             console.error("Failed to retrieve local data:", e);
-            return {};
+            return {
+                "cmi.score.raw": 0,
+                "cmi.suspend_data": "",
+            };
         }
     }
 
-    set localData(data: Record<string, any>) {
+    set localData(data: scormData) {
         try {
             localStorage.setItem("gi_game-data", JSON.stringify(data));
         } catch (e) {
@@ -26,19 +30,22 @@ class ScormWrapper {
         }
     }
 
-    get scormData(): Record<string, any> {
+    get scormData(): scormData {
         try {
             return {
-                "cmi.score.raw": SCORM.get("cmi.score.raw"),
+                "cmi.score.raw": parseInt(SCORM.get("cmi.score.raw"), 10) || 0,
                 "cmi.suspend_data": SCORM.get("cmi.suspend_data"),
             };
         } catch (e) {
             console.error("Failed to retrieve SCORM data:", e);
-            return {};
+            return {
+                "cmi.score.raw": 0,
+                "cmi.suspend_data": "",
+            };
         }
     }
 
-    get data(): Record<string, any> {
+    get data(): scormData {
         return this.#mode === "scorm" ? this.scormData : this.localData;
     }
 
@@ -90,7 +97,7 @@ class ScormWrapper {
         if (this.mode === "scorm") {
             try {
                 const scoreRaw = SCORM.get("cmi.score.raw");
-                return scoreRaw ? parseFloat(scoreRaw) : -1;
+                return scoreRaw ? parseInt(scoreRaw, 10) : -1;
             } catch (e) {
                 console.error("Failed to retrieve score from SCORM:", e);
                 return -2;
@@ -98,7 +105,7 @@ class ScormWrapper {
         }
         try {
             const score = this.localData["cmi.score.raw"];
-            return score ? parseInt(score, 10) : -1;
+            return score ? score : -1;
         } catch (e) {
             console.error("Failed to retrieve score locally:", e);
             return -2;

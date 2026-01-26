@@ -98,7 +98,7 @@ const Timer = () => {
         <div className='flex h-[4em] min-w-[48px] aspect-ratio-square  w-[4em] text-3 rounded-full flex-justify-center flex-items-center position-relative'>
             <span className='text-3'>{points} pts</span>
             <svg
-                className='absolute color-slate-100 w-full h-full '
+                className='absolute color-theme-light w-full h-full '
                 xmlns='http://www.w3.org/2000/svg'
                 viewBox='0 0 24 24'>
                 <circle

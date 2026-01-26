@@ -44,3 +44,8 @@ export type AnimationsOptions = {
     initializer: () => void;
     executor: () => Timeline;
 };
+
+export type scormData = {
+    "cmi.score.raw": number;
+    "cmi.suspend_data": string;
+};
