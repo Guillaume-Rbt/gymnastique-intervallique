@@ -1,7 +1,7 @@
 import Button from "../components/ui/Button";
 import { useGameContext } from "../hooks/useGameContext";
 import { type GameContext } from "../libs/types";
-import { useLayoutEffect, useRef } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 import { createScope, createTimeline, Scope, utils, stagger } from "animejs";
 import { useGameEffect } from "../hooks/useGameEffect";
 import Game from "../libs/game";
@@ -110,11 +110,11 @@ export default function Home() {
             animManager.unregister("home-enter");
             animManager.unregister("home-exit");
         };
-    }, [game, animManager]);
+    }, [animManager]);
 
-    const handleStart = () => {
+    const handleStart = useCallback(() => {
         animManager.launch("home-exit");
-    };
+    }, [animManager]);
 
     return (
         <div

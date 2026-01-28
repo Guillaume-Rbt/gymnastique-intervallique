@@ -1,7 +1,8 @@
 import type { ButtonProps } from "../../libs/types";
 import Utils from "../../utils/utils";
 import React from "react";
-export default function Button({
+
+const Button = React.memo(function Button({
     label = "",
     onClick = () => {},
     classes = "",
@@ -33,4 +34,6 @@ export default function Button({
             {child}
         </button>
     );
-}
+});
+
+export default Button;

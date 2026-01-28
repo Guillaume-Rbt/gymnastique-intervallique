@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import Toggle from "../components/ui/Toggle";
 import { intervals, buttons } from "../utils/constants";
 import { useGameContext } from "../hooks/useGameContext";
-import { useEffect, useReducer } from "react";
+import { useEffect, useReducer, useMemo } from "react";
 import type { AllowedIntervals } from "../libs/types";
 import BackIcon from "../assets/images/back.svg?react";
 
@@ -37,22 +37,26 @@ export default function Settings() {
     useEffect(() => {
         if (opened) return;
         game.allowedIntervals = allowedIntervals;
-    }, [opened]);
+    }, [opened, allowedIntervals]);
 
-    const toggleList = intervals.map((_, index) => {
-        const isEnabled = allowedIntervals.get(index)?.enabled || false;
+    const toggleList = useMemo(
+        () =>
+            intervals.map((_, index) => {
+                const isEnabled = allowedIntervals.get(index)?.enabled || false;
 
-        return (
-            <Toggle
-                key={index}
-                label={buttons[index]}
-                value={isEnabled}
-                onChange={(v) => {
-                    dispatch({ type: v ? "enable" : "disable", interval: index });
-                }}
-            />
-        );
-    });
+                return (
+                    <Toggle
+                        key={index}
+                        label={buttons[index]}
+                        value={isEnabled}
+                        onChange={(v) => {
+                            dispatch({ type: v ? "enable" : "disable", interval: index });
+                        }}
+                    />
+                );
+            }),
+        [allowedIntervals, dispatch],
+    );
 
     const classes = opened ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0";
 

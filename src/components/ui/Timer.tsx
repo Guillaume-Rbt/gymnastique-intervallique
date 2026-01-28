@@ -69,7 +69,7 @@ const Timer = () => {
         if (!running || !paused) return;
         pausedAtRef.current = Date.now();
         clearInterval(intervalRef.current!);
-    }, [paused]);
+    }, [running, paused]);
 
     useGameEffect({
         onEnter: {

@@ -1,4 +1,7 @@
-export default function Toggle({
+import { useCallback } from "react";
+import React from "react";
+
+const Toggle = React.memo(function Toggle({
     value = false,
     label,
     onChange = () => {},
@@ -7,9 +10,9 @@ export default function Toggle({
     onChange?: (v: boolean) => void;
     label: string;
 }) {
-    const handleClick = () => {
+    const handleClick = useCallback(() => {
         onChange(!value);
-    };
+    }, [onChange, value]);
 
     return (
         <div className='flex flex-items-center gap-3' onClick={handleClick}>
@@ -24,4 +27,6 @@ export default function Toggle({
             )}
         </div>
     );
-}
+});
+
+export default Toggle;

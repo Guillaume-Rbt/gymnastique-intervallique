@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useLayoutEffect, useRef, useState } from "react";
 import { useGameContext } from "../../hooks/useGameContext";
 import Button from "./Button";
 import useBoolean from "../../hooks/useBoolean";
@@ -19,12 +19,12 @@ export default function Volume() {
     const trackRef = useRef<HTMLDivElement>(null);
     const isDraggingRef = useRef<boolean>(false);
 
-    function handlePointerDown(e: React.PointerEvent) {
+    const handlePointerDown = useCallback((e: React.PointerEvent) => {
         e.preventDefault();
         isDraggingRef.current = true;
         document.addEventListener("pointermove", handlePointerMove);
         document.addEventListener("pointerup", handlePointerUp);
-    }
+    }, []);
 
     function handlePointerMove(e: PointerEvent) {
         if (!isDraggingRef.current || !trackRef.current || !thumbRef.current) return;

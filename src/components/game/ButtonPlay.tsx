@@ -40,7 +40,7 @@ export default function ButtonPlay({
         }
 
         game.playInterval(intervalToPlay);
-    }, [playing]);
+    }, [playing, interval, stateFollowsGame]);
 
     useGameEffect({
         onEnter: {
@@ -62,7 +62,7 @@ export default function ButtonPlay({
         if (stateFollowsGame) {
             setPlayingTrue();
         }
-    }, []);
+    }, [stateFollowsGame]);
 
     useGameEvent(Game.EVENTS.INTERVAL_PLAYING, handleIntervalPlaying);
     useGameEvent(Game.EVENTS.INTERVAL_ENDED, setPlayingFalse);
