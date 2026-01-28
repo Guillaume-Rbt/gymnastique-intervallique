@@ -43,7 +43,12 @@ export default function Footer() {
             initializer: footerInit,
             executor: footerEnter,
         });
-    }, [animManager]);
+        return () => {
+            scope.current?.revert();
+            scope.current = null;
+            animManager.unregister("footer-enter");
+        };
+    }, []);
 
     return (
         <footer

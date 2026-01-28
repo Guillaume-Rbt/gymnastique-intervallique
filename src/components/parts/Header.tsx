@@ -51,7 +51,7 @@ export default function Header() {
             scope.current = null;
             animManager.unregister("header-enter");
         };
-    }, [animManager]);
+    }, []);
 
     return (
         <header

@@ -55,7 +55,7 @@ export default function Settings() {
                     />
                 );
             }),
-        [allowedIntervals, dispatch],
+        [allowedIntervals],
     );
 
     const classes = opened ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0";

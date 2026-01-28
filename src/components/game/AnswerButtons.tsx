@@ -29,7 +29,7 @@ export default function AnswerButtons() {
 
     const buttonsLabel = useMemo(() => {
         return device.type === "mobile" ? buttonsMobile : buttons;
-    }, [device]);
+    }, [device.type]);
 
     const answerDataRef = useRef<{ correct: boolean; answer: string; expected: string } | null>(null);
 
@@ -111,7 +111,7 @@ export default function AnswerButtons() {
             scope.current = null;
             animManager.unregister("answer-buttons-enter");
         };
-    }, [animManager]);
+    }, []);
 
     const getVariant = useCallback(
         ({
@@ -165,7 +165,7 @@ export default function AnswerButtons() {
                     />
                 );
             }),
-        [allowedIntervals, buttonsLabel, getVariant, game, active, answered],
+        [allowedIntervals, buttonsLabel, getVariant, active, answered],
     );
 
     return (

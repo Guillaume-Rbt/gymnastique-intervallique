@@ -66,7 +66,7 @@ export default function Volume() {
         return () => {
             document.removeEventListener(Utils.EVENTS.DOWN_START, handleClickOutside);
         };
-    }, [open]);
+    }, [open, volume]);
 
     return (
         <div className='relative' ref={sliderRef}>

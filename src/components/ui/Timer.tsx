@@ -26,7 +26,7 @@ const Timer = () => {
         totalPausedDurationRef.current = 0;
         pausedAtRef.current = 0;
         startTimeRef.current = 0;
-    }, [game]);
+    }, []);
 
     useEffect(() => {
         if (!running || paused) return;

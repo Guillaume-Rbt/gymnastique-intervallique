@@ -110,11 +110,11 @@ export default function Home() {
             animManager.unregister("home-enter");
             animManager.unregister("home-exit");
         };
-    }, [animManager]);
+    }, []);
 
     const handleStart = useCallback(() => {
         animManager.launch("home-exit");
-    }, [animManager]);
+    }, []);
 
     return (
         <div

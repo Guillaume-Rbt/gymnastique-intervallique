@@ -111,6 +111,13 @@ export function End() {
                 executor: endExitPlay,
             });
         });
+
+        return () => {
+            scope.current?.revert();
+            scope.current = null;
+            animManager.unregister("end-enter");
+            animManager.unregister("end-exit");
+        };
     }, []);
 
     useGameEffect({
