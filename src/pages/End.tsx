@@ -10,10 +10,13 @@ import type { AnsweredIntervalType } from "../libs/types";
 import { buttons, intervals } from "../utils/constants";
 import { scormWrapper } from "../libs/scormWrapper";
 import { createScope, createTimeline, Scope, utils, stagger } from "animejs";
+import { Scrollbar } from "../components/ui/Scrollbar";
 
 export function End() {
     const root = useRef<HTMLDivElement | null>(null);
     const scope = useRef<Scope | null>(null);
+    const scrollableRef = useRef<HTMLDivElement>(null);
+    const elementRef = useRef<HTMLDivElement | null>(null);
 
     const { game, animManager } = useGameContext();
 
@@ -124,6 +127,7 @@ export function End() {
         onEnter: {
             [GAME_STATES.ENDED]: () => {
                 scormWrapper.saveNewScore(game.score);
+                if (game.score > scormWrapper.getScore()) scormWrapper.saveScore(game.score);
                 setAnsweredInterval([...game.answeredIntervals.values()]);
                 animManager.launch("end-enter");
             },
@@ -140,38 +144,44 @@ export function End() {
         <div
             ref={root}
             className={`bg-[image:inherit] bg-center bg-fixed bg-cover bg-no-repeat text-theme-light position-fixed w-full h-full bg-theme-blue z-999 transition-opacity duration-200 ${visible ? "" : "pointer-events-none"}`}>
-            <div className='flex flex-col flex-items-center justify-center h-full w-full bg-theme-blue/80 backdrop-blur-3xl gap-10 p-6 text-center'>
+            <div className='flex flex-col flex-items-center justify-center h-full w-full bg-theme-blue/80 backdrop-blur-3xl gap-10 p-block-6 text-center'>
                 {!resultsShown && (
                     <>
-                        <h1 ref={setItemRef("title")} className='text-4xl font-bold'>
-                            Gymnastique Intervallique
-                        </h1>
-                        <div
-                            ref={setItemRef("result")}
-                            className='flex flex-col gap-2 text-7 border-1 border-solid border-theme-light p-5 rounded-3 bg-theme-light/10'>
-                            <p>Vous avez obtenu&nbsp;:</p>
-                            <p>
-                                {game.score} point{game.score > 1 ? "s" : ""}
-                            </p>
-                        </div>
-                        <div className='flex flex-col gap-3 flex-items-stretch'>
-                            <div ref={setItemRef("button-results")}>
-                                <Button onClick={showResult} classes={"btn-secondary"} label='Voir les résultats' />
+                        <div className='flex flex-col flex-items-center gap-10'>
+                            <h1 ref={setItemRef("title")} className='text-4xl font-bold'>
+                                Gymnastique Intervallique
+                            </h1>
+                            <div
+                                ref={setItemRef("result")}
+                                className='flex flex-col gap-2 text-7 border-1 border-solid border-theme-light p-5 rounded-3 bg-theme-light/10'>
+                                <p>Vous avez obtenu&nbsp;:</p>
+                                <p>
+                                    {game.score} point{game.score > 1 ? "s" : ""}
+                                </p>
                             </div>
+                            <div className='flex flex-col gap-3 flex-items-stretch'>
+                                <div ref={setItemRef("button-results")}>
+                                    <Button
+                                        onClick={showResult}
+                                        classes={"btn-secondary"}
+                                        label='Revoir les intervalles'
+                                    />
+                                </div>
 
-                            <div ref={setItemRef("button-new-game")}>
-                                <Button
-                                    onClick={() => game.reset()}
-                                    classes={"btn-primary w-full"}
-                                    label='Nouvelle partie'
-                                />
+                                <div ref={setItemRef("button-new-game")}>
+                                    <Button
+                                        onClick={() => game.reset()}
+                                        classes={"btn-primary w-full"}
+                                        label='Nouvelle partie'
+                                    />
+                                </div>
                             </div>
                         </div>
                     </>
                 )}
 
                 <div className={`w-full h-full flex flex-col ${resultsShown ? "" : "hidden"} gap-6`}>
-                    <div className='flex w-full'>
+                    <div className='flex w-full p-inline-6'>
                         <Button
                             onClick={hideResult}
                             classes='text-5.5 color-theme-light px-2.25 py-1.25 flex flex-items-center flex-justify-center border-1 border-solid border-theme-light/40 bg-theme-light/5 rounded-2 hover:bg-white/20'>
@@ -179,63 +189,70 @@ export function End() {
                         </Button>
                     </div>
 
-                    <div className='flex grow overflow-auto scrollbar-hover flex-col flex-items-center'>
-                        <h1 className='mb-8 text-8'>Vos réponses</h1>
-                        <table className='table-auto text-left border-collapse'>
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th></th>
-                                    <th className='border border-solid border-theme-light/30 py-3 px-3'>Intervalle</th>
-                                    <th className='border border-solid border-theme-light/30 py-3 px-3'>
-                                        Votre réponse
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {answeredInterval
-                                    .map((item) => {
-                                        const answer =
-                                            intervals.indexOf(item.answer) == -1
-                                                ? "Non répondu"
-                                                : buttons[intervals.indexOf(item.answer)];
+                    <div
+                        ref={scrollableRef}
+                        className='flex grow overflow-hidden scrollbar-hover flex-col position-relative flex-items-center p-is-2 pie-6'>
+                        <Scrollbar containerRef={scrollableRef} elementRef={elementRef} />
+                        <div ref={elementRef} className='flex flex-col position-relative flex-items-center'>
+                            <h1 className='mb-8 text-8'>Vos réponses</h1>
+                            <table className='table-auto text-left border-collapse'>
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th></th>
+                                        <th className='border border-solid border-theme-light/30 py-3 px-3'>
+                                            Intervalle
+                                        </th>
+                                        <th className='border border-solid border-theme-light/30 py-3 px-3'>
+                                            Votre réponse
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {answeredInterval
+                                        .map((item) => {
+                                            const answer =
+                                                intervals.indexOf(item.answer) == -1
+                                                    ? "Non répondu"
+                                                    : buttons[intervals.indexOf(item.answer)];
 
-                                        return {
-                                            expected: buttons[intervals.indexOf(item.expected)],
-                                            answer: answer,
-                                            interval: item.interval,
-                                            correct: item.correct,
-                                        };
-                                    })
-                                    .map((item, i) => {
-                                        const classes = item.correct ? "color-theme-correct" : "color-theme-wrong";
+                                            return {
+                                                expected: buttons[intervals.indexOf(item.expected)],
+                                                answer: answer,
+                                                interval: item.interval,
+                                                correct: item.correct,
+                                            };
+                                        })
+                                        .map((item, i) => {
+                                            const classes = item.correct ? "color-theme-correct" : "color-theme-wrong";
 
-                                        return (
-                                            <tr key={item.interval.id}>
-                                                <td className='text-center border border-solid border-theme-light/30 py-2 px-3 vertical-middle'>
-                                                    {i + 1}
-                                                </td>
-                                                <td className='border border-solid border-theme-light/30 py-2 px-3 scroll-snap-start '>
-                                                    {" "}
-                                                    <ButtonPlay
-                                                        size='small'
-                                                        interval={item.interval}
-                                                        stateFollowsGame={false}
-                                                        enabledOnInit={true}
-                                                    />
-                                                </td>
+                                            return (
+                                                <tr key={item.interval.id}>
+                                                    <td className='text-center border border-solid border-theme-light/30 py-2 px-3 vertical-middle'>
+                                                        {i + 1}
+                                                    </td>
+                                                    <td className='border border-solid border-theme-light/30 py-2 px-3 scroll-snap-start '>
+                                                        {" "}
+                                                        <ButtonPlay
+                                                            size='small'
+                                                            interval={item.interval}
+                                                            stateFollowsGame={false}
+                                                            enabledOnInit={true}
+                                                        />
+                                                    </td>
 
-                                                <td
-                                                    className='vertical-middle border border-solid border-theme-light/30 px-3'
-                                                    dangerouslySetInnerHTML={{ __html: item.expected }}></td>
-                                                <td
-                                                    className={`${classes} border border-solid border-theme-light/30 px-3`}
-                                                    dangerouslySetInnerHTML={{ __html: item.answer }}></td>
-                                            </tr>
-                                        );
-                                    })}
-                            </tbody>
-                        </table>
+                                                    <td
+                                                        className='vertical-middle border border-solid border-theme-light/30 px-3'
+                                                        dangerouslySetInnerHTML={{ __html: item.expected }}></td>
+                                                    <td
+                                                        className={`${classes} border border-solid border-theme-light/30 px-3`}
+                                                        dangerouslySetInnerHTML={{ __html: item.answer }}></td>
+                                                </tr>
+                                            );
+                                        })}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>

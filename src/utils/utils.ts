@@ -1,7 +1,12 @@
+import type React from "react";
+
 const touchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
 const events = {
     DOWN_START: touchDevice ? "touchstart" : ("mousedown" as keyof MouseEvent),
+    MOVE: touchDevice ? "touchmove" : ("mousemove" as keyof MouseEvent),
+    UP_END: touchDevice ? "touchend" : ("mouseup" as keyof MouseEvent),
+    WHEEL: touchDevice ? "wheel" : ("wheel" as keyof WheelEvent),
 };
 
 function ensureArrayOfStrings(value: string | string[]): string[] {
@@ -27,7 +32,10 @@ function HTMLFromString(htmlString: string): DocumentFragment {
     return range.createContextualFragment(htmlString);
 }
 
-function getEventCoords(event: MouseEvent | TouchEvent): { x: number; y: number } {
+function getEventCoords(event: MouseEvent | TouchEvent | React.MouseEvent | React.TouchEvent): {
+    x: number;
+    y: number;
+} {
     if (event instanceof MouseEvent) {
         return { x: event.clientX, y: event.clientY };
     } else if (event instanceof TouchEvent) {
@@ -41,7 +49,10 @@ function getEventCoords(event: MouseEvent | TouchEvent): { x: number; y: number 
     return { x: 0, y: 0 };
 }
 
-function getRelativeEventCoords(event: MouseEvent | TouchEvent): { x: number; y: number } {
+function getRelativeEventCoords(event: MouseEvent | TouchEvent | React.MouseEvent | React.TouchEvent): {
+    x: number;
+    y: number;
+} {
     if (!event.currentTarget) return { x: 0, y: 0 };
     const rect = (event.currentTarget as Element).getBoundingClientRect();
     const coords = getEventCoords(event);

@@ -49,3 +49,9 @@ export type scormData = {
     "cmi.score.raw": number;
     "cmi.suspend_data": string;
 };
+
+export type ScrollableConfig = {
+    element: HTMLElement;
+    thumb: HTMLElement;
+    track: HTMLElement;
+};

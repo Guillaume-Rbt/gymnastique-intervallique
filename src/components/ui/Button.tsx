@@ -18,12 +18,12 @@ const Button = React.memo(function Button({
     let child: React.ReactNode = children;
     const htmlFragment = Utils.HTMLFromString(label);
     if (htmlFragment && htmlFragment.childNodes && htmlFragment.childNodes.length > 0) {
-        child = Array.from(htmlFragment.childNodes).map((node, _) => {
+        child = Array.from(htmlFragment.childNodes).map((node, index) => {
             if (node.nodeType === Node.TEXT_NODE) {
                 return node.textContent;
             } else if (node.nodeType === Node.ELEMENT_NODE) {
                 // @ts-ignore
-                return React.createElement(node.tagName.toLowerCase(), {}, node.textContent);
+                return React.createElement(node.tagName.toLowerCase(), { key: index }, node.textContent);
             }
             return null;
         });
