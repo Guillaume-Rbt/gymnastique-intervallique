@@ -4,26 +4,26 @@ import Header from "./components/parts/Header";
 import Home from "./pages/Home";
 import { useGameContext } from "./hooks/useGameContext";
 import Footer from "./components/parts/Footer";
-import { End } from "./pages/End";
+import { End } from "./pages/end/End";
 import { scormWrapper } from "./libs/scormWrapper";
 
 function App() {
-    const { game } = useGameContext();
+ const { game } = useGameContext();
 
-    useEffect(() => {
-        game.init();
-        scormWrapper.initialize();
-    }, []);
+ useEffect(() => {
+  game.init();
+  scormWrapper.initialize();
+ }, []);
 
-    return (
-        <>
-            <Home />
-            <Header />
-            <GameBoard />
-            <Footer />
-            <End />
-        </>
-    );
+ return (
+  <>
+   <Home />
+   <Header />
+   <GameBoard />
+   <Footer />
+   <End />
+  </>
+ );
 }
 
 export default App;

@@ -75,7 +75,6 @@ export default function ButtonPlay({
                 onClick={handleClickPlay}
                 classes={[
                     "color-theme-light",
-                    "margin-x-auto",
                     "btn-primary",
                     "aspect-square",
                     "p-0",

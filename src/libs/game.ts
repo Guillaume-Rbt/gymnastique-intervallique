@@ -186,7 +186,6 @@ export default class Game extends Emitter {
         }
 
         this.updateState(GAME_STATES.ENDED);
-        this.removeListeners();
         this.sequencer.clear();
         return false;
     }
@@ -224,6 +223,7 @@ export default class Game extends Emitter {
     }
 
     handleIntervalEnd() {
+        console.log("Interval ended");
         this.emit(Game.EVENTS.INTERVAL_ENDED);
     }
 

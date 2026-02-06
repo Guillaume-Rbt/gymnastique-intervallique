@@ -58,7 +58,7 @@ export default function Settings() {
         [allowedIntervals],
     );
 
-    const classes = opened ? "pointer-events-auto opacity-100" : "pointer-events-none opacity-0";
+    const classes = opened ? "pointer-events-auto! opacity-100!" : "";
 
     return (
         <>
@@ -71,7 +71,7 @@ export default function Settings() {
             </Button>
             {createPortal(
                 <div
-                    className={` bg-[url(./images/background.webp)] bg-center bg-fixed bg-cover bg-no-repeat position-fixed transition-opacity  duration-200 top-0 left-0 w-full h-full z-20 ${classes}`}>
+                    className={` bg-[url(./images/background.webp)] bg-center bg-fixed bg-cover bg-no-repeat position-fixed transition-opacity  duration-200 top-0 left-0 w-full h-full z-20 pointer-events-none opacity-0 ${classes}`}>
                     <div className='w-full flex flex-col  color-theme-light h-full bg-theme-blue/80 backdrop-blur-3xl p-4'>
                         {" "}
                         <div className='flex w-full '>
