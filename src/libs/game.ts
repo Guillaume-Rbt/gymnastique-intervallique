@@ -112,6 +112,7 @@ export default class Game extends Emitter {
         INTERVAL_PLAYING: "game.interval.playing",
         INTERVAL_ENDED: "game.interval.ended",
         SCORE_CHANGED: "game.score.changed",
+        VOLUME_CHANGE: "game.volume.change",
     };
 
     constructor(options: Partial<GameConfig> = {}) {
@@ -243,6 +244,10 @@ export default class Game extends Emitter {
         this.sequencer.on(Sequencer.EVENTS.SEQUENCE_END, this.handleIntervalEnd.bind(this));
 
         this.sequencer.on(Sequencer.EVENTS.SEQUENCE_ABORT, this.handleIntervalEnd.bind(this));
+
+        this.sequencer.on(Sequencer.EVENTS.VOLUME_CHANGE, (data) => {
+            this.emit(Game.EVENTS.VOLUME_CHANGE, { volume: data.volume });
+        });
     }
 
     removeListeners() {

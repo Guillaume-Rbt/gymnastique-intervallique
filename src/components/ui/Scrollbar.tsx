@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Utils from "../../utils/utils";
 
 export function Scrollbar({
@@ -100,9 +100,16 @@ export function Scrollbar({
         updateScrollData();
     }, []);
 
+    // Forcer une mise à jour après chaque rendu pour détecter les changements de contenu
+    useLayoutEffect(() => {
+        updateScrollData();
+    });
+
     useEffect(() => {
-        const element = containerRef.current;
-        if (!element) return;
+        const container = containerRef.current;
+        const element = elementRef.current;
+
+        if (!container || !element) return;
 
         ro.current = new ResizeObserver(handleResize);
         ro.current.observe(element);
@@ -110,9 +117,9 @@ export function Scrollbar({
         const touchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
 
         if (touchDevice) {
-            element.addEventListener(Utils.EVENTS.DOWN_START as string, onContainerDown);
+            container.addEventListener(Utils.EVENTS.DOWN_START as string, onContainerDown);
         } else {
-            element.addEventListener("wheel", onWheel, { passive: false });
+            container.addEventListener("wheel", onWheel, { passive: false });
         }
 
         updateScrollData();
@@ -121,12 +128,14 @@ export function Scrollbar({
             if (ro.current) {
                 ro.current.disconnect();
             }
-            element.removeEventListener("wheel", onWheel);
-            element.removeEventListener(Utils.EVENTS.DOWN_START as string, onContainerDown);
+            container.removeEventListener("wheel", onWheel);
+            container.removeEventListener(Utils.EVENTS.DOWN_START as string, onContainerDown);
         };
     }, [onWheel, onContainerDown, handleResize]);
 
     // Don't display scrollbar if all content is visible
+
+    console.log("scrollHeight:", scrollHeight, "clientHeight:", clientHeight);
     if (scrollHeight <= clientHeight) {
         return null;
     }

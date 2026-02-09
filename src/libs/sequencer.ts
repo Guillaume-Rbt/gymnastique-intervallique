@@ -15,6 +15,7 @@ export default class Sequencer extends Emitter {
         SEQUENCE_START: "sequence.start",
         SEQUENCE_END: "sequence.end",
         SEQUENCE_ABORT: "sequence.abort",
+        VOLUME_CHANGE: "volume.change",
     };
 
     audioContext: AudioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
@@ -33,6 +34,7 @@ export default class Sequencer extends Emitter {
 
     set volume(value: number) {
         this.masterGain.gain.value = utils.clamp(value, 0, 1);
+        this.emit(Sequencer.EVENTS.VOLUME_CHANGE, { volume: this.masterGain.gain.value });
     }
 
     get volume(): number {

@@ -6,6 +6,8 @@ import VolumeIcon from "../../assets/images/volume.svg?react";
 import Mute from "../../assets/images/mute.svg?react";
 import Utils from "../../utils/utils";
 import { GAME_STATES } from "../../libs/game";
+import Game from "../../libs/game";
+import { useGameEvent } from "../../hooks/useGameEvent";
 
 export default function Volume() {
     const { game } = useGameContext();
@@ -42,6 +44,11 @@ export default function Volume() {
         document.removeEventListener("pointermove", handlePointerMove);
         document.removeEventListener("pointerup", handlePointerUp);
     }
+
+    useGameEvent(Game.EVENTS.VOLUME_CHANGE, (data) => {
+        console.log("Volume changed:", data.volume);
+        setVolume(data.volume);
+    });
 
     useLayoutEffect(() => {
         function handleClickOutside(e: Event) {
