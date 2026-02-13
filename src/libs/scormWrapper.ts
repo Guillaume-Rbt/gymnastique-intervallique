@@ -1,6 +1,13 @@
 import { SCORM } from "pipwerks-scorm-api-wrapper";
 import { type scormData } from "./types";
 
+const MODE = import.meta.env.MODE; // "development" in dev mode, "production" in build
+
+const fakeData = {
+    "cmi.score.raw": Math.floor(Math.random() * 51),
+    "cmi.suspend_data": "5@10@15@10@25@15@35@20@5@50", // Example of last 10 scores
+};
+
 class ScormWrapper {
     #mode: "local" | "scorm" = "local";
     init: boolean = false;
@@ -46,6 +53,10 @@ class ScormWrapper {
     }
 
     get data(): scormData {
+        if (MODE === "development") {
+            return fakeData;
+        }
+
         return this.#mode === "scorm" ? this.scormData : this.localData;
     }
 

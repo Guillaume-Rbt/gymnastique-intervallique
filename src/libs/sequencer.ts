@@ -97,7 +97,6 @@ export default class Sequencer extends Emitter {
             const name = typeof item === "string" ? item : item.name;
             const m = this.markers.find((x) => x.name === name);
             if (!m) {
-                console.warn(`[Sequencer] Marker not found for note "${name}"`);
                 continue;
             }
 

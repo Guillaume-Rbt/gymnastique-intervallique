@@ -9,6 +9,7 @@ import { scormWrapper } from "../../libs/scormWrapper";
 import { createScope, createTimeline, Scope, utils, stagger } from "animejs";
 import GameSummary from "./GameSummary";
 import Volume from "../../components/ui/Volume";
+import LatestGameGraph from "./LatestGameGraph";
 
 export function End() {
     const root = useRef<HTMLDivElement | null>(null);
@@ -164,8 +165,10 @@ export function End() {
                         )}
                     </div>
 
-                    <div className='grid h-1 grid-cols-2 flex-grow w-full px-10'>
-                        <GameSummary></GameSummary>
+                    <div className='h-1 flex gap-4 flex-grow w-full px-10'>
+                        {visible && <LatestGameGraph className={["col-2"]}></LatestGameGraph>}
+
+                        <GameSummary className={["col-2"]}></GameSummary>
                     </div>
 
                     <div className='flex w-full gap-3 px-10'>
@@ -180,81 +183,6 @@ export function End() {
                         </div>
                     </div>
                 </div>
-                {/*        <div className={`w-full h-full flex flex-col ${resultsShown ? "" : "hidden"} gap-6`}>
-                    <div className='flex w-full p-inline-6'>
-                        <Button
-                            onClick={hideResult}
-                            classes='text-5.5 color-theme-light px-2.25 py-1.25 flex flex-items-center flex-justify-center border-1 border-solid border-theme-light/40 bg-theme-light/5 rounded-2 hover:bg-white/20'>
-                            <BackIcon />
-                        </Button>
-                    </div>
-
-                    <div
-                        ref={scrollableRef}
-                        className='flex grow overflow-hidden scrollbar-hover flex-col position-relative flex-items-center p-is-2 pie-6'>
-                        <Scrollbar containerRef={scrollableRef} elementRef={elementRef} />
-                        <div ref={elementRef} className='flex flex-col position-relative flex-items-center'>
-                            <h1 className='mb-8 text-8'>Vos réponses</h1>
-                            <table className='table-auto text-left border-collapse'>
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th></th>
-                                        <th className='border border-solid border-theme-light/30 py-3 px-3'>
-                                            Intervalle
-                                        </th>
-                                        <th className='border border-solid border-theme-light/30 py-3 px-3'>
-                                            Votre réponse
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {answeredInterval
-                                        .map((item) => {
-                                            const answer =
-                                                intervals.indexOf(item.answer) == -1
-                                                    ? "Non répondu"
-                                                    : buttons[intervals.indexOf(item.answer)];
-
-                                            return {
-                                                expected: buttons[intervals.indexOf(item.expected)],
-                                                answer: answer,
-                                                interval: item.interval,
-                                                correct: item.correct,
-                                            };
-                                        })
-                                        .map((item, i) => {
-                                            const classes = item.correct ? "color-theme-correct" : "color-theme-wrong";
-
-                                            return (
-                                                <tr key={item.interval.id}>
-                                                    <td className='text-center border border-solid border-theme-light/30 py-2 px-3 vertical-middle'>
-                                                        {i + 1}
-                                                    </td>
-                                                    <td className='border border-solid border-theme-light/30 py-2 px-3 scroll-snap-start '>
-                                                        {" "}
-                                                        <ButtonPlay
-                                                            size='small'
-                                                            interval={item.interval}
-                                                            stateFollowsGame={false}
-                                                            enabledOnInit={true}
-                                                        />
-                                                    </td>
-
-                                                    <td
-                                                        className='vertical-middle border border-solid border-theme-light/30 px-3'
-                                                        dangerouslySetInnerHTML={{ __html: item.expected }}></td>
-                                                    <td
-                                                        className={`${classes} border border-solid border-theme-light/30 px-3`}
-                                                        dangerouslySetInnerHTML={{ __html: item.answer }}></td>
-                                                </tr>
-                                            );
-                                        })}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div> */}
             </div>
         </div>
     );

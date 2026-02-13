@@ -7,7 +7,7 @@ import { intervals, buttons } from "../../utils/constants";
 import ButtonPlay from "../../components/game/ButtonPlay";
 import { Scrollbar } from "../../components/ui/Scrollbar";
 
-export default function GameSummary() {
+export default function GameSummary({ className = [] }: { className?: string[] }) {
     const { game } = useGameContext();
     const [answeredIntervals, setAnsweredIntervals] = useState<AnsweredIntervalType[]>([]);
 
@@ -23,7 +23,8 @@ export default function GameSummary() {
     });
 
     return (
-        <div className='rounded-3 overflow-hidden border-solid flex flex-col border-theme-light w-full border-.2'>
+        <div
+            className={`rounded-3 overflow-hidden border-solid flex flex-col border-theme-light  border-.2 ${className.join(" ")}`}>
             <div className='w-full bg-theme-light/10 p-block-2'>
                 <p className='p-is-2 text-align-start'>Vos réponses</p>
             </div>

@@ -46,7 +46,6 @@ export default function Volume() {
     }
 
     useGameEvent(Game.EVENTS.VOLUME_CHANGE, (data) => {
-        console.log("Volume changed:", data.volume);
         setVolume(data.volume);
     });
 

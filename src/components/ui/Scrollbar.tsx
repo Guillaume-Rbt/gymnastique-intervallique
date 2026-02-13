@@ -135,7 +135,6 @@ export function Scrollbar({
 
     // Don't display scrollbar if all content is visible
 
-    console.log("scrollHeight:", scrollHeight, "clientHeight:", clientHeight);
     if (scrollHeight <= clientHeight) {
         return null;
     }
