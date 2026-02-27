@@ -7,7 +7,6 @@ export default defineConfig({
             include: ["src/**/*.tsx"],
         },
     },
-
     theme: {
         breakpoint: {
             xs: "480px",
@@ -48,6 +47,7 @@ export default defineConfig({
                     "--gap": `${Number(gap) * 0.25}rem`,
                 };
             },
+            { layer: "utilities" },
         ],
         [
             /^col-(\d+)$/,
@@ -58,6 +58,7 @@ export default defineConfig({
                     width: `calc((100% / ${n}) - ((${nbSpacing} * var(--gap)) / ${n}))`,
                 };
             },
+            { layer: "utilities" },
         ],
         [
             /margin-(x|y)-(?:(start|end)-)?auto/,
@@ -72,6 +73,7 @@ export default defineConfig({
                     margin-${axis}${side}: auto;
                 }`;
             },
+            { layer: "utilities" },
         ],
         [
             /container-margin-(y|x)-auto/,
@@ -89,6 +91,7 @@ export default defineConfig({
                         margin-${axis}-end: auto;
                     }`;
             },
+            { layer: "utilities" },
         ],
     ],
     shortcuts: {

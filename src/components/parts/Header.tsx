@@ -58,7 +58,7 @@ export default function Header() {
             ref={root}
             className='shadow-10 color-slate-200 z-1 overflow-hidden max-sm:gap-5 xs:px-10 text-3 header position-fixed max-xs:flex-justify-center gap-12 sm:gap-10 xs:px-15 z-10  w-full top-0 flex-items-center flex-justify-start flex h-16'>
             <h1 className='font-bold text-4 max-xs:hidden'>Quel est l'intervalle&nbsp;?</h1>
-            <div className='flex ml-auto max-sm:gap-5 flex-items-center sm:gap-10'>
+            <div className='flex ml-auto max-sm:gap-5 flex-items-center sm:gap-10  max-xs:mr-auto'>
                 <Timer />
                 <Progress />
                 <Score />

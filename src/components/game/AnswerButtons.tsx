@@ -18,11 +18,9 @@ const buttonResponseVariants = {
     disabled: "opacity-50 pointer-events-none",
 };
 
-export default function AnswerButtons() {
+export default function AnswerButtons({ ref }: { ref?: React.Ref<HTMLDivElement> }) {
     const allowedIntervals = useGameAllowedIntervals();
     const scope = useRef<Scope | null>(null);
-    const root = useRef<HTMLDivElement | null>(null);
-
     const [answered, _, __, toggleAnswered] = useBoolean(false);
     const [active, setActiveTrue, setActiveFalse] = useBoolean(false);
     const device = useDevice();
@@ -69,6 +67,8 @@ export default function AnswerButtons() {
     });
 
     useLayoutEffect(() => {
+        const root = ref as React.MutableRefObject<HTMLDivElement | null>;
+
         scope.current = createScope({ root }).add((_) => {
             if (!root.current) return;
 
@@ -154,7 +154,7 @@ export default function AnswerButtons() {
                 return (
                     <Button
                         ref={setItemRef(interval.text)}
-                        classes='col-4 hover-scale-100  max-lg:col-2 max-xs:col-2 border-solid  border-1 max-xl:col-3  py-2.3 px-2  max-xxl:text-[max(16px,_0.675rem)] text-3.5 rounded-2 font-bold'
+                        classes=' col-4 hover-scale-100  max-lg:col-2 max-xs:col-2 border-solid   border-1 max-xl:col-3  py-2.3 px-2  max-xxl:text-[max(16px,_0.675rem)] text-3.5 rounded-2 font-bold  layer-mobile:[@media(min-width:744px)_and_(max-width:1024px)_and_(orientation:portrait)]:col-1!'
                         key={index}
                         label={buttonLabel}
                         variant={variant}
@@ -170,8 +170,8 @@ export default function AnswerButtons() {
 
     return (
         <div
-            ref={root}
-            className='color-theme-light gap-1.5 max-xs:px-4 px-15 min-w-[300px] flex flex-wrap flex-justify-center margin-x-auto'>
+            ref={ref}
+            className='position-relative color-theme-light gap-1.5 max-xs:px-4 px-15 min-w-[300px] flex flex-wrap flex-justify-center margin-x-auto'>
             {buttonsList}
         </div>
     );

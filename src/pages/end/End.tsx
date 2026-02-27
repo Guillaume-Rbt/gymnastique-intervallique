@@ -141,14 +141,14 @@ export function End() {
             <div className='flex flex-col flex-items-center justify-center h-full w-full bg-theme-blue/80 backdrop-blur-3xl gap-10 p-block-6 text-center'>
                 {" "}
                 <div className='flex flex-col flex-items-center gap-7 h-full w-full'>
-                    <h1 ref={setItemRef("title")} className='text-4xl font-bold'>
+                    <h1 ref={setItemRef("title")} className='text-3xl font-bold'>
                         Gymnastique Intervallique
                     </h1>
 
                     <div className='flex flex-col gap-2 flex-items-center'>
                         <div
                             ref={setItemRef("result")}
-                            className='flex flex-col gap-2 text-10 border-1 border-solid border-theme-light p-5 rounded-3 bg-theme-light/10'>
+                            className='flex flex-col gap-2 text-7 border-1 border-solid border-theme-light p-3 rounded-3 bg-theme-light/10'>
                             <p className='text-4'>Vous avez obtenu&nbsp;:</p>
                             <p>
                                 {game.score} point{game.score > 1 ? "s" : ""}
@@ -156,7 +156,7 @@ export function End() {
                         </div>
                         {scormWrapper.getScore() > 0 && (
                             <p className='flex flex-items-center gap-3'>
-                                <TrophyIcon className='text-7 color-theme-light'></TrophyIcon>
+                                <TrophyIcon className='text-5 color-theme-light'></TrophyIcon>
                                 <span>
                                     Meilleur score : {scormWrapper.getScore()} point
                                     {scormWrapper.getScore() > 1 ? "s" : ""}

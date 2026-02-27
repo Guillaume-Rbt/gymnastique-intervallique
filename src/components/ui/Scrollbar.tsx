@@ -1,7 +1,16 @@
 import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Utils from "../../utils/utils";
 
-export function Scrollbar({
+type ScrollState = {
+    scrollTop: number;
+    scrollHeight: number;
+    clientHeight: number;
+    paddingTop: number;
+};
+
+const INITIAL_STATE: ScrollState = { scrollTop: 0, scrollHeight: 0, clientHeight: 0, paddingTop: 0 };
+
+export default function Scrollbar({
     containerRef,
     elementRef,
 }: {
@@ -9,80 +18,71 @@ export function Scrollbar({
     elementRef: React.RefObject<HTMLDivElement | null>;
 }) {
     const ro = useRef<ResizeObserver | null>(null);
-    const [scrollTop, setScrollTop] = useState(0);
-    const [scrollHeight, setScrollHeight] = useState(0);
-    const [clientHeight, setClientHeight] = useState(0);
+    const mo = useRef<MutationObserver | null>(null);
+    const rafRef = useRef<number | null>(null);
+    const [state, setState] = useState<ScrollState>(INITIAL_STATE);
+    const { scrollTop, scrollHeight, clientHeight, paddingTop } = state;
 
-    const onMouseDown = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-        event.preventDefault();
-        const startY = Utils.getEventCoords(event.nativeEvent).y;
-        const startScrollTop = scrollTop;
+    const updateScrollData = useCallback(() => {
+        if (!containerRef.current || !elementRef.current) return;
 
-        const onMouseMove = (moveEvent: Event) => {
-            if (containerRef.current && elementRef.current) {
-                const deltaY = Utils.getEventCoords(moveEvent as MouseEvent | TouchEvent).y - startY;
-                const trackHeight = containerRef.current.clientHeight;
-                const thumbHeight = Math.max((containerRef.current.clientHeight / scrollHeight) * trackHeight, 20);
-                const scrollableHeight = scrollHeight - clientHeight;
-                const scrollRatio = scrollableHeight / (trackHeight - thumbHeight);
+        const cs = window.getComputedStyle(containerRef.current);
+        const pt = parseFloat(cs.paddingTop) || 0;
+        const pb = parseFloat(cs.paddingBottom) || 0;
+        const viewportHeight = Math.max(containerRef.current.clientHeight - pt - pb, 0);
+        const currentScrollHeight = elementRef.current.scrollHeight;
+        const currentTop = Math.abs(parseFloat(elementRef.current.style.top) || 0);
+        const scrollableHeight = Math.max(currentScrollHeight - viewportHeight, 0);
+        const clampedScrollTop = Utils.clamp(0, currentTop, scrollableHeight);
 
-                const newScrollTop = Utils.clamp(0, startScrollTop + deltaY * scrollRatio, scrollableHeight);
+        if (clampedScrollTop !== currentTop) {
+            elementRef.current.style.top = `-${clampedScrollTop}px`;
+        }
 
-                elementRef.current.style.top = `-${newScrollTop}px`;
-                setScrollTop(newScrollTop);
-            }
-        };
+        setState({
+            scrollTop: clampedScrollTop,
+            scrollHeight: currentScrollHeight,
+            clientHeight: viewportHeight,
+            paddingTop: pt,
+        });
+    }, [containerRef, elementRef]);
 
-        const onMouseUp = () => {
-            document.removeEventListener("mousemove", onMouseMove);
-            document.removeEventListener("mouseup", onMouseUp);
-        };
+    const handleResize = useCallback(() => {
+        if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+        rafRef.current = requestAnimationFrame(() => {
+            updateScrollData();
+            rafRef.current = null;
+        });
+    }, [updateScrollData]);
 
-        document.addEventListener("mousemove", onMouseMove);
-        document.addEventListener("mouseup", onMouseUp);
-    };
+    useLayoutEffect(() => {
+        updateScrollData();
+    }, [updateScrollData]);
 
     const onWheel = useCallback(
         (event: Event) => {
             const wheelEvent = event as WheelEvent;
             wheelEvent.preventDefault();
-            if (containerRef.current && elementRef.current) {
-                const delta = wheelEvent.deltaY;
-                const scrollableHeight = scrollHeight - clientHeight;
-                const newScrollTop = Utils.clamp(0, scrollTop + delta, scrollableHeight);
-
-                elementRef.current.style.top = `-${newScrollTop}px`;
-                setScrollTop(newScrollTop);
-            }
+            if (!containerRef.current || !elementRef.current) return;
+            const newScrollTop = Utils.clamp(0, scrollTop + wheelEvent.deltaY, scrollHeight - clientHeight);
+            elementRef.current.style.top = `-${newScrollTop}px`;
+            setState((s) => ({ ...s, scrollTop: newScrollTop }));
         },
-        [scrollTop, scrollHeight, clientHeight],
+        [scrollTop, scrollHeight, clientHeight, containerRef, elementRef],
     );
-
-    const updateScrollData = () => {
-        if (containerRef.current && elementRef.current) {
-            const currentTop = parseFloat(elementRef.current.style.top) || 0;
-            setScrollTop(Math.abs(currentTop));
-            setScrollHeight(elementRef.current.scrollHeight);
-            setClientHeight(containerRef.current.clientHeight);
-        }
-    };
 
     const onContainerDown = useCallback(
         (event: Event) => {
-            const touchEvent = event as MouseEvent | TouchEvent;
-            const startY = Utils.getEventCoords(touchEvent).y;
+            const startY = Utils.getEventCoords(event as MouseEvent | TouchEvent).y;
             const startScrollTop = scrollTop;
+            const scrollableHeight = scrollHeight - clientHeight;
 
             const onMove = (moveEvent: Event) => {
-                const moveCoords = Utils.getEventCoords(moveEvent as MouseEvent | TouchEvent);
-                if (containerRef.current && elementRef.current) {
-                    const deltaY = startY - moveCoords.y; // Inversé pour un scroll naturel
-                    const scrollableHeight = scrollHeight - clientHeight;
-                    const newScrollTop = Utils.clamp(0, startScrollTop + deltaY, scrollableHeight);
-
-                    elementRef.current.style.top = `-${newScrollTop}px`;
-                    setScrollTop(newScrollTop);
-                }
+                if (!elementRef.current) return;
+                const deltaY = startY - Utils.getEventCoords(moveEvent as MouseEvent | TouchEvent).y;
+                const newScrollTop = Utils.clamp(0, startScrollTop + deltaY, scrollableHeight);
+                elementRef.current.style.top = `-${newScrollTop}px`;
+                setState((s) => ({ ...s, scrollTop: newScrollTop }));
             };
 
             const onEnd = () => {
@@ -93,65 +93,87 @@ export function Scrollbar({
             document.addEventListener(Utils.EVENTS.MOVE as string, onMove);
             document.addEventListener(Utils.EVENTS.UP_END as string, onEnd);
         },
-        [scrollTop, scrollHeight, clientHeight],
+        [scrollTop, scrollHeight, clientHeight, elementRef],
     );
 
-    const handleResize = useCallback(() => {
-        updateScrollData();
-    }, []);
+    const onMouseDown = useCallback(
+        (event: React.MouseEvent<HTMLDivElement>) => {
+            event.preventDefault();
+            const startY = Utils.getEventCoords(event.nativeEvent).y;
+            const startScrollTop = scrollTop;
+            const thumbHeight = Math.max((clientHeight / scrollHeight) * clientHeight, 20);
+            const scrollableHeight = scrollHeight - clientHeight;
+            const scrollRatio = scrollableHeight / (clientHeight - thumbHeight);
 
-    // Forcer une mise à jour après chaque rendu pour détecter les changements de contenu
-    useLayoutEffect(() => {
-        updateScrollData();
-    });
+            const onMouseMove = (moveEvent: Event) => {
+                if (!elementRef.current) return;
+                const deltaY = Utils.getEventCoords(moveEvent as MouseEvent | TouchEvent).y - startY;
+                const newScrollTop = Utils.clamp(0, startScrollTop + deltaY * scrollRatio, scrollableHeight);
+                elementRef.current.style.top = `-${newScrollTop}px`;
+                setState((s) => ({ ...s, scrollTop: newScrollTop }));
+            };
+
+            const onMouseUp = () => {
+                document.removeEventListener("mousemove", onMouseMove);
+                document.removeEventListener("mouseup", onMouseUp);
+            };
+
+            document.addEventListener("mousemove", onMouseMove);
+            document.addEventListener("mouseup", onMouseUp);
+        },
+        [scrollTop, clientHeight, scrollHeight, elementRef],
+    );
 
     useEffect(() => {
         const container = containerRef.current;
         const element = elementRef.current;
-
         if (!container || !element) return;
 
         ro.current = new ResizeObserver(handleResize);
         ro.current.observe(element);
+        ro.current.observe(container);
+
+        // attributes exclu : chaque écriture de style.top déclencherait une boucle de mise à jour
+        mo.current = new MutationObserver(handleResize);
+        mo.current.observe(element, { childList: true, subtree: true, characterData: true });
 
         const touchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
-
         if (touchDevice) {
             container.addEventListener(Utils.EVENTS.DOWN_START as string, onContainerDown);
         } else {
             container.addEventListener("wheel", onWheel, { passive: false });
         }
 
-        updateScrollData();
+        handleResize();
+        document.fonts?.ready.then(() => handleResize());
 
         return () => {
-            if (ro.current) {
-                ro.current.disconnect();
+            ro.current?.disconnect();
+            mo.current?.disconnect();
+            if (rafRef.current !== null) {
+                cancelAnimationFrame(rafRef.current);
+                rafRef.current = null;
             }
             container.removeEventListener("wheel", onWheel);
             container.removeEventListener(Utils.EVENTS.DOWN_START as string, onContainerDown);
         };
     }, [onWheel, onContainerDown, handleResize]);
 
-    // Don't display scrollbar if all content is visible
-
-    if (scrollHeight <= clientHeight) {
-        return null;
-    }
+    if (scrollHeight <= clientHeight) return null;
 
     const thumbHeight = Math.max((clientHeight / scrollHeight) * clientHeight, 20);
     const maxThumbTop = clientHeight - thumbHeight;
     const thumbTop = Utils.clamp(0, (scrollTop / (scrollHeight - clientHeight)) * maxThumbTop, maxThumbTop);
 
     return (
-        <div className='bg-theme-light/20 w-1.5 max-sm:w-1 rounded-full position-absolute top-0 right-2 h-full hover:bg-theme-light/40'>
+        <div
+            className='scrollbar bg-theme-light/20 w-1.5 max-sm:w-1 rounded-full position-absolute right-2 hover:bg-theme-light/40'
+            style={{ top: `${paddingTop}px`, height: `${clientHeight}px` }}>
             <div
                 onMouseDown={onMouseDown}
                 className='w-1.5 max-sm:w-1 rounded-full bg-theme-light position-absolute cursor-pointer hover:bg-theme-light/80'
-                style={{
-                    height: `${thumbHeight}px`,
-                    top: `${thumbTop}px`,
-                }}></div>
+                style={{ height: `${thumbHeight}px`, top: `${thumbTop}px` }}
+            />
         </div>
     );
 }

@@ -7,6 +7,11 @@ type UseBooleanReturn = [
     () => void, // toggle
 ];
 
+/**
+ *
+ * @param initialValue
+ * @returns [value, setTrue, setFalse, toggle]
+ */
 export default function useBoolean(initialValue: boolean = false): UseBooleanReturn {
     const [value, setValue] = useState(initialValue);
 

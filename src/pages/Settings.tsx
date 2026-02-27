@@ -5,9 +5,10 @@ import { createPortal } from "react-dom";
 import Toggle from "../components/ui/Toggle";
 import { intervals, buttons } from "../utils/constants";
 import { useGameContext } from "../hooks/useGameContext";
-import { useEffect, useReducer, useMemo } from "react";
+import { useEffect, useReducer, useMemo, useRef } from "react";
 import type { AllowedIntervals } from "../libs/types";
-import BackIcon from "../assets/images/back.svg?react";
+import ButtonBack from "../components/ui/ButtonBack";
+import Scrollbar from "../components/ui/Scrollbar";
 
 function reducer(state: AllowedIntervals, action: { type: string; interval: number }): AllowedIntervals {
     const enabledIntervalsNumber = [...state.values()].filter((v) => v.enabled).length;
@@ -33,6 +34,9 @@ export default function Settings() {
     const { game } = useGameContext();
 
     const [allowedIntervals, dispatch] = useReducer(reducer, game.allowedIntervals);
+
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const elementRef = useRef<HTMLDivElement | null>(null);
 
     useEffect(() => {
         if (opened) return;
@@ -72,23 +76,21 @@ export default function Settings() {
             {createPortal(
                 <div
                     className={`bg-[url(/images/background.webp)] bg-center bg-fixed bg-cover bg-no-repeat position-fixed transition-opacity  duration-200 top-0 left-0 w-full h-full z-20 pointer-events-none opacity-0 ${classes}`}>
-                    <div className='w-full flex flex-col  color-theme-light h-full bg-theme-blue/80 backdrop-blur-3xl p-4'>
-                        {" "}
-                        <div className='flex w-full '>
-                            <Button
-                                onClick={hide}
-                                classes='text-5.5  px-2.25 py-1.25 flex flex-items-center flex-justify-center border-1 border-solid border-theme-light/40 bg-theme-light/5 rounded-2 hover:bg-white/20'>
-                                <BackIcon />
-                            </Button>
-                        </div>
-                        <div className='w-230 max-w-[100%] m-x-auto flex grow overflow-auto scrollbar-hover flex-col'>
+                    <div className='w-full flex flex-col  color-theme-light h-full bg-theme-blue/80 backdrop-blur-3xl p-4 p-ie-0'>
+                        <ButtonBack onClick={hide} />
+                        <div className='w-230 max-w-[100%] m-x-auto h-1 flex flex-grow flex-col'>
                             <h2 className='text-8 text-center mb-6 mt-4'>Paramètres</h2>
-                            <h3 className='mb-2 text-5'>Sélection des intervalles</h3>
-                            <p className='color-theme-light/70 text-3 mb-6'>
-                                Vous devez sélectionner au moins trois intervalles.
-                            </p>
-                            <div className='grid grid-cols-3 gap-2 max-md:grid-cols-2 max-sm:grid-cols-1'>
-                                {toggleList}
+                            <div ref={containerRef} className='flex-grow overflow-hidden position-relative'>
+                                <Scrollbar containerRef={containerRef} elementRef={elementRef} />
+                                <div ref={elementRef} className='position-relative'>
+                                    <h3 className='mb-2 text-5'>Sélection des intervalles</h3>
+                                    <p className='color-theme-light/70 text-3 mb-6'>
+                                        Vous devez sélectionner au moins trois intervalles.
+                                    </p>
+                                    <div className='grid grid-cols-3 gap-2 max-md:grid-cols-2 max-sm:grid-cols-1'>
+                                        {toggleList}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
