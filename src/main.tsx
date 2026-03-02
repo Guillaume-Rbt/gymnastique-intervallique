@@ -1,6 +1,5 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import "@unocss/reset/eric-meyer.css";
 import "./index.css";
 import "virtual:uno.css";
 

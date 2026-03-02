@@ -10,12 +10,16 @@ import { createScope, createTimeline, Scope, utils, stagger } from "animejs";
 import GameSummary from "./GameSummary";
 import Volume from "../../components/ui/Volume";
 import LatestGameGraph from "./LatestGameGraph";
+import Scrollbar from "../../components/ui/Scrollbar";
 
 export function End() {
     const root = useRef<HTMLDivElement | null>(null);
     const scope = useRef<Scope | null>(null);
 
     const { game, animManager } = useGameContext();
+
+    const containerRef = useRef<HTMLDivElement | null>(null);
+    const elementRef = useRef<HTMLDivElement | null>(null);
 
     const itemsRef = useRef(new Map<string, HTMLElement>());
 
@@ -138,49 +142,63 @@ export function End() {
         <div
             ref={root}
             className={`bg-[image:inherit] bg-center bg-fixed bg-cover bg-no-repeat text-theme-light position-fixed w-full h-full bg-theme-blue z-999 transition-opacity duration-200 ${visible ? "" : "pointer-events-none"}`}>
-            <div className='flex flex-col flex-items-center justify-center h-full w-full bg-theme-blue/80 backdrop-blur-3xl gap-10 p-block-6 text-center'>
-                {" "}
-                <div className='flex flex-col flex-items-center gap-7 h-full w-full'>
-                    <h1 ref={setItemRef("title")} className='text-3xl font-bold'>
-                        Gymnastique Intervallique
-                    </h1>
+            <div className='flex flex-col flex-items-center justify-center h-full w-full bg-theme-blue/80 backdrop-blur-3xl  p-block-6 p-be-0 text-center'>
+                <div
+                    ref={containerRef}
+                    className='flex h-1 flex-grow position-relative w-full overflow-hidden flex-col'>
+                    <Scrollbar containerRef={containerRef} elementRef={elementRef} />
+                    <div
+                        ref={elementRef}
+                        className='flex flex-col flex-items-center position-relative gap-7 h-full w-full'>
+                        <h1 ref={setItemRef("title")} className='text-3xl font-bold'>
+                            Gymnastique Intervallique
+                        </h1>
 
-                    <div className='flex flex-col gap-2 flex-items-center'>
-                        <div
-                            ref={setItemRef("result")}
-                            className='flex flex-col gap-2 text-7 border-1 border-solid border-theme-light p-3 rounded-3 bg-theme-light/10'>
-                            <p className='text-4'>Vous avez obtenu&nbsp;:</p>
-                            <p>
-                                {game.score} point{game.score > 1 ? "s" : ""}
-                            </p>
+                        <div className='flex flex-col gap-2 flex-items-center'>
+                            <div
+                                ref={setItemRef("result")}
+                                className='flex flex-col gap-2 text-7 border-1 border-solid border-theme-light p-3 rounded-3 bg-theme-light/10'>
+                                <p className='text-4'>Vous avez obtenu&nbsp;:</p>
+                                <p>
+                                    {game.score} point{game.score > 1 ? "s" : ""}
+                                </p>
+                            </div>
+                            {scormWrapper.getScore() > 0 && (
+                                <p className='flex flex-items-center gap-3'>
+                                    <TrophyIcon className='text-5 color-theme-light'></TrophyIcon>
+                                    <span>
+                                        Meilleur score : {scormWrapper.getScore()} point
+                                        {scormWrapper.getScore() > 1 ? "s" : ""}
+                                    </span>
+                                </p>
+                            )}
                         </div>
-                        {scormWrapper.getScore() > 0 && (
-                            <p className='flex flex-items-center gap-3'>
-                                <TrophyIcon className='text-5 color-theme-light'></TrophyIcon>
-                                <span>
-                                    Meilleur score : {scormWrapper.getScore()} point
-                                    {scormWrapper.getScore() > 1 ? "s" : ""}
-                                </span>
-                            </p>
-                        )}
-                    </div>
 
-                    <div className='h-1 flex gap-4 flex-grow w-full px-10'>
-                        {visible && <LatestGameGraph className={["col-2"]}></LatestGameGraph>}
+                        <div className='h-1 responsive:[@media(max-width:1024px)]:h-auto responsive:[@media(max-width:1024px)]:flex-shrink-0  flex flex-wrap gap-4 flex-grow w-full px-10'>
+                            {visible && (
+                                <LatestGameGraph
+                                    className={[
+                                        "col-2 responsive:[@media(max-width:1024px)]:col-1 responsive:[@media(max-width:1024px)]:h-[calc(50% - var(--spacing)*4)]  responsive:[@media(max-width:1024px)]:min-h-50",
+                                    ]}></LatestGameGraph>
+                            )}
 
-                        <GameSummary className={["col-2"]}></GameSummary>
-                    </div>
-
-                    <div className='flex w-full gap-3 px-10'>
-                        <Volume></Volume>
-
-                        <div ref={setItemRef("button-new-game")} className='m-inline-auto'>
-                            <Button
-                                onClick={() => game.reset()}
-                                classes={"btn-primary w-full m-inline-auto"}
-                                label='Nouvelle partie'
-                            />
+                            <GameSummary
+                                className={[
+                                    "col-2 responsive:[@media(max-width:1024px)]:col-1 responsive:[@media(max-width:1024px)]:h-[calc(50% - var(--spacing)*4)] responsive:[@media(max-width:1024px)]:min-h-50",
+                                ]}></GameSummary>
                         </div>
+                    </div>
+                </div>
+
+                <div className='flex w-full gap-3 px-10 h-16 flex-items-center'>
+                    <Volume></Volume>
+
+                    <div ref={setItemRef("button-new-game")} className='m-inline-auto'>
+                        <Button
+                            onClick={() => game.reset()}
+                            classes={"btn-primary w-full m-inline-auto"}
+                            label='Nouvelle partie'
+                        />
                     </div>
                 </div>
             </div>

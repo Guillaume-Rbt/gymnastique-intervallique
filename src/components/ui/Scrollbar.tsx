@@ -73,6 +73,7 @@ export default function Scrollbar({
 
     const onContainerDown = useCallback(
         (event: Event) => {
+            event.stopPropagation();
             const startY = Utils.getEventCoords(event as MouseEvent | TouchEvent).y;
             const startScrollTop = scrollTop;
             const scrollableHeight = scrollHeight - clientHeight;

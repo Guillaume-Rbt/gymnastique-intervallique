@@ -77,7 +77,7 @@ export default function ButtonPlay({
                     "color-theme-light",
                     "btn-primary",
                     "aspect-square",
-                    "p-0",
+                    "custom:p-0",
                     "rounded-full",
                     "flex",
                     "flex-items-center",
@@ -85,7 +85,7 @@ export default function ButtonPlay({
                     !enabled ? "opacity-50 pointer-events-none" : "",
                     ...sizeClasses,
                 ]}>
-                {playing ? <PauseIcon /> : <PlayIcon />}
+                {playing ? <PauseIcon className='flex-shrink-0' /> : <PlayIcon className='flex-shrink-0' />}
             </Button>
         </>
     );

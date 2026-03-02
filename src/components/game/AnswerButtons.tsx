@@ -154,7 +154,7 @@ export default function AnswerButtons({ ref }: { ref?: React.Ref<HTMLDivElement>
                 return (
                     <Button
                         ref={setItemRef(interval.text)}
-                        classes=' col-4 hover-scale-100  max-lg:col-2 max-xs:col-2 border-solid   border-1 max-xl:col-3  py-2.3 px-2  max-xxl:text-[max(16px,_0.675rem)] text-3.5 rounded-2 font-bold  layer-mobile:[@media(min-width:744px)_and_(max-width:1024px)_and_(orientation:portrait)]:col-1!'
+                        classes='col-4 hover-scale-100  max-lg:col-2 max-xs:col-2 border-solid   border-1 max-xl:col-3  py-2.3 px-2  max-xxl:text-[max(16px,_0.675rem)] text-3.5 rounded-2 font-bold responsive:[@media(min-width:744px)_and_(max-width:1024px)_and_(orientation:_portrait)]:col-1'
                         key={index}
                         label={buttonLabel}
                         variant={variant}

@@ -7,6 +7,28 @@ export default defineConfig({
             include: ["src/**/*.tsx"],
         },
     },
+    outputToCssLayers: true,
+    layers: {
+        preflights: -100,
+        default: 0,
+        shortcuts: 10,
+        components: 20,
+        utilities: 30,
+        custom: 40,
+        responsive: 100,
+    },
+    variants: [
+        (matcher) => {
+            if (!matcher.match(/^[a-z]*:/)) return matcher;
+
+            const match = matcher.match(/^([a-z]*:)/);
+
+            return {
+                matcher: matcher.slice(match![1].length),
+                layer: match![1].slice(0, match![1].length - 1),
+            };
+        },
+    ],
     theme: {
         breakpoint: {
             xs: "480px",
@@ -37,7 +59,6 @@ export default defineConfig({
                 "scrollbar-width": "none" /* Firefox — cachée par défaut */,
                 "scrollbar-color": "rgba(0,0,0,0.4) transparent",
             },
-            { layer: "components" },
         ],
         [
             /^gap-(\d+(?:\.\d+)?)$/,
@@ -47,7 +68,6 @@ export default defineConfig({
                     "--gap": `${Number(gap) * 0.25}rem`,
                 };
             },
-            { layer: "utilities" },
         ],
         [
             /^col-(\d+)$/,
@@ -58,7 +78,6 @@ export default defineConfig({
                     width: `calc((100% / ${n}) - ((${nbSpacing} * var(--gap)) / ${n}))`,
                 };
             },
-            { layer: "utilities" },
         ],
         [
             /margin-(x|y)-(?:(start|end)-)?auto/,
@@ -73,7 +92,6 @@ export default defineConfig({
                     margin-${axis}${side}: auto;
                 }`;
             },
-            { layer: "utilities" },
         ],
         [
             /container-margin-(y|x)-auto/,
@@ -91,7 +109,6 @@ export default defineConfig({
                         margin-${axis}-end: auto;
                     }`;
             },
-            { layer: "utilities" },
         ],
     ],
     shortcuts: {
