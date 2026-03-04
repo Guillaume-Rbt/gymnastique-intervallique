@@ -2,3 +2,26 @@
 @layer preflights {
     @import "@unocss/reset/eric-meyer.css";
 }
+
+@layer component {
+    .settings-panel,
+    .fullscreen-card {
+        opacity: 1;
+        display: block;
+        transition:
+            opacity 0.3s,
+            display 0.3s allow-discrete;
+    }
+
+    .settings-panel.hidden,
+    .fullscreen-card.hidden {
+        opacity: 0;
+    }
+
+    @starting-style {
+        .settings-panel,
+        .fullscreen-card {
+            opacity: 0;
+        }
+    }
+}

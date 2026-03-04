@@ -23,6 +23,8 @@ export default function Card({
 
     const [isOpen, open, close] = useBoolean(false);
 
+    const classes = isOpen ? "" : "hidden";
+
     return (
         <div
             className={`rounded-3 overflow-hidden border-solid flex flex-col border-theme-light  border-.2 ${className.join(" ")}`}>
@@ -43,29 +45,28 @@ export default function Card({
                     {children}
                 </div>
             </div>
-            {isOpen &&
-                createPortal(
-                    <div
-                        className={`bg-[url(/images/background.webp)] color-theme-light bg-center z-50 bg-fixed bg-cover bg-no-repeat position-fixed w-full h-full`}>
-                        <div className='w-full h-full p-4 bg-theme-blue/80 backdrop-blur-3xl flex flex-col'>
-                            <ButtonBack onClick={close} />
-                            <h1 className='text-8 text-center mb-6 mt-4'>{title}</h1>
+            {createPortal(
+                <div
+                    className={`bg-[url(/images/background.webp)] color-theme-light bg-center z-50 bg-fixed bg-cover bg-no-repeat position-fixed w-full h-full fullscreen-card ${classes}`}>
+                    <div className='w-full h-full p-4 bg-theme-blue/80 backdrop-blur-3xl flex flex-col'>
+                        <ButtonBack onClick={close} />
+                        <h1 className='text-8 text-center mb-6 mt-4'>{title}</h1>
+                        <div
+                            ref={fullsceenContainerRef}
+                            className='h-1 overflow-hidden position-relative has-[.scrollbar]:p-ie-3 fullscreen-card flex flex-col flex-grow'>
+                            <Scrollbar
+                                containerRef={fullsceenContainerRef}
+                                elementRef={fullscreenElementRef}></Scrollbar>
                             <div
-                                ref={fullsceenContainerRef}
-                                className='h-1 overflow-hidden position-relative has-[.scrollbar]:p-ie-3 fullscreen-card flex flex-col flex-grow'>
-                                <Scrollbar
-                                    containerRef={fullsceenContainerRef}
-                                    elementRef={fullscreenElementRef}></Scrollbar>
-                                <div
-                                    ref={fullscreenElementRef}
-                                    className='position-relative slot has-[.graph-container]:h-full'>
-                                    {children}
-                                </div>
+                                ref={fullscreenElementRef}
+                                className='position-relative slot has-[.graph-container]:h-full'>
+                                {children}
                             </div>
                         </div>
-                    </div>,
-                    document.getElementById("card-fullscreen")!,
-                )}
+                    </div>
+                </div>,
+                document.getElementById("fullscreen-card-root")!,
+            )}
         </div>
     );
 }
