@@ -1,11 +1,18 @@
 import { SCORM } from "pipwerks-scorm-api-wrapper";
 import { type scormData } from "./types";
+import UUID from "./uuid";
 
 const MODE = import.meta.env.MODE; // "development" in dev mode, "production" in build
 
 const fakeData = {
     "cmi.score.raw": Math.floor(Math.random() * 51),
-    "cmi.suspend_data": "5@10@15@10@25@15@35@20@5@50", // Example of last 10 scores
+    "cmi.suspend_data": '{"id":"1", "score": 2, "date": 1000}', // Example of last 10 scores
+};
+
+export type ScoreType = {
+    id: string;
+    score: number;
+    date: number;
 };
 
 class ScormWrapper {
@@ -53,10 +60,9 @@ class ScormWrapper {
     }
 
     get data(): scormData {
-        if (MODE === "development") {
+        if (MODE == "development") {
             return fakeData;
         }
-
         return this.#mode === "scorm" ? this.scormData : this.localData;
     }
 
@@ -123,32 +129,42 @@ class ScormWrapper {
         }
     }
 
-    getLastTenScores(): number[] {
-        if (this.mode === "scorm") {
-            try {
-                const suspendData = SCORM.get("cmi.suspend_data");
-                return suspendData ? suspendData.split("@").map((score: string) => parseInt(score, 10)) : [];
-            } catch (e) {
-                console.error("Failed to retrieve last ten scores from SCORM:", e);
-                return [];
-            }
+    getLastTenScores(useFake = false): ScoreType[] {
+        if (useFake) {
+            return fakeData["cmi.suspend_data"]
+                .split("@")
+                .filter(Boolean)
+                .map((score) => JSON.parse(score) as ScoreType);
         }
-
         try {
-            const scores = this.localData["cmi.suspend_data"] || null;
-            return scores ? scores.split("@").map((score: string) => parseInt(score, 10)) : [];
+            const suspendData =
+                this.mode === "scorm" ? SCORM.get("cmi.suspend_data") : this.localData["cmi.suspend_data"];
+
+            if (!suspendData) return [];
+
+            return suspendData
+                .split("@")
+                .filter(Boolean)
+                .map((score) => JSON.parse(score) as ScoreType);
         } catch (e) {
-            console.error("Failed to retrieve last ten scores locally:", e);
+            console.error("Failed to retrieve last ten scores:", e);
             return [];
         }
     }
-
     saveNewScore(score: number) {
         const lastTenScores = this.getLastTenScores();
 
+        const newScore: ScoreType = {
+            id: UUID.generate(),
+            score,
+            date: Date.now(),
+        };
+
+        const suspendData = [newScore, ...lastTenScores.slice(0, 9)].map((score) => JSON.stringify(score)).join("@");
+
         if (this.mode === "scorm") {
             try {
-                SCORM.set("cmi.suspend_data", [...lastTenScores.slice(-9), score].join("@"));
+                SCORM.set("cmi.suspend_data", suspendData);
                 return SCORM.save();
             } catch (e) {
                 console.error("Failed to save new score to SCORM:", e);
@@ -157,7 +173,10 @@ class ScormWrapper {
         }
 
         try {
-            this.localData = { ...this.localData, "cmi.suspend_data": [...lastTenScores.slice(-9), score].join("@") };
+            this.localData = {
+                ...this.localData,
+                "cmi.suspend_data": suspendData,
+            };
             return true;
         } catch (e) {
             console.error("Failed to save new score locally:", e);

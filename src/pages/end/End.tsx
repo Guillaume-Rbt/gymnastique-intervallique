@@ -9,7 +9,7 @@ import { scormWrapper } from "../../libs/scormWrapper";
 import { createScope, createTimeline, Scope, utils, stagger } from "animejs";
 import GameSummary from "./GameSummary";
 import Volume from "../../components/ui/Volume";
-import LatestGameGraph from "./LatestGameGraph";
+import LatestGames from "./LatestGames";
 import Scrollbar from "../../components/ui/Scrollbar";
 
 export function End() {
@@ -175,17 +175,16 @@ export function End() {
                         </div>
 
                         <div className='h-1 responsive:[@media(max-width:1024px)]:h-auto responsive:[@media(max-width:1024px)]:flex-shrink-0  flex flex-wrap gap-4 flex-grow w-full px-10'>
-                            {visible && (
-                                <LatestGameGraph
-                                    className={[
-                                        "col-2 responsive:[@media(max-width:1024px)]:col-1 responsive:[@media(max-width:1024px)]:h-[calc(50% - var(--spacing)*4)]  responsive:[@media(max-width:1024px)]:min-h-50",
-                                    ]}></LatestGameGraph>
-                            )}
-
                             <GameSummary
                                 className={[
                                     "col-2 responsive:[@media(max-width:1024px)]:col-1 responsive:[@media(max-width:1024px)]:h-[calc(50% - var(--spacing)*4)] responsive:[@media(max-width:1024px)]:min-h-50",
                                 ]}></GameSummary>
+
+                            <LatestGames
+                                className={[
+                                    "col-2 responsive:[@media(max-width:1024px)]:col-1 responsive:[@media(max-width:1024px)]:h-[calc(50% - var(--spacing)*4)] responsive:[@media(max-width:1024px)]:min-h-50",
+                                ]}
+                            />
                         </div>
                     </div>
                 </div>
