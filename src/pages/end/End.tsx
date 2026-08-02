@@ -141,7 +141,7 @@ export function End() {
     return (
         <div
             ref={root}
-            className={`bg-[image:inherit] bg-center bg-fixed bg-cover bg-no-repeat text-theme-light position-fixed w-full h-full bg-theme-blue z-999 transition-opacity duration-200 ${visible ? "" : "pointer-events-none"}`}>
+            className={`bg-[image:inherit] bg-center bg-fixed bg-cover bg-no-repeat text-theme-light position-fixed w-full h-full bg-theme-blue z-999 transition-opacity duration-200 ${visible ? "" : "pointer-events-none opacity-0"}`}>
             <div className='flex flex-col flex-items-center justify-center h-full w-full bg-theme-blue/80 backdrop-blur-3xl  p-block-6 p-be-0 text-center'>
                 <div
                     ref={containerRef}
