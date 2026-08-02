@@ -8,7 +8,7 @@ export type ButtonVariants = { [key: string]: string | [] };
 export type ButtonVariant = keyof ButtonVariants;
 export type ButtonProps = {
     label?: string;
-    onClick?: () => void;
+    onClick?: (() => void) | null;
     classes?: string | string[];
     variant?: ButtonVariant;
     variants?: ButtonVariants;

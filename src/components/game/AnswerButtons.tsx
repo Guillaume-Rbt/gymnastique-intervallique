@@ -142,6 +142,16 @@ export default function AnswerButtons({ ref }: { ref?: React.Ref<HTMLDivElement>
         [],
     );
 
+    const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        const target = e.target as HTMLElement;
+        if (target.tagName.toLowerCase() === "button") {
+            const interval = target.getAttribute("data-interval");
+            if (interval) {
+                game.checkAnswer(interval);
+            }
+        }
+    };
+
     const buttonsList = useMemo(
         () =>
             buttonsLabel.map((buttonLabel, index) => {
@@ -159,9 +169,7 @@ export default function AnswerButtons({ ref }: { ref?: React.Ref<HTMLDivElement>
                         label={buttonLabel}
                         variant={variant}
                         variants={buttonResponseVariants}
-                        onClick={() => {
-                            game.checkAnswer(interval.text);
-                        }}
+                        data-interval={interval.text}
                     />
                 );
             }),
@@ -170,6 +178,7 @@ export default function AnswerButtons({ ref }: { ref?: React.Ref<HTMLDivElement>
 
     return (
         <div
+            onClick={handleClick}
             ref={ref}
             className='position-relative color-theme-light gap-1.5 max-xs:px-4 px-15 min-w-[300px] flex flex-wrap flex-justify-center margin-x-auto'>
             {buttonsList}

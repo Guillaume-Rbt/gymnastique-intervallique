@@ -4,12 +4,13 @@ import React from "react";
 
 const Button = React.memo(function Button({
     label = "",
-    onClick = () => {},
+    onClick = null,
     classes = "",
     variant = "",
     variants = {},
     children = null,
     ref = null,
+    ...props
 }: ButtonProps) {
     const variantClasses = Utils.ensureArrayOfStrings(variant ? variants?.[variant] : "");
 
@@ -30,7 +31,12 @@ const Button = React.memo(function Button({
     }
 
     return (
-        <button ref={ref} role='button' className={buttonsClasses.join(" ")} onClick={onClick}>
+        <button
+            {...props}
+            ref={ref}
+            role='button'
+            className={buttonsClasses.join(" ")}
+            {...(onClick ? { onClick } : {})}>
             {child}
         </button>
     );
