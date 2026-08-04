@@ -4,6 +4,9 @@ import type { AnimationManager } from "./animations/anim-manager";
 import type { Interval } from "./interval-generator";
 import type { Timeline } from "animejs";
 
+export type DataAttributes = {
+    [K in `data-${string}`]?: string | number | boolean;
+};
 export type ButtonVariants = { [key: string]: string | [] };
 export type ButtonVariant = keyof ButtonVariants;
 export type ButtonProps = {

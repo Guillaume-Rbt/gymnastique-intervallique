@@ -1,4 +1,4 @@
-import type { ButtonProps } from "../../libs/types";
+import type { ButtonProps, DataAttributes } from "../../libs/types";
 import Utils from "../../utils/utils";
 import React from "react";
 
@@ -11,7 +11,7 @@ const Button = React.memo(function Button({
     children = null,
     ref = null,
     ...props
-}: ButtonProps) {
+}: ButtonProps & DataAttributes) {
     const variantClasses = Utils.ensureArrayOfStrings(variant ? variants?.[variant] : "");
 
     const buttonsClasses = ["cursor-pointer", "btn", ...Utils.ensureArrayOfStrings(classes), ...variantClasses];

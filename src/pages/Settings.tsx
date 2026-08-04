@@ -38,6 +38,22 @@ export default function Settings() {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const elementRef = useRef<HTMLDivElement | null>(null);
 
+    const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        let parent = e.target as HTMLElement;
+
+        while (parent && parent !== e.currentTarget) {
+            if (parent.dataset.interval) break;
+            parent = parent.parentElement as HTMLElement;
+        }
+
+        const interval = parent.dataset.interval;
+        if (!interval) return;
+
+        const isEnabled = allowedIntervals.get(Number(interval))?.enabled || false;
+
+        dispatch({ type: isEnabled ? "disable" : "enable", interval: Number(interval) });
+    };
+
     useEffect(() => {
         if (opened) return;
         game.allowedIntervals = allowedIntervals;
@@ -48,16 +64,7 @@ export default function Settings() {
             intervals.map((_, index) => {
                 const isEnabled = allowedIntervals.get(index)?.enabled || false;
 
-                return (
-                    <Toggle
-                        key={index}
-                        label={buttons[index]}
-                        value={isEnabled}
-                        onChange={(v) => {
-                            dispatch({ type: v ? "enable" : "disable", interval: index });
-                        }}
-                    />
-                );
+                return <Toggle key={index} label={buttons[index]} value={isEnabled} data-interval={index} />;
             }),
         [allowedIntervals],
     );
@@ -87,7 +94,9 @@ export default function Settings() {
                                     <p className='color-theme-light/70 text-3 mb-6'>
                                         Vous devez sélectionner au moins trois intervalles.
                                     </p>
-                                    <div className='grid grid-cols-3 gap-2 max-md:grid-cols-2 max-sm:grid-cols-1'>
+                                    <div
+                                        onClick={handleClick}
+                                        className='grid grid-cols-3 gap-2 max-md:grid-cols-2 max-sm:grid-cols-1'>
                                         {toggleList}
                                     </div>
                                 </div>
